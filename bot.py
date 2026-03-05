@@ -3,6 +3,7 @@ import uuid
 import aiohttp
 import os
 from datetime import datetime, timedelta
+from aiohttp import web
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import CommandStart
@@ -14,6 +15,7 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 YUKASSA_SHOP_ID = os.environ.get("YUKASSA_SHOP_ID")
 YUKASSA_SECRET_KEY = os.environ.get("YUKASSA_SECRET_KEY")
+PORT = int(os.environ.get("PORT", 8080))
 # ==========================================
 
 bot = Bot(token=BOT_TOKEN)
@@ -200,7 +202,21 @@ async def back(callback: CallbackQuery):
         reply_markup=main_menu()
     )
 
+# Простой веб-сервер чтобы Render не ругался
+async def health(request):
+    return web.Response(text="OK")
+
 async def main():
+    # Запускаем веб-сервер
+    app = web.Application()
+    app.router.add_get("/", health)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", PORT)
+    await site.start()
+    print(f"Веб-сервер запущен на порту {PORT}")
+
+    # Запускаем бота
     print("Бот запущен!")
     await dp.start_polling(bot)
 
