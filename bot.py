@@ -16,6 +16,7 @@ SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 YUKASSA_SHOP_ID = os.environ.get("YUKASSA_SHOP_ID")
 YUKASSA_SECRET_KEY = os.environ.get("YUKASSA_SECRET_KEY")
 PORT = int(os.environ.get("PORT", 8080))
+RENDER_URL = os.environ.get("RENDER_URL", "")
 # ==========================================
 
 bot = Bot(token=BOT_TOKEN)
@@ -76,6 +77,18 @@ async def check_yukassa_payment(payment_id: str):
         async with session.get(f"https://api.yookassa.ru/v3/payments/{payment_id}", headers=headers) as resp:
             result = await resp.json()
             return result.get("status")
+
+# Антисон — пингуем себя каждые 10 минут
+async def keep_alive():
+    while True:
+        await asyncio.sleep(600)  # 10 минут
+        if RENDER_URL:
+            try:
+                async with aiohttp.ClientSession() as session:
+                    await session.get(f"https://{RENDER_URL}/")
+                    print("Ping отправлен — бот не спит!")
+            except:
+                pass
 
 @dp.message(CommandStart())
 async def start(message: Message):
@@ -202,12 +215,11 @@ async def back(callback: CallbackQuery):
         reply_markup=main_menu()
     )
 
-# Простой веб-сервер чтобы Render не ругался
 async def health(request):
     return web.Response(text="OK")
 
 async def main():
-    # Запускаем веб-сервер
+    # Веб-сервер
     app = web.Application()
     app.router.add_get("/", health)
     runner = web.AppRunner(app)
@@ -216,7 +228,10 @@ async def main():
     await site.start()
     print(f"Веб-сервер запущен на порту {PORT}")
 
-    # Запускаем бота
+    # Антисон
+    asyncio.create_task(keep_alive())
+
+    # Бот
     print("Бот запущен!")
     await dp.start_polling(bot)
 
