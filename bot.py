@@ -35,7 +35,6 @@ dp = Dispatcher()
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 PLANS = {
-    "test":    {"name": "Тест", "price": 1, "days": 1},
     "month":   {"name": "1 месяц",   "price": 99,  "days": 30},
     "half":    {"name": "6 месяцев", "price": 299, "days": 180},
     "forever": {"name": "Навсегда",  "price": 499, "days": 36500},
@@ -67,7 +66,6 @@ def main_menu():
 
 def plans_menu():
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🧪 Тест — 1₽", callback_data="plan_test")],
         [InlineKeyboardButton(text="1 месяц — 99₽", callback_data="plan_month")],
         [InlineKeyboardButton(text="6 месяцев — 299₽", callback_data="plan_half")],
         [InlineKeyboardButton(text="Навсегда — 499₽", callback_data="plan_forever")],
@@ -387,7 +385,7 @@ async def support(callback: CallbackQuery):
         return
     try:
         await callback.message.edit_text(
-            "📞 <b>Поддержка</b>\n\nПо всем вопросам: @vit9aso2",
+            "📞 <b>Поддержка</b>\n\nПо всем вопросам: @disxrm",
             parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[
                 [InlineKeyboardButton(text="◀️ Назад", callback_data="back")]
