@@ -58,6 +58,7 @@ async def create_yukassa_invoice(amount: int, order_id: str, description: str):
     }
     data = {
         "amount": {"value": f"{amount}.00", "currency": "RUB"},
+        "capture": True,  # ← ИСПРАВЛЕНИЕ: без этого СБП не отображается
         "confirmation": {"type": "redirect", "return_url": "https://t.me/VOIDTWEAKS_BOT"},
         "description": description,
         "metadata": {"order_id": order_id}
