@@ -396,7 +396,6 @@ async def my_license(callback: CallbackQuery):
     try:
         now_iso = datetime.now().isoformat()
 
-        # Деактивируем просроченные прямо здесь
         supabase.table("licenses").update({"is_active": False}).eq(
             "telegram_id", callback.from_user.id
         ).eq("is_active", True).lt("expires_at", now_iso).execute()
@@ -417,9 +416,11 @@ async def my_license(callback: CallbackQuery):
         else:
             text = "❌ У вас нет активных лицензий\n\nНажмите <b>Купить лицензию</b>"
 
-        await callback.message.edit_text(text, parse_mode="HTML", reply_markup=main_menu())
-    except TelegramBadRequest:
-        pass
+        try:
+            await callback.message.delete()
+        except Exception:
+            pass
+        await callback.message.answer(text, parse_mode="HTML", reply_markup=main_menu())
     except Exception as e:
         logger.error(f"Ошибка в my_license: {e}")
         await callback.answer("❌ Ошибка загрузки лицензий.", show_alert=True)
@@ -430,15 +431,16 @@ async def support(callback: CallbackQuery):
         await callback.answer("⏳ Не так быстро!")
         return
     try:
-        await callback.message.edit_text(
-            "📞 <b>Поддержка</b>\n\nПо всем вопросам: @disxrm",
-            parse_mode="HTML",
-            reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="◀️ Назад", callback_data="back")]
-            ])
-        )
-    except TelegramBadRequest:
+        await callback.message.delete()
+    except Exception:
         pass
+    await callback.message.answer(
+        "📞 <b>Поддержка</b>\n\nПо всем вопросам: @disxrm",
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="◀️ Назад", callback_data="back")]
+        ])
+    )
 
 @dp.callback_query(F.data == "back")
 async def back(callback: CallbackQuery):
