@@ -28,6 +28,7 @@ YUKASSA_SHOP_ID = os.environ.get("YUKASSA_SHOP_ID")
 YUKASSA_SECRET_KEY = os.environ.get("YUKASSA_SECRET_KEY")
 PORT = int(os.environ.get("PORT", 8080))
 RENDER_URL = os.environ.get("RENDER_URL", "")
+BANNER_URL = "https://raw.githubusercontent.com/disxrm/voidtweaks/main/banner.png"
 # ==========================================
 
 bot = Bot(token=BOT_TOKEN)
@@ -230,11 +231,12 @@ async def keep_alive():
 
 @dp.message(CommandStart())
 async def start(message: Message):
-    await message.answer(
-        "👋 Добро пожаловать в <b>VoidTweaks</b>!\n\n"
-        "🚀 Программа для оптимизации Windows ПК\n"
-        "⚡ Увеличивает FPS и производительность\n\n"
-        "Выберите действие:",
+    await message.answer_photo(
+        photo=BANNER_URL,
+        caption="👋 Добро пожаловать в <b>VoidTweaks</b>!\n\n"
+                "🚀 Программа для оптимизации Windows ПК\n"
+                "⚡ Увеличивает FPS и производительность\n\n"
+                "Выберите действие:",
         parse_mode="HTML",
         reply_markup=main_menu()
     )
@@ -245,16 +247,18 @@ async def buy(callback: CallbackQuery):
         await callback.answer("⏳ Не так быстро!")
         return
     try:
-        await callback.message.edit_text(
-            "💳 <b>Выберите тариф:</b>\n\n"
-            "📅 <b>1 месяц — 99₽</b>\n"
-            "📅 <b>6 месяцев — 299₽</b>\n"
-            "♾️ <b>Навсегда — 499₽</b>",
-            parse_mode="HTML",
-            reply_markup=plans_menu()
-        )
-    except TelegramBadRequest:
+        await callback.message.delete()
+    except Exception:
         pass
+    await callback.message.answer_photo(
+        photo=BANNER_URL,
+        caption="💳 <b>Выберите тариф:</b>\n\n"
+                "📅 <b>1 месяц — 99₽</b>\n"
+                "📅 <b>6 месяцев — 299₽</b>\n"
+                "♾️ <b>Навсегда — 499₽</b>",
+        parse_mode="HTML",
+        reply_markup=plans_menu()
+    )
 
 @dp.callback_query(F.data.startswith("plan_"))
 async def select_plan(callback: CallbackQuery):
@@ -400,13 +404,15 @@ async def back(callback: CallbackQuery):
         await callback.answer("⏳ Не так быстро!")
         return
     try:
-        await callback.message.edit_text(
-            "👋 Добро пожаловать в <b>VoidTweaks</b>!\n\nВыберите действие:",
-            parse_mode="HTML",
-            reply_markup=main_menu()
-        )
-    except TelegramBadRequest:
+        await callback.message.delete()
+    except Exception:
         pass
+    await callback.message.answer_photo(
+        photo=BANNER_URL,
+        caption="👋 Добро пожаловать в <b>VoidTweaks</b>!\n\nВыберите действие:",
+        parse_mode="HTML",
+        reply_markup=main_menu()
+    )
 
 # ===== WEBHOOK ОТ ЮKASSA (авто-выдача без нажатия кнопки) =====
 # Настрой в личном кабинете ЮKassa: HTTP-уведомления → URL: https://ВАШ_ДОМЕН/webhook/yukassa
