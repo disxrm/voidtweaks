@@ -28,25 +28,24 @@ YUKASSA_SHOP_ID = os.environ.get("YUKASSA_SHOP_ID")
 YUKASSA_SECRET_KEY = os.environ.get("YUKASSA_SECRET_KEY")
 PORT = int(os.environ.get("PORT", 8080))
 RENDER_URL = os.environ.get("RENDER_URL", "")
-BANNER_URL = "https://raw.githubusercontent.com/disxrm/voidtweaks/main/banner.png"
+BANNER_WELCOME_URL = "https://raw.githubusercontent.com/disxrm/voidtweaks/main/banner_welcome.png"
+BANNER_PLANS_URL = "https://raw.githubusercontent.com/disxrm/voidtweaks/main/banner_plans.png"
 # ==========================================
 
-# Кэш file_id баннера
-_banner_file_id: str | None = None
+# Кэш file_id баннеров
+_banner_welcome_id: str | None = None
+_banner_plans_id: str | None = None
 
-async def get_banner():
-    global _banner_file_id
-    if _banner_file_id:
-        return _banner_file_id
+async def get_banner(url: str, name: str):
+    from aiogram.types import BufferedInputFile
     try:
-        from aiogram.types import BufferedInputFile
         async with aiohttp.ClientSession() as session:
-            async with session.get(BANNER_URL) as resp:
+            async with session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.read()
-                    return BufferedInputFile(data, filename="banner.png")
+                    return BufferedInputFile(data, filename=name)
     except Exception as e:
-        logger.error(f"Ошибка загрузки баннера: {e}")
+        logger.error(f"Ошибка загрузки баннера {name}: {e}")
     return None
 
 bot = Bot(token=BOT_TOKEN)
@@ -249,8 +248,8 @@ async def keep_alive():
 
 @dp.message(CommandStart())
 async def start(message: Message):
-    global _banner_file_id
-    banner = await get_banner()
+    global _banner_welcome_id
+    banner = _banner_welcome_id or await get_banner(BANNER_WELCOME_URL, "banner_welcome.png")
     if banner:
         msg = await message.answer_photo(
             photo=banner,
@@ -262,7 +261,7 @@ async def start(message: Message):
             reply_markup=main_menu()
         )
         if msg.photo:
-            _banner_file_id = msg.photo[-1].file_id
+            _banner_welcome_id = msg.photo[-1].file_id
     else:
         await message.answer(
             "👋 Добро пожаловать в <b>VoidTweaks</b>!\n\n"
@@ -282,20 +281,17 @@ async def buy(callback: CallbackQuery):
         await callback.message.delete()
     except Exception:
         pass
-    global _banner_file_id
-    banner = _banner_file_id or await get_banner()
+    global _banner_plans_id
+    banner = _banner_plans_id or await get_banner(BANNER_PLANS_URL, "banner_plans.png")
     if banner:
         msg = await callback.message.answer_photo(
             photo=banner,
-            caption="💳 <b>Выберите тариф:</b>\n\n"
-                    "📅 <b>1 месяц — 99₽</b>\n"
-                    "📅 <b>6 месяцев — 299₽</b>\n"
-                    "♾️ <b>Навсегда — 499₽</b>",
+            caption="💳 <b>Выберите тариф:</b>",
             parse_mode="HTML",
             reply_markup=plans_menu()
         )
         if hasattr(msg, 'photo') and msg.photo:
-            _banner_file_id = msg.photo[-1].file_id
+            _banner_plans_id = msg.photo[-1].file_id
     else:
         await callback.message.answer(
             "💳 <b>Выберите тариф:</b>\n\n"
@@ -453,8 +449,8 @@ async def back(callback: CallbackQuery):
         await callback.message.delete()
     except Exception:
         pass
-    global _banner_file_id
-    banner = _banner_file_id or await get_banner()
+    global _banner_welcome_id
+    banner = _banner_welcome_id or await get_banner(BANNER_WELCOME_URL, "banner_welcome.png")
     if banner:
         msg = await callback.message.answer_photo(
             photo=banner,
@@ -463,7 +459,7 @@ async def back(callback: CallbackQuery):
             reply_markup=main_menu()
         )
         if hasattr(msg, 'photo') and msg.photo:
-            _banner_file_id = msg.photo[-1].file_id
+            _banner_welcome_id = msg.photo[-1].file_id
     else:
         await callback.message.answer(
             "👋 Добро пожаловать в <b>VoidTweaks</b>!\n\nВыберите действие:",
