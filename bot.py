@@ -30,11 +30,49 @@ PORT = int(os.environ.get("PORT", 8080))
 RENDER_URL = os.environ.get("RENDER_URL", "")
 BANNER_WELCOME_URL = "https://raw.githubusercontent.com/disxrm/voidtweaks/main/banner_welcome.png"
 BANNER_PLANS_URL = "https://raw.githubusercontent.com/disxrm/voidtweaks/main/banner_plans.png"
+# Прямая ссылка на .exe из GitHub Releases
+EXE_URL = "https://github.com/disxrm/voidtweaks/releases/download/1.0/VOIDTWEAKS.exe"
+# Кэш file_id .exe — чтобы не скачивать каждый раз
+_exe_file_id: str | None = None
 # ==========================================
 
 # Кэш file_id баннеров
 _banner_welcome_id: str | None = None
 _banner_plans_id: str | None = None
+
+async def send_exe(chat_id: int, caption: str):
+    """Отправляет VOIDTWEAKS.exe. Первый раз скачивает, потом использует file_id."""
+    global _exe_file_id
+    from aiogram.types import BufferedInputFile, FSInputFile
+    try:
+        if _exe_file_id:
+            msg = await bot.send_document(
+                chat_id=chat_id,
+                document=_exe_file_id,
+                caption=caption,
+                parse_mode="HTML"
+            )
+        else:
+            # Скачиваем и отправляем первый раз
+            async with aiohttp.ClientSession() as session:
+                async with session.get(EXE_URL) as resp:
+                    if resp.status != 200:
+                        logger.error(f"Не удалось скачать .exe: {resp.status}")
+                        return
+                    data = await resp.read()
+            file = BufferedInputFile(data, filename="VOIDTWEAKS.exe")
+            msg = await bot.send_document(
+                chat_id=chat_id,
+                document=file,
+                caption=caption,
+                parse_mode="HTML"
+            )
+            # Кэшируем file_id для следующих отправок
+            if msg.document:
+                _exe_file_id = msg.document.file_id
+                logger.info(f"VOIDTWEAKS.exe закэширован: {_exe_file_id}")
+    except Exception as e:
+        logger.error(f"Ошибка отправки .exe пользователю {chat_id}: {e}")
 
 async def get_banner(url: str, name: str):
     from aiogram.types import BufferedInputFile
@@ -378,6 +416,11 @@ async def check_payment(callback: CallbackQuery):
                 )
             except TelegramBadRequest:
                 pass
+            # Отправляем .exe отдельным сообщением
+            await send_exe(
+                callback.from_user.id,
+                "⬇️ <b>VOIDTWEAKS.exe</b> — скачайте и запустите от имени администратора"
+            )
         else:
             await callback.answer("⚠️ Лицензия уже была выдана по этому платежу.", show_alert=True)
 
@@ -511,6 +554,11 @@ async def yukassa_webhook(request: web.Request):
                                 f"⚠️ Ключ привязывается к вашему ПК при первой активации",
                                 parse_mode="HTML",
                                 reply_markup=main_menu()
+                            )
+                            # Отправляем .exe следующим сообщением
+                            await send_exe(
+                                telegram_id,
+                                "⬇️ <b>VOIDTWEAKS.exe</b> — скачайте и запустите от имени администратора"
                             )
                         except Exception as e:
                             logger.error(f"Не удалось отправить ключ {telegram_id}: {e}")
