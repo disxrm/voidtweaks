@@ -308,38 +308,54 @@ async def select_plan(callback: CallbackQuery):
         await callback.answer("⏳ Не так быстро!")
         return
 
-    plan_key = callback.data.replace("plan_", "")
-    plan = PLANS[plan_key]
-    order_id = f"{callback.from_user.id}_{plan_key}_{int(datetime.now().timestamp())}"
+    try:
+        plan_key = callback.data.replace("plan_", "")
+        plan = PLANS[plan_key]
+        order_id = f"{callback.from_user.id}_{plan_key}_{int(datetime.now().timestamp())}"
 
-    payment_id, payment_url = await create_yukassa_invoice(
-        amount=plan["price"],
-        order_id=order_id,
-        description=f"VoidTweaks — {plan['name']}"
-    )
+        await callback.answer("⏳ Создаём счёт...")
 
-    if payment_url:
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="💳 Оплатить", url=payment_url)],
-            [InlineKeyboardButton(text="✅ Проверить оплату", callback_data=f"check_{payment_id}_{plan_key}")],
-            [InlineKeyboardButton(text="◀️ Назад", callback_data="buy")],
-        ])
-        # Удаляем старое сообщение (может быть фото — edit_text на фото не работает)
-        try:
-            await callback.message.delete()
-        except Exception:
-            pass
-        await callback.message.answer(
-            f"💳 <b>Оплата — {plan['name']}</b>\n\n"
-            f"💰 Сумма: <b>{plan['price']}₽</b>\n\n"
-            f"1. Нажмите <b>Оплатить</b>\n"
-            f"2. Выберите банк (СБП, Сбер, Тинькофф...)\n"
-            f"3. Оплатите и нажмите <b>Проверить оплату</b>",
-            parse_mode="HTML",
-            reply_markup=keyboard
+        payment_id, payment_url = await create_yukassa_invoice(
+            amount=plan["price"],
+            order_id=order_id,
+            description=f"VoidTweaks — {plan['name']}"
         )
-    else:
-        await callback.answer("❌ Ошибка создания счёта. Попробуйте позже.", show_alert=True)
+
+        if payment_url:
+            keyboard = InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="💳 Оплатить", url=payment_url)],
+                [InlineKeyboardButton(text="✅ Проверить оплату", callback_data=f"check_{payment_id}_{plan_key}")],
+                [InlineKeyboardButton(text="◀️ Назад", callback_data="buy")],
+            ])
+            # delete() вместо edit_text — работает и на фото, и на тексте
+            try:
+                await callback.message.delete()
+            except Exception:
+                pass
+            await callback.message.answer(
+                f"💳 <b>Оплата — {plan['name']}</b>\n\n"
+                f"💰 Сумма: <b>{plan['price']}₽</b>\n\n"
+                f"1. Нажмите <b>Оплатить</b>\n"
+                f"2. Выберите банк (СБП, Сбер, Тинькофф...)\n"
+                f"3. Оплатите и нажмите <b>Проверить оплату</b>",
+                parse_mode="HTML",
+                reply_markup=keyboard
+            )
+        else:
+            await callback.message.answer(
+                "❌ Не удалось создать счёт на оплату.\n\nПопробуйте позже или напишите в поддержку: @disxrm",
+                reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                    [InlineKeyboardButton(text="◀️ Назад", callback_data="buy")]
+                ])
+            )
+    except Exception as e:
+        logger.error(f"Ошибка select_plan у {callback.from_user.id}: {e}")
+        await callback.message.answer(
+            "❌ Произошла ошибка. Попробуйте позже или напишите @disxrm",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="◀️ Назад", callback_data="buy")]
+            ])
+        )
 
 @dp.callback_query(F.data.startswith("check_"))
 async def check_payment(callback: CallbackQuery):
@@ -347,49 +363,60 @@ async def check_payment(callback: CallbackQuery):
         await callback.answer("⏳ Не так быстро!")
         return
 
-    parts = callback.data.split("_")
-    payment_id = parts[1]
-    plan_key = parts[2]
-    plan = PLANS[plan_key]
+    try:
+        parts = callback.data.split("_")
+        payment_id = parts[1]
+        plan_key = parts[2]
+        plan = PLANS[plan_key]
 
-    status = await check_yukassa_payment(payment_id)
+        await callback.answer("⏳ Проверяем оплату...")
 
-    if status is None:
-        await callback.answer("❌ Ошибка связи с платёжной системой. Попробуйте позже.", show_alert=True)
-        return
+        status = await check_yukassa_payment(payment_id)
 
-    if status == "succeeded":
-        key = await issue_license(callback.from_user.id, plan_key, payment_id)
-        if key:
-            expires_text = ""
-            if plan_key != "forever":
-                exp_date = (datetime.now() + timedelta(days=plan["days"])).strftime("%d.%m.%Y")
-                expires_text = f"\n📅 Действует до: {exp_date}"
-            try:
-                await callback.message.delete()
-            except Exception:
-                pass
-            await callback.message.answer(
-                f"✅ <b>Оплата прошла успешно!</b>\n\n"
-                f"🔑 Ваш ключ активации:\n"
-                f"<code>{key}</code>\n\n"
-                f"📋 Скопируйте ключ и вставьте в программу\n"
-                f"📅 Тариф: {plan['name']}{expires_text}\n\n"
-                f"⚠️ Ключ привязывается к вашему ПК при первой активации",
-                parse_mode="HTML",
-                reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-                    [InlineKeyboardButton(text="🏠 Главное меню", callback_data="back")]
-                ])
-            )
+        if status is None:
+            await callback.message.answer("❌ Ошибка связи с платёжной системой. Попробуйте позже.")
+            return
+
+        if status == "succeeded":
+            key = await issue_license(callback.from_user.id, plan_key, payment_id)
+            if key:
+                expires_text = ""
+                if plan_key != "forever":
+                    exp_date = (datetime.now() + timedelta(days=plan["days"])).strftime("%d.%m.%Y")
+                    expires_text = f"\n📅 Действует до: {exp_date}"
+                try:
+                    await callback.message.delete()
+                except Exception:
+                    pass
+                await callback.message.answer(
+                    f"✅ <b>Оплата прошла успешно!</b>\n\n"
+                    f"🔑 Ваш ключ активации:\n"
+                    f"<code>{key}</code>\n\n"
+                    f"📋 Скопируйте ключ и вставьте в программу\n"
+                    f"📅 Тариф: {plan['name']}{expires_text}\n\n"
+                    f"⚠️ Ключ привязывается к вашему ПК при первой активации",
+                    parse_mode="HTML",
+                    reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                        [InlineKeyboardButton(text="🏠 Главное меню", callback_data="back")]
+                    ])
+                )
+                await send_exe(
+                    callback.from_user.id,
+                    "⬇️ <b>VOIDTWEAKS.exe</b> — скачайте и запустите от имени администратора"
+                )
+            else:
+                await callback.answer("⚠️ Лицензия уже была выдана по этому платежу.", show_alert=True)
+
+        elif status == "pending":
+            await callback.answer("⏳ Оплата ещё не прошла. Подождите и попробуйте снова.", show_alert=True)
+        elif status == "canceled":
+            await callback.answer("❌ Платёж отменён. Создайте новый.", show_alert=True)
         else:
-            await callback.answer("⚠️ Лицензия уже была выдана по этому платежу.", show_alert=True)
+            await callback.answer("❌ Оплата не найдена.", show_alert=True)
 
-    elif status == "pending":
-        await callback.answer("⏳ Оплата ещё не прошла. Подождите и попробуйте снова.", show_alert=True)
-    elif status == "canceled":
-        await callback.answer("❌ Платёж отменён. Создайте новый.", show_alert=True)
-    else:
-        await callback.answer("❌ Оплата не найдена.", show_alert=True)
+    except Exception as e:
+        logger.error(f"Ошибка check_payment у {callback.from_user.id}: {e}")
+        await callback.answer("❌ Произошла ошибка. Попробуйте позже.", show_alert=True)
 
 @dp.callback_query(F.data == "mylicense")
 async def my_license(callback: CallbackQuery):
