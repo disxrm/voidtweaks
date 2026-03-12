@@ -79,7 +79,8 @@ def main_menu():
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="💳 Купить лицензию", callback_data="buy")],
         [InlineKeyboardButton(text="🔑 Мои лицензии",    callback_data="mylicense")],
-        [InlineKeyboardButton(text="📞 Поддержка",        callback_data="support")],
+        [InlineKeyboardButton(text="📞 Поддержка",        callback_data="support"),
+         InlineKeyboardButton(text="⬇️ Скачать",         url="https://github.com/disxrm/voidtweaks/releases/download/1.0/VOIDTWEAKS.exe")],
     ])
 
 def plans_menu():
