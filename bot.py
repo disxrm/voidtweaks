@@ -233,16 +233,17 @@ async def notify_expiring_licenses():
             logger.error(f"Ошибка в notify_expiring_licenses: {e}")
 
 async def keep_alive():
-    """Пингуем себя каждые 10 минут чтобы не засыпать на Render."""
+    """Пингуем себя каждые 5 минут. Render нужен внешний пинг — настрой UptimeRobot на https://voidtweaks.onrender.com/"""
     while True:
-        await asyncio.sleep(600)
-        if RENDER_URL:
-            try:
-                async with aiohttp.ClientSession() as session:
-                    await session.get(f"https://{RENDER_URL}/")
-                    logger.info("Ping отправлен — бот не спит!")
-            except Exception as e:
-                logger.warning(f"Ping не удался: {e}")
+        await asyncio.sleep(300)  # каждые 5 минут вместо 10
+        try:
+            # Пингуем через публичный URL если задан, иначе localhost
+            url = f"https://{RENDER_URL}/" if RENDER_URL else f"http://localhost:{PORT}/"
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                    logger.info(f"Keep-alive ping: {resp.status}")
+        except Exception as e:
+            logger.warning(f"Keep-alive ping не удался: {e}")
 
 # ===== ХЭНДЛЕРЫ =====
 
@@ -308,31 +309,24 @@ async def select_plan(callback: CallbackQuery):
         await callback.answer("⏳ Не так быстро!")
         return
 
-    try:
-        plan_key = callback.data.replace("plan_", "")
-        plan = PLANS[plan_key]
-        order_id = f"{callback.from_user.id}_{plan_key}_{int(datetime.now().timestamp())}"
+    plan_key = callback.data.replace("plan_", "")
+    plan = PLANS[plan_key]
+    order_id = f"{callback.from_user.id}_{plan_key}_{int(datetime.now().timestamp())}"
 
-        await callback.answer("⏳ Создаём счёт...")
+    payment_id, payment_url = await create_yukassa_invoice(
+        amount=plan["price"],
+        order_id=order_id,
+        description=f"VoidTweaks — {plan['name']}"
+    )
 
-        payment_id, payment_url = await create_yukassa_invoice(
-            amount=plan["price"],
-            order_id=order_id,
-            description=f"VoidTweaks — {plan['name']}"
-        )
-
-        if payment_url:
-            keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="💳 Оплатить", url=payment_url)],
-                [InlineKeyboardButton(text="✅ Проверить оплату", callback_data=f"check_{payment_id}_{plan_key}")],
-                [InlineKeyboardButton(text="◀️ Назад", callback_data="buy")],
-            ])
-            # delete() вместо edit_text — работает и на фото, и на тексте
-            try:
-                await callback.message.delete()
-            except Exception:
-                pass
-            await callback.message.answer(
+    if payment_url:
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="💳 Оплатить", url=payment_url)],
+            [InlineKeyboardButton(text="✅ Проверить оплату", callback_data=f"check_{payment_id}_{plan_key}")],
+            [InlineKeyboardButton(text="◀️ Назад", callback_data="buy")],
+        ])
+        try:
+            await callback.message.edit_text(
                 f"💳 <b>Оплата — {plan['name']}</b>\n\n"
                 f"💰 Сумма: <b>{plan['price']}₽</b>\n\n"
                 f"1. Нажмите <b>Оплатить</b>\n"
@@ -341,21 +335,10 @@ async def select_plan(callback: CallbackQuery):
                 parse_mode="HTML",
                 reply_markup=keyboard
             )
-        else:
-            await callback.message.answer(
-                "❌ Не удалось создать счёт на оплату.\n\nПопробуйте позже или напишите в поддержку: @disxrm",
-                reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-                    [InlineKeyboardButton(text="◀️ Назад", callback_data="buy")]
-                ])
-            )
-    except Exception as e:
-        logger.error(f"Ошибка select_plan у {callback.from_user.id}: {e}")
-        await callback.message.answer(
-            "❌ Произошла ошибка. Попробуйте позже или напишите @disxrm",
-            reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="◀️ Назад", callback_data="buy")]
-            ])
-        )
+        except TelegramBadRequest:
+            pass
+    else:
+        await callback.answer("❌ Ошибка создания счёта. Попробуйте позже.", show_alert=True)
 
 @dp.callback_query(F.data.startswith("check_"))
 async def check_payment(callback: CallbackQuery):
@@ -363,32 +346,26 @@ async def check_payment(callback: CallbackQuery):
         await callback.answer("⏳ Не так быстро!")
         return
 
-    try:
-        parts = callback.data.split("_")
-        payment_id = parts[1]
-        plan_key = parts[2]
-        plan = PLANS[plan_key]
+    parts = callback.data.split("_")
+    payment_id = parts[1]
+    plan_key = parts[2]
+    plan = PLANS[plan_key]
 
-        await callback.answer("⏳ Проверяем оплату...")
+    status = await check_yukassa_payment(payment_id)
 
-        status = await check_yukassa_payment(payment_id)
+    if status is None:
+        await callback.answer("❌ Ошибка связи с платёжной системой. Попробуйте позже.", show_alert=True)
+        return
 
-        if status is None:
-            await callback.message.answer("❌ Ошибка связи с платёжной системой. Попробуйте позже.")
-            return
-
-        if status == "succeeded":
-            key = await issue_license(callback.from_user.id, plan_key, payment_id)
-            if key:
-                expires_text = ""
-                if plan_key != "forever":
-                    exp_date = (datetime.now() + timedelta(days=plan["days"])).strftime("%d.%m.%Y")
-                    expires_text = f"\n📅 Действует до: {exp_date}"
-                try:
-                    await callback.message.delete()
-                except Exception:
-                    pass
-                await callback.message.answer(
+    if status == "succeeded":
+        key = await issue_license(callback.from_user.id, plan_key, payment_id)
+        if key:
+            expires_text = ""
+            if plan_key != "forever":
+                exp_date = (datetime.now() + timedelta(days=plan["days"])).strftime("%d.%m.%Y")
+                expires_text = f"\n📅 Действует до: {exp_date}"
+            try:
+                await callback.message.edit_text(
                     f"✅ <b>Оплата прошла успешно!</b>\n\n"
                     f"🔑 Ваш ключ активации:\n"
                     f"<code>{key}</code>\n\n"
@@ -400,23 +377,17 @@ async def check_payment(callback: CallbackQuery):
                         [InlineKeyboardButton(text="🏠 Главное меню", callback_data="back")]
                     ])
                 )
-                await send_exe(
-                    callback.from_user.id,
-                    "⬇️ <b>VOIDTWEAKS.exe</b> — скачайте и запустите от имени администратора"
-                )
-            else:
-                await callback.answer("⚠️ Лицензия уже была выдана по этому платежу.", show_alert=True)
-
-        elif status == "pending":
-            await callback.answer("⏳ Оплата ещё не прошла. Подождите и попробуйте снова.", show_alert=True)
-        elif status == "canceled":
-            await callback.answer("❌ Платёж отменён. Создайте новый.", show_alert=True)
+            except TelegramBadRequest:
+                pass
         else:
-            await callback.answer("❌ Оплата не найдена.", show_alert=True)
+            await callback.answer("⚠️ Лицензия уже была выдана по этому платежу.", show_alert=True)
 
-    except Exception as e:
-        logger.error(f"Ошибка check_payment у {callback.from_user.id}: {e}")
-        await callback.answer("❌ Произошла ошибка. Попробуйте позже.", show_alert=True)
+    elif status == "pending":
+        await callback.answer("⏳ Оплата ещё не прошла. Подождите и попробуйте снова.", show_alert=True)
+    elif status == "canceled":
+        await callback.answer("❌ Платёж отменён. Создайте новый.", show_alert=True)
+    else:
+        await callback.answer("❌ Оплата не найдена.", show_alert=True)
 
 @dp.callback_query(F.data == "mylicense")
 async def my_license(callback: CallbackQuery):
@@ -569,7 +540,13 @@ async def main():
     asyncio.create_task(notify_expiring_licenses())
 
     logger.info("Бот запущен!")
-    await dp.start_polling(bot)
+    # Перезапускаем polling при любом падении
+    while True:
+        try:
+            await dp.start_polling(bot)
+        except Exception as e:
+            logger.error(f"Polling упал: {e}. Перезапуск через 5 секунд...")
+            await asyncio.sleep(5)
 
 if __name__ == "__main__":
     asyncio.run(main())
