@@ -154,7 +154,7 @@ async def check_yukassa_payment(payment_id: str):
 # ===== ВЫДАЧА ЛИЦЕНЗИИ =====
 
 async def issue_license(telegram_id: int, plan_key: str, payment_id: str) -> str | None:
-    """Выдаёт лицензию. Защита от двойной выдачи по payment_id."""
+    """Выдаёт лицензию. Защита от двойной выдачи по payment_id. Авто-апгрейд старого плана."""
     if payment_id in used_payment_ids:
         logger.warning(f"Двойная выдача по payment_id {payment_id} заблокирована")
         return None
@@ -165,6 +165,19 @@ async def issue_license(telegram_id: int, plan_key: str, payment_id: str) -> str
         logger.warning(f"Лицензия по {payment_id} уже в БД")
         used_payment_ids.add(payment_id)
         return existing.data[0]["license_key"]
+
+    # Деактивируем старые активные лицензии пользователя (апгрейд)
+    try:
+        old = supabase.table("licenses").select("license_key, plan").eq(
+            "telegram_id", telegram_id
+        ).eq("is_active", True).execute()
+        for old_lic in old.data or []:
+            supabase.table("licenses").update({"is_active": False}).eq(
+                "license_key", old_lic["license_key"]
+            ).execute()
+            logger.info(f"Апгрейд: деактивирована лицензия {old_lic['license_key']} (план {old_lic['plan']})")
+    except Exception as e:
+        logger.warning(f"Не удалось деактивировать старые лицензии: {e}")
 
     plan = PLANS[plan_key]
     key = generate_key()
@@ -406,26 +419,117 @@ async def my_license(callback: CallbackQuery):
             "telegram_id", callback.from_user.id
         ).eq("is_active", True).execute()
 
+        has_expiring = False
         if result.data:
             text = "🔑 <b>Ваши активные лицензии:</b>\n\n"
             for lic in result.data:
                 expires = lic.get("expires_at")
+                plan_name = PLANS.get(lic.get("plan", ""), {}).get("name", lic.get("plan", "—"))
+                hwid = lic.get("hwid")
+                hwid_text = f"💻 ПК: <code>{hwid}</code>\n" if hwid else ""
                 if expires:
-                    exp_date = datetime.fromisoformat(expires).strftime("%d.%m.%Y")
-                    text += f"<code>{lic['license_key']}</code>\n📅 До: {exp_date}\n\n"
+                    exp_dt = datetime.fromisoformat(expires)
+                    exp_date = exp_dt.strftime("%d.%m.%Y")
+                    days_left = (exp_dt - datetime.now()).days
+                    if days_left <= 0:
+                        days_text = "⏰ Истекает сегодня!"
+                    elif days_left == 1:
+                        days_text = "⏰ Остался 1 день!"
+                    else:
+                        days_text = f"⏳ Осталось дней: {days_left}"
+                    if days_left <= 7:
+                        has_expiring = True
+                    text += (
+                        f"<code>{lic['license_key']}</code>\n"
+                        f"📦 Тариф: {plan_name}\n"
+                        f"{hwid_text}"
+                        f"📅 До: {exp_date}\n"
+                        f"{days_text}\n\n"
+                    )
                 else:
-                    text += f"<code>{lic['license_key']}</code>\n♾️ Навсегда\n\n"
+                    text += (
+                        f"<code>{lic['license_key']}</code>\n"
+                        f"📦 Тариф: {plan_name}\n"
+                        f"{hwid_text}"
+                        f"♾️ Навсегда\n\n"
+                    )
         else:
             text = "❌ У вас нет активных лицензий\n\nНажмите <b>Купить лицензию</b>"
+
+        keyboard = []
+        if has_expiring:
+            keyboard.append([InlineKeyboardButton(text="🔄 Продлить со скидкой 10%", callback_data="renew")])
+        keyboard.append([InlineKeyboardButton(text="◀️ Назад", callback_data="back")])
 
         try:
             await callback.message.delete()
         except Exception:
             pass
-        await callback.message.answer(text, parse_mode="HTML", reply_markup=main_menu())
+        await callback.message.answer(
+            text, parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard)
+        )
     except Exception as e:
         logger.error(f"Ошибка в my_license: {e}")
         await callback.answer("❌ Ошибка загрузки лицензий.", show_alert=True)
+
+@dp.callback_query(F.data == "renew")
+async def renew(callback: CallbackQuery):
+    if is_flood(callback.from_user.id):
+        await callback.answer("⏳ Не так быстро!")
+        return
+    try:
+        await callback.message.delete()
+    except Exception:
+        pass
+    renew_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text=f"1 месяц — {int(99*0.9)}₽ (-10%)",      callback_data="plan_month_renew")],
+        [InlineKeyboardButton(text=f"6 месяцев — {int(299*0.9)}₽ (-10%)",   callback_data="plan_half_renew")],
+        [InlineKeyboardButton(text=f"Навсегда — {int(499*0.9)}₽ (-10%)",    callback_data="plan_forever_renew")],
+        [InlineKeyboardButton(text="◀️ Назад", callback_data="back")],
+    ])
+    await callback.message.answer(
+        "🔄 <b>Продление лицензии</b>\n\n"
+        "Скидка 10% за продление — спасибо, что остаётесь с нами! 🙏\n\n"
+        "Выберите тариф:",
+        parse_mode="HTML",
+        reply_markup=renew_keyboard
+    )
+
+@dp.callback_query(F.data.startswith("plan_") & F.data.endswith("_renew"))
+async def select_plan_renew(callback: CallbackQuery):
+    if is_flood(callback.from_user.id):
+        await callback.answer("⏳ Не так быстро!")
+        return
+    plan_key = callback.data.replace("plan_", "").replace("_renew", "")
+    if plan_key not in PLANS:
+        await callback.answer("❌ Неверный тариф", show_alert=True)
+        return
+    plan = PLANS[plan_key]
+    discounted_price = int(plan["price"] * 0.9)
+    order_id = f"{callback.from_user.id}_{plan_key}_{int(datetime.now().timestamp())}"
+    payment_id, payment_url = await create_yukassa_invoice(
+        discounted_price, order_id,
+        f"VoidTweaks — продление {plan['name']} (скидка 10%)"
+    )
+    if not payment_url:
+        await callback.answer("❌ Ошибка создания платежа. Попробуйте позже.", show_alert=True)
+        return
+    try:
+        await callback.message.delete()
+    except Exception:
+        pass
+    await callback.message.answer(
+        f"💳 <b>Продление: {plan['name']}</b>\n\n"
+        f"💰 Сумма со скидкой: <b>{discounted_price}₽</b> (было {plan['price']}₽)\n\n"
+        f"После оплаты старая лицензия будет заменена новой.",
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="💳 Оплатить", url=payment_url)],
+            [InlineKeyboardButton(text="✅ Я оплатил", callback_data=f"check_{payment_id}_{plan_key}")],
+            [InlineKeyboardButton(text="◀️ Назад", callback_data="back")],
+        ])
+    )
 
 @dp.callback_query(F.data == "support")
 async def support(callback: CallbackQuery):
@@ -474,7 +578,20 @@ async def back(callback: CallbackQuery):
 # ===== WEBHOOK ОТ ЮKASSA (авто-выдача без нажатия кнопки) =====
 # Настрой в личном кабинете ЮKassa: HTTP-уведомления → URL: https://ВАШ_ДОМЕН/webhook/yukassa
 
+# Официальные IP ЮKassa (https://yookassa.ru/developers/using-api/webhooks)
+YUKASSA_IPS = {
+    "185.71.76.0", "185.71.77.0", "77.75.153.0", "77.75.156.11",
+    "77.75.156.35", "77.75.154.128", "2a02:5180::/32"
+}
+
 async def yukassa_webhook(request: web.Request):
+    # Проверка IP
+    peer = request.headers.get("X-Forwarded-For", request.remote or "")
+    client_ip = peer.split(",")[0].strip()
+    if client_ip not in YUKASSA_IPS:
+        logger.warning(f"Webhook отклонён: неизвестный IP {client_ip}")
+        return web.Response(text="Forbidden", status=403)
+
     try:
         body = await request.read()
         data = json.loads(body)
@@ -516,6 +633,23 @@ async def yukassa_webhook(request: web.Request):
                             )
                         except Exception as e:
                             logger.error(f"Не удалось отправить ключ {telegram_id}: {e}")
+
+                        # Онбординг — пошаговая инструкция
+                        await asyncio.sleep(1)
+                        try:
+                            await bot.send_message(
+                                telegram_id,
+                                "📋 <b>Как активировать VoidTweaks:</b>\n\n"
+                                "1️⃣ Нажмите <b>⬇️ Скачать</b> в меню и установите программу\n"
+                                "2️⃣ Запустите <b>VOIDTWEAKS.exe</b>\n"
+                                "3️⃣ Нажмите кнопку <b>«Запустить оптимизацию»</b>\n"
+                                "4️⃣ В появившемся окне вставьте ключ выше\n"
+                                "5️⃣ Нажмите <b>«Активировать»</b> — готово! 🚀\n\n"
+                                "❓ Если что-то не работает — пишите @disxrm",
+                                parse_mode="HTML"
+                            )
+                        except Exception as e:
+                            logger.error(f"Не удалось отправить онбординг {telegram_id}: {e}")
 
         return web.Response(text="OK", status=200)
 
