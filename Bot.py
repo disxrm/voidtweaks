@@ -8,13 +8,13 @@ from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKe
 from aiogram.filters import CommandStart
 from supabase import create_client
 
-# ===== КЛЮЧИ ИЗ ПЕРЕМЕННЫХ ОКРУЖЕНИЯ =====
+# ===== КОНФИГ (через переменные окружения) =====
 BOT_TOKEN          = os.getenv("BOT_TOKEN")
 SUPABASE_URL       = os.getenv("SUPABASE_URL")
 SUPABASE_KEY       = os.getenv("SUPABASE_KEY")
 YUKASSA_SHOP_ID    = os.getenv("YUKASSA_SHOP_ID")
 YUKASSA_SECRET_KEY = os.getenv("YUKASSA_SECRET_KEY")
-# ==========================================
+# ===============================================
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -62,6 +62,7 @@ async def create_yukassa_invoice(amount: int, order_id: str, description: str):
     async with aiohttp.ClientSession() as session:
         async with session.post("https://api.yookassa.ru/v3/payments", json=data, headers=headers) as resp:
             result = await resp.json()
+            print(f"[YooKassa] status={resp.status} response={result}")
             payment_id = result.get("id")
             payment_url = result.get("confirmation", {}).get("confirmation_url")
             return payment_id, payment_url
@@ -103,11 +104,16 @@ async def select_plan(callback: CallbackQuery):
     plan = PLANS[plan_key]
     order_id = f"{callback.from_user.id}_{plan_key}_{int(datetime.now().timestamp())}"
 
-    payment_id, payment_url = await create_yukassa_invoice(
-        amount=plan["price"],
-        order_id=order_id,
-        description=f"VoidTweaks — {plan['name']}"
-    )
+    try:
+        payment_id, payment_url = await create_yukassa_invoice(
+            amount=plan["price"],
+            order_id=order_id,
+            description=f"VoidTweaks — {plan['name']}"
+        )
+    except Exception as e:
+        print(f"[YooKassa] Exception: {e}")
+        await callback.answer("❌ Ошибка создания счёта. Попробуйте позже.", show_alert=True)
+        return
 
     if payment_url:
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
@@ -202,7 +208,9 @@ async def back(callback: CallbackQuery):
 
 async def main():
     print("Бот запущен!")
-    await dp.start_polling(bot)
+    # Сбрасываем вебхук и накопившиеся апдейты — убивает конфликт инстансов
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
 
 if __name__ == "__main__":
     asyncio.run(main())
