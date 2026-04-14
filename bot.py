@@ -7,12 +7,11 @@ import json
 from datetime import datetime, timedelta
 from aiohttp import web
 from aiogram import Bot, Dispatcher, F
-from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton, BufferedInputFile
 from aiogram.filters import CommandStart
 from aiogram.exceptions import TelegramBadRequest
 from supabase import create_client
 
-# ===== ЛОГИРОВАНИЕ =====
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -20,7 +19,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ===== КЛЮЧИ ИЗ ПЕРЕМЕННЫХ ОКРУЖЕНИЯ =====
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
@@ -30,14 +28,11 @@ PORT = int(os.environ.get("PORT", 8080))
 RENDER_URL = os.environ.get("RENDER_URL", "")
 BANNER_WELCOME_URL = "https://raw.githubusercontent.com/disxrm/voidtweaks/main/banner_welcome.png"
 BANNER_PLANS_URL = "https://raw.githubusercontent.com/disxrm/voidtweaks/main/banner_plans.png"
-# ==========================================
 
-# Кэш file_id баннеров
 _banner_welcome_id: str | None = None
 _banner_plans_id: str | None = None
 
 async def get_banner(url: str, name: str):
-    from aiogram.types import BufferedInputFile
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
@@ -58,9 +53,8 @@ PLANS = {
     "forever": {"name": "Навсегда",  "price": 499, "days": 36500},
 }
 
-# Антифлуд
 user_last_action: dict[int, datetime] = {}
-FLOOD_TIMEOUT = 2  # секунды
+FLOOD_TIMEOUT = 2
 
 def is_flood(user_id: int) -> bool:
     now = datetime.now()
@@ -70,10 +64,7 @@ def is_flood(user_id: int) -> bool:
     user_last_action[user_id] = now
     return False
 
-# Защита от двойной выдачи ключей
 used_payment_ids: set[str] = set()
-
-# ===== МЕНЮ =====
 
 def main_menu():
     return InlineKeyboardMarkup(inline_keyboard=[
@@ -95,8 +86,6 @@ def generate_key():
     raw = str(uuid.uuid4()).upper().replace("-", "")
     return f"{raw[:4]}-{raw[4:8]}-{raw[8:12]}-{raw[12:16]}"
 
-# ===== ЮKASSA =====
-
 async def create_yukassa_invoice(amount: int, order_id: str, description: str):
     import base64
     credentials = base64.b64encode(f"{YUKASSA_SHOP_ID}:{YUKASSA_SECRET_KEY}".encode()).decode()
@@ -107,7 +96,7 @@ async def create_yukassa_invoice(amount: int, order_id: str, description: str):
     }
     data = {
         "amount": {"value": f"{amount}.00", "currency": "RUB"},
-        "capture": True,  # Обязательно для СБП
+        "capture": True,
         "confirmation": {"type": "redirect", "return_url": "https://t.me/VOIDTWEAKS_BOT"},
         "description": description,
         "metadata": {"order_id": order_id}
@@ -151,22 +140,17 @@ async def check_yukassa_payment(payment_id: str):
         logger.error(f"Ошибка проверки платежа {payment_id}: {e}")
         return None
 
-# ===== ВЫДАЧА ЛИЦЕНЗИИ =====
-
 async def issue_license(telegram_id: int, plan_key: str, payment_id: str) -> str | None:
-    """Выдаёт лицензию. Защита от двойной выдачи по payment_id. Авто-апгрейд старого плана."""
     if payment_id in used_payment_ids:
         logger.warning(f"Двойная выдача по payment_id {payment_id} заблокирована")
         return None
 
-    # Проверка в БД
     existing = supabase.table("licenses").select("license_key").eq("payment_id", payment_id).execute()
     if existing.data:
         logger.warning(f"Лицензия по {payment_id} уже в БД")
         used_payment_ids.add(payment_id)
         return existing.data[0]["license_key"]
 
-    # Деактивируем старые активные лицензии пользователя (апгрейд)
     try:
         old = supabase.table("licenses").select("license_key, plan").eq(
             "telegram_id", telegram_id
@@ -199,17 +183,13 @@ async def issue_license(telegram_id: int, plan_key: str, payment_id: str) -> str
         logger.error(f"Ошибка записи лицензии: {e}")
         return None
 
-# ===== ФОНОВЫЕ ЗАДАЧИ =====
-
 async def notify_expiring_licenses():
-    """Каждые 12 часов уведомляет об истекающих лицензиях и деактивирует просроченные."""
     while True:
         await asyncio.sleep(12 * 3600)
         try:
             now_iso = datetime.now().isoformat()
             soon_iso = (datetime.now() + timedelta(days=3)).isoformat()
 
-            # Уведомляем об истечении через 3 дня
             expiring = supabase.table("licenses").select("*").eq(
                 "is_active", True
             ).gte("expires_at", now_iso).lte("expires_at", soon_iso).execute()
@@ -232,7 +212,6 @@ async def notify_expiring_licenses():
                 except Exception as e:
                     logger.error(f"Не удалось уведомить {lic['telegram_id']}: {e}")
 
-            # Деактивируем просроченные
             expired = supabase.table("licenses").select("license_key").eq(
                 "is_active", True
             ).lt("expires_at", now_iso).execute()
@@ -247,19 +226,15 @@ async def notify_expiring_licenses():
             logger.error(f"Ошибка в notify_expiring_licenses: {e}")
 
 async def keep_alive():
-    """Пингуем себя каждые 5 минут. Render нужен внешний пинг — настрой UptimeRobot на https://voidtweaks.onrender.com/"""
     while True:
-        await asyncio.sleep(300)  # каждые 5 минут вместо 10
+        await asyncio.sleep(300)
         try:
-            # Пингуем через публичный URL если задан, иначе localhost
             url = f"https://{RENDER_URL}/" if RENDER_URL else f"http://localhost:{PORT}/"
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
                     logger.info(f"Keep-alive ping: {resp.status}")
         except Exception as e:
             logger.warning(f"Keep-alive ping не удался: {e}")
-
-# ===== ХЭНДЛЕРЫ =====
 
 @dp.message(CommandStart())
 async def start(message: Message):
@@ -349,8 +324,16 @@ async def select_plan(callback: CallbackQuery):
                 parse_mode="HTML",
                 reply_markup=keyboard
             )
-        except TelegramBadRequest:
-            pass
+        except Exception:
+            await callback.message.answer(
+                f"💳 <b>Оплата — {plan['name']}</b>\n\n"
+                f"💰 Сумма: <b>{plan['price']}₽</b>\n\n"
+                f"1. Нажмите <b>Оплатить</b>\n"
+                f"2. Выберите банк (СБП, Сбер, Тинькофф...)\n"
+                f"3. Оплатите и нажмите <b>Проверить оплату</b>",
+                parse_mode="HTML",
+                reply_markup=keyboard
+            )
     else:
         await callback.answer("❌ Ошибка создания счёта. Попробуйте позже.", show_alert=True)
 
@@ -391,8 +374,19 @@ async def check_payment(callback: CallbackQuery):
                         [InlineKeyboardButton(text="🏠 Главное меню", callback_data="back")]
                     ])
                 )
-            except TelegramBadRequest:
-                pass
+            except Exception:
+                await callback.message.answer(
+                    f"✅ <b>Оплата прошла успешно!</b>\n\n"
+                    f"🔑 Ваш ключ активации:\n"
+                    f"<code>{key}</code>\n\n"
+                    f"📋 Скопируйте ключ и вставьте в программу\n"
+                    f"📅 Тариф: {plan['name']}{expires_text}\n\n"
+                    f"⚠️ Ключ привязывается к вашему ПК при первой активации",
+                    parse_mode="HTML",
+                    reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                        [InlineKeyboardButton(text="🏠 Главное меню", callback_data="back")]
+                    ])
+                )
         else:
             await callback.answer("⚠️ Лицензия уже была выдана по этому платежу.", show_alert=True)
 
@@ -575,17 +569,12 @@ async def back(callback: CallbackQuery):
             reply_markup=main_menu()
         )
 
-# ===== WEBHOOK ОТ ЮKASSA (авто-выдача без нажатия кнопки) =====
-# Настрой в личном кабинете ЮKassa: HTTP-уведомления → URL: https://ВАШ_ДОМЕН/webhook/yukassa
-
-# Официальные IP ЮKassa (https://yookassa.ru/developers/using-api/webhooks)
 YUKASSA_IPS = {
     "185.71.76.0", "185.71.77.0", "77.75.153.0", "77.75.156.11",
     "77.75.156.35", "77.75.154.128", "2a02:5180::/32"
 }
 
 async def yukassa_webhook(request: web.Request):
-    # Проверка IP
     peer = request.headers.get("X-Forwarded-For", request.remote or "")
     client_ip = peer.split(",")[0].strip()
     if client_ip not in YUKASSA_IPS:
@@ -606,7 +595,6 @@ async def yukassa_webhook(request: web.Request):
             metadata = payment.get("metadata", {})
             order_id = metadata.get("order_id", "")
 
-            # order_id формат: {telegram_id}_{plan_key}_{timestamp}
             parts = order_id.split("_")
             if len(parts) >= 2:
                 telegram_id = int(parts[0])
@@ -634,7 +622,6 @@ async def yukassa_webhook(request: web.Request):
                         except Exception as e:
                             logger.error(f"Не удалось отправить ключ {telegram_id}: {e}")
 
-                        # Онбординг — пошаговая инструкция
                         await asyncio.sleep(1)
                         try:
                             await bot.send_message(
@@ -675,7 +662,6 @@ async def main():
     asyncio.create_task(notify_expiring_licenses())
 
     logger.info("Бот запущен!")
-    # Перезапускаем polling при любом падении
     while True:
         try:
             await dp.start_polling(bot)
