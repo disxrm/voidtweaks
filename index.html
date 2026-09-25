@@ -1874,7 +1874,7 @@ footer {
           </div>
           <div class="dl-meta-cell">
             <div class="lbl">Размер</div>
-            <div class="val">~120 МБ</div>
+            <div class="val">174 МБ</div>
           </div>
           <div class="dl-meta-cell">
             <div class="lbl">Формат</div>
@@ -1882,7 +1882,7 @@ footer {
           </div>
         </div>
 
-        <a href="#" class="btn btn-primary" id="downloadBtn" style="width:100%;justify-content:center;height:52px;font-size:15px;">
+        <a href="https://github.com/disxrm/voidtweaks/releases/latest/download/VOIDTWEAKSInstaller.exe" class="btn btn-primary" id="downloadBtn" style="width:100%;justify-content:center;height:52px;font-size:15px;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
           </svg>
@@ -2566,22 +2566,21 @@ footer {
 })();
 
 /* ============================================================
-   Кнопка скачивания (заглушка)
+   Кнопка скачивания
    ============================================================ */
 (() => {
   const btn = document.getElementById('downloadBtn');
-  btn.addEventListener('click', (e) => {
-    e.preventDefault();
-    // TODO: подставить ссылку на VOIDTWEAKSInstaller.exe
-
+  btn.addEventListener('click', () => {
+    // Переход по ссылке идёт как обычно — файл начинает скачиваться сразу.
+    // Ниже только визуальный отклик на клик, без блокировки перехода.
     const orig = btn.innerHTML;
     btn.innerHTML = `
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 0.9s linear infinite">
         <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
       </svg>
-      Готовим ссылку...
+      Загрузка началась...
     `;
-    setTimeout(() => { btn.innerHTML = orig; }, 1400);
+    setTimeout(() => { btn.innerHTML = orig; }, 1800);
   });
 
   if (!document.getElementById('spinKeyframes')) {
