@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>VOID TWEAKS — Оптимизация Windows под максимум</title>
+<title>VOID TWEAKS</title>
 <meta name="description" content="VOID TWEAKS — премиальный оптимизатор Windows: твики реестра и служб, управление прерываниями, автозагрузка и встроенные утилиты." />
 <meta name="theme-color" content="#06050D" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='none' stroke='%23A78BFA' stroke-width='6'/%3E%3Cpath d='M30 30 L50 72 L70 30' fill='none' stroke='%23A78BFA' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="logo.png">
 <style>
 /* ============================================================
    VOID TWEAKS — Design tokens
@@ -413,7 +413,8 @@ button { font: inherit; }
   letter-spacing: -0.3px;
   font-size: 15.5px;
 }
-.brand svg { width: 26px; height: 26px; }
+.brand svg,
+.brand img { width: 26px; height: 26px; flex-shrink: 0; object-fit: contain; }
 .brand-sub {
   color: var(--text-3);
   font-weight: 500;
@@ -1276,7 +1277,8 @@ footer {
   gap: 12px;
   margin-bottom: 14px;
 }
-.foot-brand svg { width: 30px; height: 30px; }
+.foot-brand svg,
+.foot-brand img { width: 30px; height: 30px; flex-shrink: 0; object-fit: contain; }
 .foot-brand span { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
 .foot-tag {
   font-size: 13px;
@@ -1370,11 +1372,7 @@ footer {
 <header class="nav" id="nav">
   <div class="container nav-inner">
     <a href="#" class="brand">
-      <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
-        <circle cx="50" cy="50" r="44" stroke="url(#logoGrad)" stroke-width="6"/>
-        <path d="M30 30 L50 72 L70 30" stroke="url(#logoGrad)" stroke-width="9"
-              stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <img src="logo.png" alt="VOID TWEAKS">
       <span>VOID TWEAKS</span>
       <span class="brand-sub">Оптимизатор Windows</span>
     </a>
@@ -1936,11 +1934,7 @@ footer {
     <div class="foot-grid">
       <div>
         <div class="foot-brand">
-          <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
-            <circle cx="50" cy="50" r="44" stroke="url(#logoGrad)" stroke-width="6"/>
-            <path d="M30 30 L50 72 L70 30" stroke="url(#logoGrad)" stroke-width="9"
-                  stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <img src="logo.png" alt="VOID TWEAKS">
           <span>VOID TWEAKS</span>
         </div>
         <p class="foot-tag">
