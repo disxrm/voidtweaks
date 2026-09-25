@@ -11,12 +11,6 @@
   </p>
 </div>
 
-<br>
-
-<p align="center">
-  <img src="banner_welcome.png" alt="VOID TWEAKS interface" width="100%">
-</p>
-
 ## Что такое VOID TWEAKS
 
 **VOID TWEAKS** — приложение для тонкой настройки Windows, ориентированное на производительность, задержку и управление системными параметрами.
@@ -59,10 +53,6 @@
 - **Инструменты для восстановления отдельных настроек Windows**
 - **Возможность отката применённых изменений**
 - **Поддержка расширенных модулей PRO**
-
-<p align="center">
-  <img src="banner_plans.png" alt="VOID TWEAKS plans" width="100%">
-</p>
 
 ## Скачать
 
