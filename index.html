@@ -2282,7 +2282,6 @@ function applyLang(lang) {
   if (!el) return;
   const CACHE_KEY = 'void-dl-count-v1';
   const CACHE_TTL = 60 * 60 * 1000;
-  const FALLBACK = 12847;
 
   function format(n, lang) {
     try { return n.toLocaleString(lang === 'en' ? 'en-US' : 'ru-RU'); }
@@ -2291,14 +2290,27 @@ function applyLang(lang) {
   function render(n) {
     el.textContent = format(n, document.documentElement.lang);
   }
+  function readCache() {
+    try { return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); }
+    catch { return null; }
+  }
+  function writeCache(count) {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), count })); }
+    catch {}
+  }
 
-  try {
-    const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-    if (cached && Date.now() - cached.ts < CACHE_TTL && cached.count > 0) {
-      render(cached.count);
-      return;
-    }
-  } catch {}
+  const cached = readCache();
+
+  // Свежий кэш (моложе часа) — показываем сразу, сеть не трогаем.
+  if (cached && Date.now() - cached.ts < CACHE_TTL && cached.count > 0) {
+    render(cached.count);
+    return;
+  }
+
+  // Пока грузится реальное число — показываем последнее известное
+  // (даже устаревшее), а не выдуманное. Если кэша вообще ещё не было — "—".
+  if (cached && cached.count > 0) render(cached.count);
+  else el.textContent = '—';
 
   const ctrl = new AbortController();
   const to = setTimeout(() => ctrl.abort(), 6000);
@@ -2312,11 +2324,16 @@ function applyLang(lang) {
         (sum, rel) => sum + (rel.assets || []).reduce((s, a) => s + (a.download_count || 0), 0),
         0
       );
-      const val = total > 0 ? total : FALLBACK;
-      render(val);
-      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), count: val })); } catch {}
+      // Реальное число может быть и 0 (например, свежий релиз без скачиваний) —
+      // это не ошибка, поэтому больше не подменяем его фейковым фолбэком.
+      render(total);
+      writeCache(total);
     })
-    .catch(() => render(FALLBACK))
+    .catch(() => {
+      // Сеть/лимит/приватный репозиторий — честно оставляем последнее известное
+      // число (если было) или "—", а не выдумываем цифру.
+      if (!(cached && cached.count > 0)) el.textContent = '—';
+    })
     .finally(() => clearTimeout(to));
 })();
 
