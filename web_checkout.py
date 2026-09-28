@@ -165,6 +165,25 @@ async def issue_web_license(token: str) -> dict | None:
             return None
         order = order.data[0]
 
+        # ============================================================
+        # ВРЕМЕННЫЙ БЛОК ДЛЯ ТЕСТИРОВАНИЯ.
+        # Позволяет выдать ключ, если в web_orders уже стоит succeeded
+        # и license_key заполнен вручную через Supabase.
+        # УДАЛИТЬ ПОСЛЕ ТЕСТА, ИНАЧЕ ЛЮБОЙ СМОЖЕТ ПОДДЕЛАТЬ ОПЛАТУ,
+        # ИЗМЕНИВ ЗАПИСЬ В БАЗЕ.
+        # ============================================================
+        if order.get("status") == "succeeded" and order.get("license_key"):
+            logger.info(f"[TEST] Выдача ключа из БД по заказу {token}")
+            return {
+                "status": "succeeded",
+                "key": order["license_key"],
+                "plan": order["plan"],
+                "expires_at": None,
+            }
+        # ============================================================
+        # КОНЕЦ ВРЕМЕННОГО БЛОКА
+        # ============================================================
+
         # уже выдан — просто отдаём тот же ключ
         if order.get("license_key"):
             lic = _supabase.table("licenses").select("*").eq(
