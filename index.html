@@ -175,6 +175,28 @@ button { font: inherit; }
 .btn-ghost { background: rgba(255,255,255,0.045); color: var(--text-2); border: 1px solid var(--border); }
 .btn-ghost:hover { color: var(--text); border-color: var(--border-hover); background: rgba(167,139,250,0.10); transform: scale(1.03); }
 
+/* === CHECKOUT === */
+.ord-backdrop { position: fixed; inset: 0; z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(6,5,13,0.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.ord-backdrop.open { display: flex; }
+.ord-card { width: 100%; max-width: 440px; max-height: calc(100dvh - 40px); overflow-y: auto; padding: 34px 28px 28px; text-align: center; }
+.ord-x { position: absolute; top: 10px; right: 12px; z-index: 2; width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: var(--text-3); font-size: 22px; line-height: 1; cursor: pointer; }
+.ord-x:hover { color: var(--text); background: rgba(167,139,250,0.10); }
+.ord-backdrop[data-state="wait"] .ord-x { display: none; }
+.ord-state { display: none; }
+.ord-backdrop[data-state="wait"] .s-wait, .ord-backdrop[data-state="done"] .s-done, .ord-backdrop[data-state="canceled"] .s-canceled,
+.ord-backdrop[data-state="slow"] .s-slow, .ord-backdrop[data-state="error"] .s-error { display: block; }
+.ord-state h3 { margin: 0 0 10px; font-size: 22px; font-weight: 800; }
+.ord-state p { margin: 0 0 22px; font-size: 14px; line-height: 1.55; color: var(--text-2); }
+.ord-state .btn { width: 100%; margin-top: 10px; }
+.ord-spin { width: 34px; height: 34px; margin: 0 auto 18px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--primary-light); animation: ord-spin 0.9s linear infinite; }
+@keyframes ord-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .ord-spin { animation-duration: 3s; } }
+.ord-key { margin: 18px 0 0; padding: 16px 12px; border-radius: var(--radius-md); background: rgba(124,58,237,0.12); border: 1px solid var(--border-hover);
+  font-family: ui-monospace, Consolas, monospace; font-size: clamp(17px, 5vw, 22px); font-weight: 700; letter-spacing: 1.5px; word-break: break-all; user-select: all; }
+.ord-state p.ord-plan { margin: 10px 0 16px; font-size: 13px; color: var(--text-3); }
+.ord-steps { margin: 22px 0 14px; padding-left: 20px; text-align: left; font-size: 13.5px; line-height: 1.65; color: var(--text-2); }
+.ord-state p.ord-warn { margin: 0 0 6px; text-align: left; font-size: 12.5px; color: var(--warning); }
+
 /* NAV */
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 14px 0;
@@ -800,9 +822,9 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
 
   <div class="mm-divider"></div>
 
-  <a href="https://t.me/VOIDTWEAKS_Bot" target="_blank" rel="noopener" class="mm-tg">
+  <a href="https://t.me/disxrm" target="_blank" rel="noopener" class="mm-tg">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.29 3.31a.75.75 0 0 1 .82-.18l18.5 7.5a.75.75 0 0 1 0 1.4l-18.5 7.5a.75.75 0 0 1-1.01-.9l1.71-6.83L14 11.28a.75.75 0 0 0 0-1.5L3.81 9.25 2.1 4.21a.75.75 0 0 1 .19-.9Z"/></svg>
-    <span data-i18n="mm_tg">Telegram-бот @VOIDTWEAKS_Bot</span>
+    <span data-i18n="mm_tg">Поддержка в Telegram</span>
   </a>
 
   <div class="mm-foot">
@@ -1234,12 +1256,12 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
         </div>
 
         <div class="pro-cta">
-          <a href="https://t.me/VOIDTWEAKS_Bot" target="_blank" rel="noopener" class="btn btn-primary">
+          <a href="#pricing" class="btn btn-primary">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M2.29 3.31a.75.75 0 0 1 .82-.18l18.5 7.5a.75.75 0 0 1 0 1.4l-18.5 7.5a.75.75 0 0 1-1.01-.9l1.71-6.83L14 11.28a.75.75 0 0 0 0-1.5L3.81 9.25 2.1 4.21a.75.75 0 0 1 .19-.9Z"/></svg>
             <span data-i18n="pro_cta1">Активировать PRO</span>
           </a>
           <a href="#download" class="btn btn-ghost" data-i18n="pro_cta2">Сначала скачать приложение</a>
-          <p class="pro-note" data-i18n-html="pro_note">Ключ привязывается к устройству автоматически. Купить и получить ключ можно через Telegram-бота <a href="https://t.me/VOIDTWEAKS_Bot" target="_blank" rel="noopener">@VOIDTWEAKS_Bot</a>.</p>
+          <p class="pro-note" data-i18n-html="pro_note">Ключ привязывается к устройству автоматически. Оплата картой или через СБП — ключ появится на этой странице сразу после платежа.</p>
         </div>
       </div>
     </div>
@@ -1284,7 +1306,7 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
           <li><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg><span data-i18n="price2_f4">Ранний доступ к бета-версиям</span></li>
           <li><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg><span data-i18n="price2_f5">Приоритетные обновления</span></li>
         </ul>
-        <a href="https://t.me/VOIDTWEAKS_Bot" target="_blank" rel="noopener" class="btn btn-primary" data-i18n="price2_cta">Купить на месяц</a>
+        <a href="#pricing" data-buy="month" class="btn btn-primary" data-i18n="price2_cta">Купить на месяц</a>
       </div>
 
       <div class="glass price-card reveal">
@@ -1300,7 +1322,7 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
           <li><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg><span data-i18n="price3_f4">Ранний доступ к бета-версиям</span></li>
           <li><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg><span data-i18n="price3_f5">Приоритетные обновления</span></li>
         </ul>
-        <a href="https://t.me/VOIDTWEAKS_Bot" target="_blank" rel="noopener" class="btn btn-ghost" data-i18n="price3_cta">Купить на полгода</a>
+        <a href="#pricing" data-buy="half" class="btn btn-ghost" data-i18n="price3_cta">Купить на полгода</a>
       </div>
 
       <div class="glass price-card featured reveal">
@@ -1317,7 +1339,7 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
           <li><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg><span data-i18n="price4_f4">Ранний доступ к бета-версиям</span></li>
           <li><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg><span data-i18n="price4_f5">Приоритетные обновления</span></li>
         </ul>
-        <a href="https://t.me/VOIDTWEAKS_Bot" target="_blank" rel="noopener" class="btn btn-primary" data-i18n="price4_cta">Купить на год</a>
+        <a href="#pricing" data-buy="forever" class="btn btn-primary" data-i18n="price4_cta">Купить на год</a>
       </div>
     </div>
   </div>
@@ -1447,7 +1469,7 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
       </div>
       <div class="foot-col">
         <h5 data-i18n="foot_support">Поддержка</h5>
-        <a href="https://t.me/VOIDTWEAKS_Bot" target="_blank" rel="noopener" data-i18n="foot_tg">Telegram-бот</a>
+        <a href="https://t.me/disxrm" target="_blank" rel="noopener" data-i18n="foot_tg">Поддержка в Telegram</a>
         <a href="#download" data-i18n="nav_download">Скачать</a>
         <a href="#faq" data-i18n="nav_faq">FAQ</a>
       </div>
@@ -1458,6 +1480,47 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
     </div>
   </div>
 </footer>
+
+<div class="ord-backdrop" id="ordModal" data-state="wait" role="dialog" aria-modal="true" aria-label="VOID TWEAKS">
+  <div class="glass ord-card">
+    <button type="button" class="ord-x" data-ord-close aria-label="Закрыть">&times;</button>
+
+    <div class="ord-state s-wait">
+      <div class="ord-spin" aria-hidden="true"></div>
+      <h3 data-i18n="ord_wait_t">Проверяем оплату…</h3>
+      <p data-i18n="ord_wait_d">Обычно это занимает несколько секунд. Не закрывайте страницу.</p>
+    </div>
+
+    <div class="ord-state s-done">
+      <h3 data-i18n="ord_done_t">Оплата прошла успешно</h3>
+      <div class="ord-key" id="ordKey"></div>
+      <p class="ord-plan" id="ordPlan"></p>
+      <button type="button" class="btn btn-primary" id="ordCopy" data-i18n="ord_copy">Скопировать ключ</button>
+      <ol class="ord-steps" data-i18n-html="ord_steps"><li>Скачайте и установите программу</li><li>Запустите VOIDTWEAKS.exe и нажмите «Запустить оптимизацию»</li><li>Вставьте ключ в появившееся окно</li><li>Нажмите «Активировать»</li></ol>
+      <p class="ord-warn" data-i18n="ord_warn">Сохраните ключ сейчас — после закрытия окна он не покажется снова. Ключ привязывается к ПК при первой активации.</p>
+      <a href="#download" class="btn btn-ghost" data-ord-close data-i18n="ord_dl">Скачать приложение</a>
+    </div>
+
+    <div class="ord-state s-canceled">
+      <h3 data-i18n="ord_canceled_t">Оплата не прошла</h3>
+      <p data-i18n="ord_canceled_d">Платёж отменён или истёк, деньги не списаны. Выберите тариф и попробуйте снова.</p>
+      <a href="#pricing" class="btn btn-primary" data-ord-close data-i18n="ord_pick">Выбрать тариф</a>
+    </div>
+
+    <div class="ord-state s-slow">
+      <h3 data-i18n="ord_slow_t">Платёж ещё обрабатывается</h3>
+      <p data-i18n="ord_slow_d">Если вы уже оплатили, подождите минуту и проверьте снова. Ключ не пропадёт.</p>
+      <button type="button" class="btn btn-primary" id="ordRetry" data-i18n="ord_retry">Проверить снова</button>
+    </div>
+
+    <div class="ord-state s-error">
+      <h3 data-i18n="ord_err_t">Что-то пошло не так</h3>
+      <p id="ordErr"></p>
+      <a href="https://t.me/disxrm" target="_blank" rel="noopener" class="btn btn-ghost" data-i18n="foot_tg">Поддержка в Telegram</a>
+      <button type="button" class="btn btn-ghost" data-ord-close data-i18n="ord_close">Закрыть</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -1698,7 +1761,7 @@ const I18N = {
     nav_home: 'Главная', nav_features: 'Возможности', nav_optimization: 'Оптимизация',
     nav_compare: 'Сравнение', nav_tools: 'Инструменты', nav_pricing: 'Тарифы',
     nav_changelog: 'Changelog', nav_faq: 'FAQ', nav_download: 'Скачать',
-    mm_tg: 'Telegram-бот @VOIDTWEAKS_Bot', mm_version: 'Версия',
+    mm_tg: 'Поддержка в Telegram', mm_version: 'Версия',
     hero_title: '<span class="line"><span class="word" style="--w:0"><span>Система</span></span> <span class="word" style="--w:1"><span>в</span></span> <span class="word" style="--w:2"><span>тонусе.</span></span></span><span class="line"><span class="word" style="--w:3"><span class="grad-primary-text">Мощность</span></span></span><span class="line"><span class="word" style="--w:4"><span>под</span></span> <span class="word" style="--w:5"><span>контролем.</span></span></span>',
     hero_lead: 'VOID TWEAKS держит Windows чистой: телеметрия, мусор и лишние службы — под замком. Твики реестра, управление прерываниями, автозагрузка и встроенные утилиты в одном месте.',
     hero_cta1: 'Скачать бесплатно', hero_cta2: 'Что умеет',
@@ -1763,7 +1826,7 @@ const I18N = {
     pro_f3: '<b>GPU-разделы</b> — NVIDIA и AMD, включая питание драйвера',
     pro_f4: '<b>Ранний доступ</b> и приоритетные обновления',
     pro_cta1: 'Активировать PRO', pro_cta2: 'Сначала скачать приложение',
-    pro_note: 'Ключ привязывается к устройству автоматически. Купить и получить ключ можно через Telegram-бота <a href="https://t.me/VOIDTWEAKS_Bot" target="_blank" rel="noopener">@VOIDTWEAKS_Bot</a>.',
+    pro_note: 'Ключ привязывается к устройству автоматически. Оплата картой или через СБП — ключ появится на этой странице сразу после платежа.',
     price_eyebrow: 'Тарифы',
     price_title: 'Выбери <span class="grad-primary-text">свой план</span>',
     price_desc: 'Один платёж — без подписок. Ключ привязывается к устройству по HWID и остаётся навсегда.',
@@ -1801,6 +1864,18 @@ const I18N = {
     price4_f4: 'Ранний доступ к бета-версиям',
     price4_f5: 'Приоритетные обновления',
     price4_cta: 'Купить на год',
+    ord_wait_t: 'Проверяем оплату…', ord_wait_d: 'Обычно это занимает несколько секунд. Не закрывайте страницу.',
+    ord_done_t: 'Оплата прошла успешно', ord_copy: 'Скопировать ключ', ord_copied: 'Скопировано',
+    ord_steps: '<li>Скачайте и установите программу</li><li>Запустите VOIDTWEAKS.exe и нажмите «Запустить оптимизацию»</li><li>Вставьте ключ в появившееся окно</li><li>Нажмите «Активировать»</li>',
+    ord_warn: 'Сохраните ключ сейчас — после закрытия окна он не покажется снова. Ключ привязывается к ПК при первой активации.',
+    ord_dl: 'Скачать приложение',
+    ord_canceled_t: 'Оплата не прошла', ord_canceled_d: 'Платёж отменён или истёк, деньги не списаны. Выберите тариф и попробуйте снова.', ord_pick: 'Выбрать тариф',
+    ord_slow_t: 'Платёж ещё обрабатывается', ord_slow_d: 'Если вы уже оплатили, подождите минуту и проверьте снова. Ключ не пропадёт.', ord_retry: 'Проверить снова',
+    ord_err_t: 'Что-то пошло не так', ord_close: 'Закрыть', ord_until: 'до',
+    ord_err_create: 'Не удалось создать платёж. Попробуйте ещё раз через минуту.',
+    ord_err_notfound: 'Заказ не найден. Если вы оплатили, напишите в поддержку.',
+    ord_err_support: 'Платёж прошёл, но заказ не удалось подтвердить. Напишите в поддержку — выдадим ключ вручную.',
+    ord_plan_month: '1 месяц', ord_plan_half: '6 месяцев', ord_plan_forever: 'Навсегда',
     log_eyebrow: 'Changelog',
     log_title: 'Что нового в <span class="grad-primary-text">VOID TWEAKS</span>',
     log_desc: 'История версий и ключевые изменения прямо из GitHub.',
@@ -1835,14 +1910,14 @@ const I18N = {
     dl_r4: '<b>~250 МБ свободного места</b> на системном диске',
     dl_r5: 'Встроенная точка восстановления перед первыми правками',
     foot_tag: 'Оптимизатор Windows с живым мониторингом железа, твиками системы и встроенными утилитами для повседневных задач.',
-    foot_product: 'Продукт', foot_support: 'Поддержка', foot_tg: 'Telegram-бот', foot_version: 'Версия 1.0.0'
+    foot_product: 'Продукт', foot_support: 'Поддержка', foot_tg: 'Поддержка в Telegram', foot_version: 'Версия 1.0.0'
   },
   en: {
     brand_sub: 'Windows Optimizer',
     nav_home: 'Home', nav_features: 'Features', nav_optimization: 'Optimization',
     nav_compare: 'Compare', nav_tools: 'Tools', nav_pricing: 'Pricing',
     nav_changelog: 'Changelog', nav_faq: 'FAQ', nav_download: 'Download',
-    mm_tg: 'Telegram bot @VOIDTWEAKS_Bot', mm_version: 'Version',
+    mm_tg: 'Support on Telegram', mm_version: 'Version',
     hero_title: '<span class="line"><span class="word" style="--w:0"><span>System</span></span> <span class="word" style="--w:1"><span>in</span></span> <span class="word" style="--w:2"><span>tune.</span></span></span><span class="line"><span class="word" style="--w:3"><span class="grad-primary-text">Power</span></span></span><span class="line"><span class="word" style="--w:4"><span>under</span></span> <span class="word" style="--w:5"><span>control.</span></span></span>',
     hero_lead: 'VOID TWEAKS keeps Windows clean: telemetry, junk and extra services are locked down. Registry tweaks, interrupt control, startup manager and built-in utilities — all in one place.',
     hero_cta1: 'Download free', hero_cta2: 'See what it does',
@@ -1907,7 +1982,7 @@ const I18N = {
     pro_f3: '<b>GPU sections</b> — NVIDIA and AMD, including driver power',
     pro_f4: '<b>Early access</b> and priority updates',
     pro_cta1: 'Activate PRO', pro_cta2: 'Download the app first',
-    pro_note: 'The key binds to your device automatically. Buy and receive your key via the Telegram bot <a href="https://t.me/VOIDTWEAKS_Bot" target="_blank" rel="noopener">@VOIDTWEAKS_Bot</a>.',
+    pro_note: 'The key binds to your device automatically. Pay by card or SBP — your key appears on this page right after payment.',
     price_eyebrow: 'Pricing',
     price_title: 'Pick <span class="grad-primary-text">your plan</span>',
     price_desc: 'One-time payment — no subscriptions. The key binds to your device via HWID and stays forever.',
@@ -1945,6 +2020,18 @@ const I18N = {
     price4_f4: 'Early access to beta versions',
     price4_f5: 'Priority updates',
     price4_cta: 'Buy yearly',
+    ord_wait_t: 'Checking your payment…', ord_wait_d: 'Usually takes a few seconds. Keep this page open.',
+    ord_done_t: 'Payment received', ord_copy: 'Copy key', ord_copied: 'Copied',
+    ord_steps: '<li>Download and install the app</li><li>Launch it and click “Run optimization”</li><li>Paste the key into the window that appears</li><li>Click “Activate”</li>',
+    ord_warn: 'Save the key now — it will not be shown again after you close this window. It binds to your PC on first activation.',
+    ord_dl: 'Download the app',
+    ord_canceled_t: 'Payment did not go through', ord_canceled_d: 'The payment was canceled or expired and nothing was charged. Pick a plan and try again.', ord_pick: 'Pick a plan',
+    ord_slow_t: 'Payment is still processing', ord_slow_d: 'If you already paid, wait a minute and check again. Your key is safe.', ord_retry: 'Check again',
+    ord_err_t: 'Something went wrong', ord_close: 'Close', ord_until: 'until',
+    ord_err_create: 'Could not create the payment. Try again in a minute.',
+    ord_err_notfound: 'Order not found. If you paid, contact support.',
+    ord_err_support: 'Payment went through but the order could not be confirmed. Contact support and we will issue the key manually.',
+    ord_plan_month: '1 month', ord_plan_half: '6 months', ord_plan_forever: 'Lifetime',
     log_eyebrow: 'Changelog',
     log_title: 'What’s new in <span class="grad-primary-text">VOID TWEAKS</span>',
     log_desc: 'Version history and key changes straight from GitHub.',
@@ -1979,7 +2066,7 @@ const I18N = {
     dl_r4: '<b>~250 MB free space</b> on the system drive',
     dl_r5: 'Built-in restore point before the first changes',
     foot_tag: 'Windows optimizer with live hardware monitoring, system tweaks and built-in utilities for everyday tasks.',
-    foot_product: 'Product', foot_support: 'Support', foot_tg: 'Telegram bot', foot_version: 'Version 1.0.0'
+    foot_product: 'Product', foot_support: 'Support', foot_tg: 'Telegram support', foot_version: 'Version 1.0.0'
   }
 };
 
@@ -2035,6 +2122,104 @@ function applyLang(lang) {
       applyLang(next);
     });
   }
+})();
+
+/* ============================================================
+   CHECKOUT — оплата через бэкенд + ЮKassa
+============================================================ */
+(() => {
+  const API = 'https://YOUR-SERVICE.onrender.com'; // ← адрес сервиса с bot.py (Render)
+  const STORE = 'void-order';
+  const $ = id => document.getElementById(id);
+  const modal = $('ordModal');
+  if (!modal) return;
+  const lang = () => (document.documentElement.lang === 'en' ? 'en' : 'ru');
+  const t = k => I18N[lang()][k] || '';
+  let timer = 0, current = '';
+
+  const open = state => { modal.dataset.state = state; modal.classList.add('open'); };
+  const showErr = msg => { $('ordErr').textContent = msg; open('error'); };
+  const close = () => {
+    clearTimeout(timer);
+    modal.classList.remove('open');
+    try { localStorage.removeItem(STORE); } catch {}
+    if (location.search.includes('order=')) history.replaceState(null, '', location.pathname + location.hash);
+  };
+
+  function done(d) {
+    const until = d.expires_at
+      ? ' · ' + t('ord_until') + ' ' + new Date(d.expires_at).toLocaleDateString(lang() === 'en' ? 'en-GB' : 'ru-RU') : '';
+    $('ordKey').textContent = d.key;
+    $('ordPlan').textContent = t('ord_plan_' + d.plan) + until;
+    open('done');
+  }
+
+  // silent=true — тихая проверка сохранённого заказа: окно открываем, только если ключ уже готов
+  function poll(token, silent) {
+    current = token;
+    clearTimeout(timer);
+    let tries = 0;
+    if (!silent) open('wait');
+    const tick = async () => {
+      try {
+        const r = await fetch(API + '/api/order?token=' + encodeURIComponent(token));
+        const d = await r.json();
+        if (r.status === 404) return showErr(t('ord_err_notfound'));
+        if (r.status === 409) return showErr(t('ord_err_support'));
+        if (d.status === 'succeeded') return done(d);
+        if (d.status === 'canceled') return silent ? close() : open('canceled');
+      } catch {}
+      if (silent) return;
+      if (++tries > 100) return open('slow');
+      timer = setTimeout(tick, 3000);
+    };
+    tick();
+  }
+
+  async function buy(plan, btn) {
+    const label = btn.textContent;
+    btn.style.pointerEvents = 'none';
+    btn.textContent = '…';
+    try {
+      const r = await fetch(API + '/api/checkout', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ plan })
+      });
+      const d = await r.json();
+      if (!r.ok || !d.url) throw new Error('checkout');
+      try { localStorage.setItem(STORE, d.token); } catch {}
+      location.href = d.url;
+    } catch {
+      btn.textContent = label;
+      btn.style.pointerEvents = '';
+      showErr(t('ord_err_create'));
+    }
+  }
+
+  document.querySelectorAll('[data-buy]').forEach(a =>
+    a.addEventListener('click', e => { e.preventDefault(); buy(a.dataset.buy, a); }));
+  modal.querySelectorAll('[data-ord-close]').forEach(el => el.addEventListener('click', close));
+  $('ordRetry').addEventListener('click', () => poll(current));
+  $('ordCopy').addEventListener('click', async e => {
+    const btn = e.currentTarget;
+    try { await navigator.clipboard.writeText($('ordKey').textContent); }
+    catch {
+      const r = document.createRange(); r.selectNodeContents($('ordKey'));
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    }
+    btn.textContent = t('ord_copied');
+    setTimeout(() => { btn.textContent = t('ord_copy'); }, 1600);
+  });
+  document.addEventListener('keydown', e => {
+    const st = modal.dataset.state;
+    if (e.key === 'Escape' && modal.classList.contains('open') && st !== 'wait' && st !== 'done') close();
+  });
+  window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
+
+  // возврат с оплаты (?order=...) или незавершённый заказ из прошлого визита
+  const fromUrl = new URLSearchParams(location.search).get('order');
+  let saved = '';
+  try { saved = localStorage.getItem(STORE) || ''; } catch {}
+  if (fromUrl) poll(fromUrl); else if (saved) poll(saved, true);
 })();
 
 /* ============================================================
