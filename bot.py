@@ -11,6 +11,7 @@ from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKe
 from aiogram.filters import CommandStart
 from aiogram.exceptions import TelegramBadRequest
 from supabase import create_client
+import web_checkout
 
 logging.basicConfig(
     level=logging.INFO,
@@ -26,6 +27,8 @@ YUKASSA_SHOP_ID = os.environ.get("YUKASSA_SHOP_ID")
 YUKASSA_SECRET_KEY = os.environ.get("YUKASSA_SECRET_KEY")
 PORT = int(os.environ.get("PORT", 8080))
 RENDER_URL = os.environ.get("RENDER_URL", "")
+SITE_URL = os.environ.get("SITE_URL", "")  # https://disxrm.github.io/voidtweaks  (без / в конце)
+ALLOWED_ORIGINS = {o.strip() for o in os.environ.get("ALLOWED_ORIGINS", SITE_URL).split(",") if o.strip()}
 BANNER_WELCOME_URL = "https://raw.githubusercontent.com/disxrm/voidtweaks/main/banner_welcome.png"
 BANNER_PLANS_URL = "https://raw.githubusercontent.com/disxrm/voidtweaks/main/banner_plans.png"
 
@@ -569,15 +572,27 @@ async def back(callback: CallbackQuery):
             reply_markup=main_menu()
         )
 
-YUKASSA_IPS = {
-    "185.71.76.0", "185.71.77.0", "77.75.153.0", "77.75.156.11",
-    "77.75.156.35", "77.75.154.128", "2a02:5180::/32"
-}
+import ipaddress
+
+# Официальные сети ЮKassa: https://yookassa.ru/developers/using-api/webhooks
+# (сверь актуальный список в документации — он иногда меняется)
+YUKASSA_NETWORKS = [ipaddress.ip_network(n) for n in (
+    "185.71.76.0/27", "185.71.77.0/27", "77.75.153.0/25",
+    "77.75.156.11/32", "77.75.156.35/32", "77.75.154.128/25",
+    "2a02:5180::/32",
+)]
+
+def is_yukassa_ip(ip: str) -> bool:
+    try:
+        addr = ipaddress.ip_address(ip)
+    except ValueError:
+        return False
+    return any(addr in net for net in YUKASSA_NETWORKS)
 
 async def yukassa_webhook(request: web.Request):
     peer = request.headers.get("X-Forwarded-For", request.remote or "")
     client_ip = peer.split(",")[0].strip()
-    if client_ip not in YUKASSA_IPS:
+    if not is_yukassa_ip(client_ip):
         logger.warning(f"Webhook отклонён: неизвестный IP {client_ip}")
         return web.Response(text="Forbidden", status=403)
 
@@ -594,6 +609,11 @@ async def yukassa_webhook(request: web.Request):
         if event == "payment.succeeded":
             metadata = payment.get("metadata", {})
             order_id = metadata.get("order_id", "")
+
+            # веб-заказ с сайта: ключ выдаём и по вебхуку, и по опросу сайта (идемпотентно)
+            if order_id.startswith("web_"):
+                await web_checkout.issue_web_license(order_id[4:])
+                return web.Response(text="OK", status=200)
 
             parts = order_id.split("_")
             if len(parts) >= 2:
@@ -651,6 +671,14 @@ async def main():
     app = web.Application()
     app.router.add_get("/", health)
     app.router.add_post("/webhook/yukassa", yukassa_webhook)
+
+    web_checkout.init(
+        supabase=supabase, plans=PLANS,
+        shop_id=YUKASSA_SHOP_ID, secret_key=YUKASSA_SECRET_KEY,
+        site_url=SITE_URL, allowed_origins=ALLOWED_ORIGINS,
+        generate_key=generate_key,
+    )
+    web_checkout.register(app)
 
     runner = web.AppRunner(app)
     await runner.setup()
