@@ -86,7 +86,7 @@ a:focus-visible, button:focus-visible, .btn:focus-visible, summary:focus-visible
 @media (prefers-reduced-motion: reduce) {
   .reveal { transition-duration: 0.01ms !important; filter: none !important; }
 }
-.feat, .tool, .metric, .opt-card, .price-card, .cmp-col, .log-entry { contain: layout paint; }
+.feat, .metric, .price-card, .log-entry { contain: layout paint; }
 
 html, body {
   margin: 0; padding: 0; background: var(--bg); color: var(--text);
@@ -397,169 +397,7 @@ section { padding: 64px 0; position: relative; }
 .feat h3 { font-size: 17px; font-weight: 700; letter-spacing: -0.2px; margin: 0 0 8px; }
 .feat p { color: var(--text-2); font-size: 13.5px; line-height: 1.6; margin: 0; }
 
-/* === COMPARISON === */
-.cmp-wrap { padding: 40px 36px; }
-@media (max-width: 720px) { .cmp-wrap { padding: 24px 18px; } }
-.cmp-grid {
-  display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: stretch;
-}
-@media (max-width: 900px) { .cmp-grid { grid-template-columns: 1fr; gap: 18px; } }
-.cmp-col {
-  padding: 28px 26px; border-radius: 18px; position: relative;
-  display: flex; flex-direction: column; gap: 14px;
-}
-.cmp-col.bad {
-  background: linear-gradient(180deg, rgba(239,68,68,0.05), rgba(239,68,68,0.02));
-  border: 1px solid rgba(239,68,68,0.16);
-}
-.cmp-col.good {
-  background: linear-gradient(180deg, rgba(124,58,237,0.10), rgba(99,102,241,0.04));
-  border: 1px solid rgba(167,139,250,0.28);
-  box-shadow: 0 30px 60px -28px rgba(124,58,237,0.5);
-}
-.cmp-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 12px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;
-  padding: 6px 12px; border-radius: 100px; align-self: flex-start;
-}
-.cmp-col.bad .cmp-badge { background: rgba(239,68,68,0.12); color: #FCA5A5; border: 1px solid rgba(239,68,68,0.25); }
-.cmp-col.good .cmp-badge { background: rgba(124,58,237,0.18); color: var(--primary-soft); border: 1px solid rgba(167,139,250,0.35); }
-.cmp-col h3 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin: 4px 0 6px; }
-.cmp-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
-.cmp-list li {
-  display: flex; align-items: flex-start; gap: 10px;
-  font-size: 13.5px; line-height: 1.55; color: var(--text-2);
-}
-.cmp-list li .icon {
-  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; margin-top: 1px;
-}
-.cmp-list li .icon svg { width: 11px; height: 11px; }
-.cmp-col.bad .cmp-list li .icon { background: rgba(239,68,68,0.14); border: 1px solid rgba(239,68,68,0.35); color: #FCA5A5; }
-.cmp-col.good .cmp-list li .icon { background: rgba(34,197,94,0.14); border: 1px solid rgba(34,197,94,0.4); color: #86EFAC; }
-.cmp-vs {
-  align-self: center; width: 56px; height: 56px; border-radius: 50%;
-  background: var(--grad-primary); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 900; font-size: 14px; letter-spacing: 0.5px;
-  box-shadow: 0 12px 34px -10px rgba(124,58,237,0.85), 0 0 0 6px rgba(10,8,23,0.6);
-  position: relative; z-index: 1;
-}
-@media (max-width: 900px) { .cmp-vs { display: none; } }
-
-/* === OPTIMIZATION === */
-.opt-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-@media (max-width: 1100px) { .opt-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 620px)  { .opt-grid { grid-template-columns: 1fr; } }
-.opt-card {
-  padding: 24px 22px 20px; display: flex; flex-direction: column;
-  position: relative; overflow: hidden; cursor: default;
-  transition: transform 0.45s var(--md-ease-decel), box-shadow 0.45s var(--md-ease-standard);
-}
-.opt-card::before {
-  content: ""; position: absolute; top: 0; left: 16px; right: 16px; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(196,181,253,0.9), transparent);
-  opacity: 0; transition: opacity 0.45s var(--md-ease-decel);
-  pointer-events: none; z-index: 2;
-}
-.opt-card::after {
-  content: ""; position: absolute; width: 260px; height: 260px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(167,139,250,0.18), transparent 65%);
-  top: var(--my, 50%); left: var(--mx, 50%); transform: translate(-50%, -50%);
-  opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
-}
-.opt-card:hover { transform: translateY(-6px); box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 40px 70px -22px rgba(124,58,237,0.45); }
-.opt-card:hover::before { opacity: 1; }
-.opt-card:hover::after  { opacity: 1; }
-.opt-card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; position: relative; z-index: 1; }
-.opt-ico {
-  width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, rgba(124,58,237,0.25), rgba(99,102,241,0.15));
-  border: 1px solid rgba(167,139,250,0.28); color: var(--primary-light);
-  transition: transform 0.5s var(--md-ease-spring), box-shadow 0.45s ease, background 0.4s ease;
-}
-.opt-ico svg { width: 20px; height: 20px; }
-.opt-card:hover .opt-ico {
-  transform: rotate(-8deg) scale(1.08);
-  box-shadow: 0 10px 26px -10px rgba(124,58,237,0.85);
-  background: linear-gradient(135deg, rgba(124,58,237,0.4), rgba(99,102,241,0.22));
-}
-.opt-card h3 { font-size: 16.5px; font-weight: 700; letter-spacing: -0.3px; margin: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.opt-badge {
-  font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 5px;
-  color: var(--primary-soft); background: rgba(124,58,237,0.16);
-  border: 1px solid rgba(167,139,250,0.34); letter-spacing: 0.5px; line-height: 1.4;
-}
-.opt-card p { color: var(--text-2); font-size: 13px; line-height: 1.6; margin: 0 0 16px; flex: 1; position: relative; z-index: 1; }
-.opt-tags { display: flex; flex-wrap: wrap; gap: 6px; position: relative; z-index: 1; }
-.opt-tag {
-  font-size: 11px; font-weight: 500; padding: 3.5px 9px; border-radius: 100px;
-  background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.06);
-  color: var(--text-2); white-space: nowrap;
-  transition: color 0.3s ease, background 0.3s ease, border-color 0.3s ease;
-}
-.opt-card:hover .opt-tag { color: var(--text); background: rgba(255,255,255,0.05); border-color: rgba(167,139,250,0.22); }
-
-/* === TOOLS === */
-.tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
-.tool {
-  padding: 20px 20px 18px; cursor: pointer; position: relative; overflow: hidden;
-  min-height: 190px; display: flex; flex-direction: column;
-  transition: transform 0.45s var(--md-ease-decel), box-shadow 0.45s var(--md-ease-standard);
-}
-.tool:hover { transform: translateY(-6px); box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 40px 70px -22px rgba(124,58,237,0.45); }
-.tool .glow { position: absolute; inset: -20px; border-radius: inherit; opacity: 0; pointer-events: none; transition: opacity 0.45s ease; filter: blur(40px); }
-.tool:hover .glow { opacity: 0.5; }
-.tool .t-icon {
-  width: 44px; height: 44px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 12px; transition: transform 0.45s var(--md-ease-spring); position: relative;
-}
-.tool:hover .t-icon { transform: rotate(-8deg) scale(1.08); }
-.tool .t-icon svg { width: 24px; height: 24px; }
-.tool h3 { font-size: 18px; font-weight: 800; letter-spacing: -0.4px; margin: 0 0 8px; }
-.tool p { color: var(--text-2); font-size: 13px; line-height: 1.6; margin: 0 0 16px; flex: 1; }
-.tool .t-foot { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--primary-light); }
-.tool .t-foot svg { width: 12px; height: 12px; transition: transform 0.35s var(--ease-out); }
-.tool:hover .t-foot svg { transform: translateX(4px); }
-
-/* === PRO === */
-.pro-wrap {
-  position: relative; border-radius: 28px; padding: 2px;
-  background: linear-gradient(135deg, rgba(196,181,253,0.5), rgba(99,102,241,0.2) 40%, rgba(232,121,249,0.35));
-  overflow: hidden;
-}
-.pro-wrap::before {
-  content: ""; position: absolute; inset: -50%;
-  background: conic-gradient(from 0deg, transparent 0%, rgba(196,181,253,0.35) 15%, transparent 30%, transparent 60%, rgba(232,121,249,0.3) 75%, transparent 90%);
-  animation: spin 14s linear infinite; z-index: 0;
-}
 @keyframes spin { to { transform: rotate(360deg); } }
-.pro-inner {
-  position: relative; z-index: 1;
-  background: linear-gradient(160deg, #14102A 0%, #0D0A1C 100%);
-  border-radius: 26px; padding: 44px 48px;
-  display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: center;
-}
-@media (max-width: 880px) { .pro-inner { grid-template-columns: 1fr; padding: 32px 24px; gap: 28px; } }
-.pro-inner h2 { font-size: clamp(30px, 3.6vw, 44px); line-height: 1.08; letter-spacing: -1px; font-weight: 800; margin: 0 0 16px; }
-.pro-inner p.lead { color: var(--text-2); font-size: 16px; line-height: 1.65; margin: 0 0 28px; max-width: 480px; }
-.pro-features { display: flex; flex-direction: column; gap: 12px; }
-.pro-feat { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-2); font-weight: 500; }
-.pro-feat .check {
-  width: 24px; height: 24px; border-radius: 50%;
-  background: rgba(124,58,237,0.18); border: 1px solid rgba(167,139,250,0.45);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--primary-soft); flex-shrink: 0;
-}
-.pro-feat .check svg { width: 12px; height: 12px; }
-.pro-feat b { color: var(--text); font-weight: 600; }
-.pro-cta { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
-.pro-cta .btn { width: 100%; justify-content: center; }
-.pro-note { font-size: 12px; color: var(--text-3); line-height: 1.55; margin-top: 4px; }
-.pro-note a { color: var(--primary-light); font-weight: 600; }
-.pro-note a:hover { text-decoration: underline; }
 
 /* === PRICING === */
 .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; align-items: stretch; }
@@ -781,9 +619,8 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
     <nav class="nav-links">
       <a href="#home" data-i18n="nav_home">Главная</a>
       <a href="#features" data-i18n="nav_features">Возможности</a>
-      <a href="#optimization" data-i18n="nav_optimization">Оптимизация</a>
-      <a href="#tools" data-i18n="nav_tools">Инструменты</a>
       <a href="#pricing" data-i18n="nav_pricing">Тарифы</a>
+      <a href="#changelog" data-i18n="nav_changelog">Changelog</a>
       <a href="#faq" data-i18n="nav_faq">FAQ</a>
     </nav>
     <div class="nav-cta">
@@ -812,9 +649,6 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
   <nav class="mm-links">
     <a href="#home" data-i18n="nav_home">Главная</a>
     <a href="#features" data-i18n="nav_features">Возможности</a>
-    <a href="#optimization" data-i18n="nav_optimization">Оптимизация</a>
-    <a href="#compare" data-i18n="nav_compare">Сравнение</a>
-    <a href="#tools" data-i18n="nav_tools">Инструменты</a>
     <a href="#pricing" data-i18n="nav_pricing">Тарифы</a>
     <a href="#changelog" data-i18n="nav_changelog">Changelog</a>
     <a href="#faq" data-i18n="nav_faq">FAQ</a>
@@ -941,328 +775,6 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
         </div>
         <h3 data-i18n="feat4_t">Менеджер автозагрузки</h3>
         <p data-i18n="feat4_d">Реестр, папка Startup, задачи планировщика и службы — с настоящими иконками приложений, как в Проводнике. Отключение в один клик.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="compare">
-  <div class="container">
-    <div class="sec-head center reveal">
-      <span class="eyebrow" data-i18n="cmp_eyebrow">Сравнение</span>
-      <h2 data-i18n-html="cmp_title">Обычная Windows <span class="grad-primary-text">против</span> VOID TWEAKS</h2>
-      <p data-i18n="cmp_desc">Один и тот же компьютер — но два совершенно разных подхода к производительности.</p>
-    </div>
-
-    <div class="glass cmp-wrap reveal" data-spotlight>
-      <div class="cmp-grid">
-        <div class="cmp-col bad">
-          <span class="cmp-badge" data-i18n="cmp_bad_badge">Stock Windows</span>
-          <h3 data-i18n="cmp_bad_title">Как есть</h3>
-          <ul class="cmp-list">
-            <li>
-              <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.397 4.554l.073-.084a.75.75 0 0 1 .976-.073l.084.073L12 10.939l6.47-6.47a.75.75 0 1 1 1.06 1.061L13.061 12l6.47 6.47a.75.75 0 0 1 .072.976l-.073.084a.75.75 0 0 1-.976.073l-.084-.073L12 13.061l-6.47 6.47a.75.75 0 1 1-1.06-1.061L10.939 12l-6.47-6.47a.75.75 0 0 1-.072-.976l.073-.084Z"/></svg></span>
-              <span data-i18n="cmp_bad_1">100+ фоновых процессов съедают ресурсы</span>
-            </li>
-            <li>
-              <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.397 4.554l.073-.084a.75.75 0 0 1 .976-.073l.084.073L12 10.939l6.47-6.47a.75.75 0 1 1 1.06 1.061L13.061 12l6.47 6.47a.75.75 0 0 1 .072.976l-.073.084a.75.75 0 0 1-.976.073l-.084-.073L12 13.061l-6.47 6.47a.75.75 0 1 1-1.06-1.061L10.939 12l-6.47-6.47a.75.75 0 0 1-.072-.976l.073-.084Z"/></svg></span>
-              <span data-i18n="cmp_bad_2">Телеметрия и рекламные ID работают фоном</span>
-            </li>
-            <li>
-              <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.397 4.554l.073-.084a.75.75 0 0 1 .976-.073l.084.073L12 10.939l6.47-6.47a.75.75 0 1 1 1.06 1.061L13.061 12l6.47 6.47a.75.75 0 0 1 .072.976l-.073.084a.75.75 0 0 1-.976.073l-.084-.073L12 13.061l-6.47 6.47a.75.75 0 1 1-1.06-1.061L10.939 12l-6.47-6.47a.75.75 0 0 1-.072-.976l.073-.084Z"/></svg></span>
-              <span data-i18n="cmp_bad_3">Неоптимальные таймеры и схемы питания</span>
-            </li>
-            <li>
-              <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.397 4.554l.073-.084a.75.75 0 0 1 .976-.073l.084.073L12 10.939l6.47-6.47a.75.75 0 1 1 1.06 1.061L13.061 12l6.47 6.47a.75.75 0 0 1 .072.976l-.073.084a.75.75 0 0 1-.976.073l-.084-.073L12 13.061l-6.47 6.47a.75.75 0 1 1-1.06-1.061L10.939 12l-6.47-6.47a.75.75 0 0 1-.072-.976l.073-.084Z"/></svg></span>
-              <span data-i18n="cmp_bad_4">Input lag в играх из-за прерываний</span>
-            </li>
-            <li>
-              <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.397 4.554l.073-.084a.75.75 0 0 1 .976-.073l.084.073L12 10.939l6.47-6.47a.75.75 0 1 1 1.06 1.061L13.061 12l6.47 6.47a.75.75 0 0 1 .072.976l-.073.084a.75.75 0 0 1-.976.073l-.084-.073L12 13.061l-6.47 6.47a.75.75 0 1 1-1.06-1.061L10.939 12l-6.47-6.47a.75.75 0 0 1-.072-.976l.073-.084Z"/></svg></span>
-              <span data-i18n="cmp_bad_5">Стандартные настройки для всех конфигураций</span>
-            </li>
-            <li>
-              <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.397 4.554l.073-.084a.75.75 0 0 1 .976-.073l.084.073L12 10.939l6.47-6.47a.75.75 0 1 1 1.06 1.061L13.061 12l6.47 6.47a.75.75 0 0 1 .072.976l-.073.084a.75.75 0 0 1-.976.073l-.084-.073L12 13.061l-6.47 6.47a.75.75 0 1 1-1.06-1.061L10.939 12l-6.47-6.47a.75.75 0 0 1-.072-.976l.073-.084Z"/></svg></span>
-              <span data-i18n="cmp_bad_6">Ручная чистка через десятки утилит</span>
-            </li>
-          </ul>
-        </div>
-
-        <div class="cmp-vs">VS</div>
-
-        <div class="cmp-col good">
-          <span class="cmp-badge" data-i18n="cmp_good_badge">VOID TWEAKS</span>
-          <h3 data-i18n="cmp_good_title">Как надо</h3>
-          <ul class="cmp-list">
-            <li>
-              <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg></span>
-              <span data-i18n="cmp_good_1">40–60 активных процессов в системе</span>
-            </li>
-            <li>
-              <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg></span>
-              <span data-i18n="cmp_good_2">Телеметрия отключена полностью</span>
-            </li>
-            <li>
-              <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg></span>
-              <span data-i18n="cmp_good_3">Тонкая настройка таймеров и питания</span>
-            </li>
-            <li>
-              <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg></span>
-              <span data-i18n="cmp_good_4">MSI + IRQ affinity — минимальный input lag</span>
-            </li>
-            <li>
-              <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg></span>
-              <span data-i18n="cmp_good_5">Твики под конкретное железо</span>
-            </li>
-            <li>
-              <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg></span>
-              <span data-i18n="cmp_good_6">Всё в одном окне, откат в один клик</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="optimization">
-  <div class="container">
-    <div class="sec-head reveal" id="optSecHead">
-      <span class="eyebrow" data-i18n="opt_eyebrow">Оптимизация</span>
-      <h2 data-i18n-html="opt_title">Восемь категорий —<br>от <span class="grad-primary-text">системы</span> до железа</h2>
-      <p data-i18n="opt_desc">Каждый твик применяется отдельно и проверяется автоматически.</p>
-    </div>
-
-    <div class="opt-grid">
-      <article class="glass opt-card reveal" data-spotlight>
-        <div class="opt-card-head">
-          <span class="opt-ico">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.34 3.94a5.5 5.5 0 0 1 7.5-1.44l.14.11a.75.75 0 0 1 .05 1.1l-3.13 3.13a.75.75 0 0 0 0 1.06l1.34 1.34a.75.75 0 0 0 1.06 0l3.13-3.13a.75.75 0 0 1 1.1.05c.05.05.09.1.12.14a5.5 5.5 0 0 1-6.85 8.06l-.2-.09-.13.13-.01.01-6.06 6.06a2.82 2.82 0 0 1-3.99-3.99l6.06-6.06.13-.13-.09-.2a5.5 5.5 0 0 1 2.03-7.16Z"/></svg>
-          </span>
-          <h3 data-i18n="optc1_t">Общее</h3>
-        </div>
-        <p data-i18n="optc1_d">Базовые твики системы, приложений и браузеров — работают на любой конфигурации.</p>
-        <div class="opt-tags">
-          <span class="opt-tag">Меню</span>
-          <span class="opt-tag">SmartScreen</span>
-          <span class="opt-tag">FTH</span>
-          <span class="opt-tag">Автозапуск</span>
-        </div>
-      </article>
-
-      <article class="glass opt-card reveal" data-spotlight>
-        <div class="opt-card-head">
-          <span class="opt-ico">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 2.75a.75.75 0 0 1 1.5 0V5h3V2.75a.75.75 0 0 1 1.5 0V5h1.75c1.24 0 2.25 1.01 2.25 2.25V9h2.25a.75.75 0 0 1 0 1.5H19v3h2.25a.75.75 0 0 1 0 1.5H19v1.75c0 1.24-1.01 2.25-2.25 2.25H15v2.25a.75.75 0 0 1-1.5 0V19h-3v2.25a.75.75 0 0 1-1.5 0V19H7.25C6.01 19 5 17.99 5 16.75V15H2.75a.75.75 0 0 1 0-1.5H5v-3H2.75a.75.75 0 0 1 0-1.5H5V7.25C5 6.01 6.01 5 7.25 5H9V2.75ZM7.25 6.5a.75.75 0 0 0-.75.75v9.5c0 .414.336.75.75.75h9.5a.75.75 0 0 0 .75-.75v-9.5a.75.75 0 0 0-.75-.75h-9.5Z"/></svg>
-          </span>
-          <h3><span data-i18n="optc2_t">Железо</span> <span class="opt-badge">PRO</span></h3>
-        </div>
-        <p data-i18n="optc2_d">GPU, CPU, память, периферия и хранилище — тонкая настройка под конкретную конфигурацию.</p>
-        <div class="opt-tags">
-          <span class="opt-tag">MSI Mode</span>
-          <span class="opt-tag">P0-State</span>
-          <span class="opt-tag">RSS</span>
-          <span class="opt-tag">NVMe</span>
-        </div>
-      </article>
-
-      <article class="glass opt-card reveal" data-spotlight>
-        <div class="opt-card-head">
-          <span class="opt-ico">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm6.36 3.14a1 1 0 0 1 1.41 0A10 10 0 1 1 4.23 5.14a1 1 0 1 1 1.42 1.41 8 8 0 1 0 12.72 0 1 1 0 0 1 0-1.41Z"/></svg>
-          </span>
-          <h3 data-i18n="optc3_t">Электропитание</h3>
-        </div>
-        <p data-i18n="optc3_d">Схемы питания, готовые пресеты и тонкая настройка процессора на каждый сценарий.</p>
-        <div class="opt-tags">
-          <span class="opt-tag">VOID V1</span>
-          <span class="opt-tag">Hibernation</span>
-          <span class="opt-tag">Fast Startup</span>
-          <span class="opt-tag">Timer</span>
-        </div>
-      </article>
-
-      <article class="glass opt-card reveal" data-spotlight>
-        <div class="opt-card-head">
-          <span class="opt-ico">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.14 2.3a.75.75 0 0 1 .56.87l-1.1 5.08h4.15a.75.75 0 0 1 .58 1.22l-8.5 11a.75.75 0 0 1-1.32-.62l1.1-5.08H4.46a.75.75 0 0 1-.58-1.22l8.5-11a.75.75 0 0 1 .76-.25Z"/></svg>
-          </span>
-          <h3><span data-i18n="optc4_t">Прерывания</span> <span class="opt-badge">PRO</span></h3>
-        </div>
-        <p data-i18n="optc4_d">MSI, IRQ affinity и распределение по ядрам. Авто-план для AMD Dual-CCD и Double-CCX.</p>
-        <div class="opt-tags">
-          <span class="opt-tag">MSI</span>
-          <span class="opt-tag">IRQ Affinity</span>
-          <span class="opt-tag">Dual-CCD</span>
-          <span class="opt-tag">CPPC</span>
-        </div>
-      </article>
-
-      <article class="glass opt-card reveal" data-spotlight>
-        <div class="opt-card-head">
-          <span class="opt-ico">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.11 5.4A2.25 2.25 0 0 1 4.6 4.02l6.75-1.99a2.25 2.25 0 0 1 1.3 0l6.75 1.99a2.25 2.25 0 0 1 1.49 1.38c.34.94.51 1.93.51 2.93 0 4.79-3.02 8.55-8.36 10.61a2.25 2.25 0 0 1-1.58 0C6.13 16.88 3.11 13.12 3.11 8.33c0-1 .17-1.99.5-2.93Z"/></svg>
-          </span>
-          <h3 data-i18n="optc5_t">Приватность</h3>
-        </div>
-        <p data-i18n="optc5_d">Телеметрия, рекламные ID и системные модули слежки — под надёжным замком.</p>
-        <div class="opt-tags">
-          <span class="opt-tag">Telemetry</span>
-          <span class="opt-tag">NDU / DPS</span>
-          <span class="opt-tag">Xbox</span>
-          <span class="opt-tag">CEIP</span>
-        </div>
-      </article>
-
-      <article class="glass opt-card reveal" data-spotlight>
-        <div class="opt-card-head">
-          <span class="opt-ico">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10-4.48 10-10 10S2 17.52 2 12Zm2.06-3.5A8.5 8.5 0 0 0 4 12c0 .35.02.7.06 1.03l3.13-1.04a10.4 10.4 0 0 1 .03-3.12L4.06 8.5Zm.63-1.63 2.94 1.16c.43-1.23 1.05-2.35 1.83-3.28a8.55 8.55 0 0 0-4.77 2.12Zm5.06-2.5c-1.04 1.06-1.85 2.41-2.35 3.93l2.35.93V4.37Zm1.5 0V9.3l2.35-.93a10.1 10.1 0 0 0-2.35-3.93Zm4.53 3.9 2.94-1.16a8.55 8.55 0 0 0-4.77-2.12c.78.93 1.4 2.05 1.83 3.28Zm.6 1.63-.04.03-3.13 1.04c.13.51.21 1.05.24 1.6.02.5 0 1-.02 1.49l3.14 1.04c.05-.34.07-.68.07-1.03 0-1.2-.24-2.35-.68-3.4ZM15.4 15.9l-2.74-1.08v4.78c1.05-.34 2.03-.87 2.87-1.55a8.5 8.5 0 0 1-.13-2.15Zm-4.24 3.7v-4.78l-2.74 1.08c.05.27.06.56.04.85-.02.45-.09.88-.2 1.3a8.5 8.5 0 0 0 2.9 1.55Z"/></svg>
-          </span>
-          <h3><span data-i18n="optc6_t">Сеть</span> <span class="opt-badge">PRO</span></h3>
-        </div>
-        <p data-i18n="optc6_d">TCP/IP, DNS, QoS и параметры сетевых адаптеров для минимальной задержки.</p>
-        <div class="opt-tags">
-          <span class="opt-tag">Nagle</span>
-          <span class="opt-tag">RSS</span>
-          <span class="opt-tag">EEE</span>
-          <span class="opt-tag">TCP Tuning</span>
-        </div>
-      </article>
-
-      <article class="glass opt-card reveal" data-spotlight>
-        <div class="opt-card-head">
-          <span class="opt-ico">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 2a1.75 1.75 0 0 1 1.72 1.4l.05.22.21 1.13H20.25a.75.75 0 0 1 .1 1.5H19.9l-.86 12.02A3.25 3.25 0 0 1 15.8 21.5H8.2a3.25 3.25 0 0 1-3.24-3.02L4.1 6.5H3.75a.75.75 0 0 1-.1-1.5h3.98l.21-1.13A1.75 1.75 0 0 1 9.55 2h4.95ZM18.4 6.5H5.6l.85 11.93c.06.87.79 1.55 1.67 1.55h7.76c.88 0 1.6-.68 1.67-1.55L18.4 6.5Zm-3.65 2.75a.75.75 0 0 1 .74.85l-.5 6a.75.75 0 0 1-1.49-.12l.5-6a.75.75 0 0 1 .75-.73Zm-5.5 0a.75.75 0 0 1 .75.73l.5 6a.75.75 0 0 1-1.49.12l-.5-6a.75.75 0 0 1 .74-.85ZM9.55 3.5a.25.25 0 0 0-.24.19L9.13 5h5.74l-.18-1.31a.25.25 0 0 0-.19-.19l-.05-.01h-4.9Z"/></svg>
-          </span>
-          <h3 data-i18n="optc7_t">Очистка</h3>
-        </div>
-        <p data-i18n="optc7_d">Безопасное удаление кэшей, логов и системного мусора — без риска для данных.</p>
-        <div class="opt-tags">
-          <span class="opt-tag">WinSxS</span>
-          <span class="opt-tag">Edge</span>
-          <span class="opt-tag">OneDrive</span>
-          <span class="opt-tag">Prefetch</span>
-        </div>
-      </article>
-
-      <article class="glass opt-card reveal" data-spotlight>
-        <div class="opt-card-head">
-          <span class="opt-ico">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.75 2a2.25 2.25 0 0 1 2.25 2.25v.5h.75a2.25 2.25 0 0 1 2.25 2.25v.5h.75a2.25 2.25 0 0 1 2.25 2.25v11.5a1.5 1.5 0 0 1-1.5 1.5H5.5a1.5 1.5 0 0 1-1.5-1.5V9.75A2.25 2.25 0 0 1 6.25 7.5h.75v-.5A2.25 2.25 0 0 1 9.25 4.75h.75v-.5A2.25 2.25 0 0 1 12.25 2h-.5Zm-1 2.25v.5h3v-.5a.75.75 0 0 0-.75-.75h-1.5a.75.75 0 0 0-.75.75Zm-2.25 3v.5h3v-.5a.75.75 0 0 0-.75-.75h-1.5a.75.75 0 0 0-.75.75Zm-2.25 3v.5h3v-.5a.75.75 0 0 0-.75-.75h-1.5a.75.75 0 0 0-.75.75Zm8.25 4.25a3 3 0 1 0-6 0 3 3 0 0 0 6 0Zm-3 1.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z"/></svg>
-          </span>
-          <h3 data-i18n="optc8_t">Периферия</h3>
-        </div>
-        <p data-i18n="optc8_d">USB-питание, HID-устройства и параметры мыши и клавиатуры для отзывчивости.</p>
-        <div class="opt-tags">
-          <span class="opt-tag">USB Power</span>
-          <span class="opt-tag">HID</span>
-          <span class="opt-tag">Mouse Accel</span>
-          <span class="opt-tag">Polling</span>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section id="tools">
-  <div class="container">
-    <div class="sec-head reveal">
-      <span class="eyebrow" data-i18n="tools_eyebrow">Инструменты</span>
-      <h2 data-i18n-html="tools_title">Пять утилит,<br>которые всегда <span class="grad-primary-text">под рукой</span></h2>
-      <p data-i18n="tools_desc">Драйверы, обход DPI, активация, тихая установка и игровые конфиги — в одном окне.</p>
-    </div>
-
-    <div class="tools-grid">
-      <div class="glass tool reveal">
-        <div class="glow" style="background: radial-gradient(circle, rgba(96,165,250,0.55), transparent 65%)"></div>
-        <div class="t-icon" style="background: linear-gradient(135deg, rgba(96,165,250,0.22), rgba(96,165,250,0.08)); border: 1px solid rgba(96,165,250,0.35); color: #93C5FD;">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 6.5v11A2.5 2.5 0 0 1 19 20H5a2.5 2.5 0 0 1-2.5-2.5v-11A2.5 2.5 0 0 1 5 4h14a2.5 2.5 0 0 1 2.5 2.5ZM11.25 13v-3.5a.75.75 0 0 1 1.5 0V13h2.72a.75.75 0 0 1 .53 1.28l-3.47 3.47a.75.75 0 0 1-1.06 0l-3.47-3.47A.75.75 0 0 1 8.53 13h2.72Z"/></svg>
-        </div>
-        <h3>Drivers</h3>
-        <p data-i18n="tool1_d">Visual C++, DirectX и файл подкачки — проверка и настройка в один клик.</p>
-        <div class="t-foot"><span data-i18n="tool_open">Открыть модуль</span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.22 5.22a.75.75 0 0 1 1.06 0l5.25 5.25a.75.75 0 0 1 0 1.06l-5.25 5.25a.75.75 0 1 1-1.06-1.06l3.97-3.97H4.75a.75.75 0 0 1 0-1.5h12.44l-3.97-3.97a.75.75 0 0 1 0-1.06Z"/></svg></div>
-      </div>
-
-      <div class="glass tool reveal">
-        <div class="glow" style="background: radial-gradient(circle, rgba(167,139,250,0.55), transparent 65%)"></div>
-        <div class="t-icon" style="background: linear-gradient(135deg, rgba(167,139,250,0.22), rgba(167,139,250,0.08)); border: 1px solid rgba(167,139,250,0.35); color: #C4B5FD;">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 2a2.5 2.5 0 0 0-2.5 2.5v15A2.5 2.5 0 0 0 6.5 22h11a2.5 2.5 0 0 0 2.5-2.5v-9A2.5 2.5 0 0 0 17.5 8H14V4.5A2.5 2.5 0 0 0 11.5 2h-5Zm6 .09V8H6.59L12.5 2.09ZM6.5 3.5H11v5.25c0 .414.336.75.75.75h5.75v9.25c0 .552-.448 1-1 1h-11c-.552 0-1-.448-1-1v-15c0-.552.448-1 1-1Z"/></svg>
-        </div>
-        <h3>Programms</h3>
-        <p data-i18n="tool2_d">Каталог приложений: тихая установка с официальных сайтов, без мастеров.</p>
-        <div class="t-foot"><span data-i18n="tool_catalog">Открыть каталог</span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.22 5.22a.75.75 0 0 1 1.06 0l5.25 5.25a.75.75 0 0 1 0 1.06l-5.25 5.25a.75.75 0 1 1-1.06-1.06l3.97-3.97H4.75a.75.75 0 0 1 0-1.5h12.44l-3.97-3.97a.75.75 0 0 1 0-1.06Z"/></svg></div>
-      </div>
-
-      <div class="glass tool reveal">
-        <div class="glow" style="background: radial-gradient(circle, rgba(34,211,238,0.55), transparent 65%)"></div>
-        <div class="t-icon" style="background: linear-gradient(135deg, rgba(34,211,238,0.22), rgba(34,211,238,0.08)); border: 1px solid rgba(34,211,238,0.35); color: #67E8F9;">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2Zm0 1.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Zm0 2.5c.71 1.24 1.53 3.05 2.06 5H9.94C10.47 9.05 11.29 7.24 12 6Zm-3.6 2.5c-.33 1-.58 2.13-.72 3.5H4.06a8.53 8.53 0 0 1 3.05-5.63l-.71 1.31c-.09.26-.09.56 0 .82ZM12 18c-.71-1.24-1.53-3.05-2.06-5h4.12C13.53 14.95 12.71 16.76 12 18Zm3.6-2.5c.33-1 .58-2.13.72-3.5h3.62a8.53 8.53 0 0 1-3.05 5.63l.71-1.31c.09-.26.09-.56 0-.82Z"/></svg>
-        </div>
-        <h3>Zapret</h3>
-        <p data-i18n="tool3_d">Последняя сборка Zapret (flowseal) для обхода DPI-блокировок YouTube и Discord.</p>
-        <div class="t-foot"><span data-i18n="tool_version">Проверить версию</span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.22 5.22a.75.75 0 0 1 1.06 0l5.25 5.25a.75.75 0 0 1 0 1.06l-5.25 5.25a.75.75 0 1 1-1.06-1.06l3.97-3.97H4.75a.75.75 0 0 1 0-1.5h12.44l-3.97-3.97a.75.75 0 0 1 0-1.06Z"/></svg></div>
-      </div>
-
-      <div class="glass tool reveal">
-        <div class="glow" style="background: radial-gradient(circle, rgba(74,222,128,0.55), transparent 65%)"></div>
-        <div class="t-icon" style="background: linear-gradient(135deg, rgba(74,222,128,0.22), rgba(74,222,128,0.08)); border: 1px solid rgba(74,222,128,0.35); color: #86EFAC;">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a4.5 4.5 0 0 1 4.5 4.5V9h.75A3.75 3.75 0 0 1 21 12.75v6.5A3.75 3.75 0 0 1 17.25 23H6.75A3.75 3.75 0 0 1 3 19.25v-6.5A3.75 3.75 0 0 1 6.75 9h.75V6.5A4.5 4.5 0 0 1 12 2Zm0 1.5A3 3 0 0 0 9 6.5V9h6V6.5A3 3 0 0 0 12 3.5Zm.75 10a1.25 1.25 0 0 0-.75 2.25v1.75a.75.75 0 0 0 1.5 0v-1.75a1.25 1.25 0 0 0-.75-2.25Z"/></svg>
-        </div>
-        <h3>ActivationCheck</h3>
-        <p data-i18n="tool4_d">Локальная проверка активации Windows и Office — без отправки данных наружу.</p>
-        <div class="t-foot"><span data-i18n="tool_status">Проверить статус</span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.22 5.22a.75.75 0 0 1 1.06 0l5.25 5.25a.75.75 0 0 1 0 1.06l-5.25 5.25a.75.75 0 1 1-1.06-1.06l3.97-3.97H4.75a.75.75 0 0 1 0-1.5h12.44l-3.97-3.97a.75.75 0 0 1 0-1.06Z"/></svg></div>
-      </div>
-
-      <div class="glass tool reveal">
-        <div class="glow" style="background: radial-gradient(circle, rgba(244,114,182,0.55), transparent 65%)"></div>
-        <div class="t-icon" style="background: linear-gradient(135deg, rgba(244,114,182,0.22), rgba(244,114,182,0.08)); border: 1px solid rgba(244,114,182,0.35); color: #F9A8D4;">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 6a5 5 0 0 1 4.95 4.28l.04.22.6 2.35c.3 1.18.44 2.4.42 3.6a3.75 3.75 0 0 1-6.9 2.28l-.28-.43-.32-.5a1.66 1.66 0 0 0-2.81 0l-.32.5-.28.43a3.75 3.75 0 0 1-6.9-2.28c-.02-1.2.12-2.42.42-3.6l.6-2.35A5 5 0 0 1 9 6h6ZM8 10a.75.75 0 0 0-.75.75v.5h-.5a.75.75 0 0 0 0 1.5h.5v.5a.75.75 0 0 0 1.5 0v-.5h.5a.75.75 0 0 0 0-1.5h-.5v-.5A.75.75 0 0 0 8 10Zm7 .5a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm2.5-2a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z"/></svg>
-        </div>
-        <h3>GameConfigs</h3>
-        <p data-i18n="tool5_d">Пресеты конфигов для популярных игр и справочник флагов запуска Steam.</p>
-        <div class="t-foot"><span data-i18n="tool_game">Выбрать игру</span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.22 5.22a.75.75 0 0 1 1.06 0l5.25 5.25a.75.75 0 0 1 0 1.06l-5.25 5.25a.75.75 0 1 1-1.06-1.06l3.97-3.97H4.75a.75.75 0 0 1 0-1.5h12.44l-3.97-3.97a.75.75 0 0 1 0-1.06Z"/></svg></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="pro">
-  <div class="container">
-    <div class="pro-wrap reveal">
-      <div class="pro-inner">
-        <div>
-          <span class="eyebrow" style="background: rgba(124,58,237,0.18); border-color: rgba(167,139,250,0.4);">VOID PRO</span>
-          <h2 data-i18n-html="pro_title">Полный доступ<br>к <span class="grad-primary-text">каждому модулю</span></h2>
-          <p class="lead" data-i18n="pro_desc">Снимает ограничения с продвинутых разделов. Ключ привязан к устройству по HWID — без e-mail и аккаунтов.</p>
-
-          <div class="pro-features">
-            <div class="pro-feat">
-              <span class="check"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg></span>
-              <span data-i18n-html="pro_f1"><b>Все твики реестра и служб</b> — включая скрытые модули</span>
-            </div>
-            <div class="pro-feat">
-              <span class="check"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg></span>
-              <span data-i18n-html="pro_f2"><b>Управление прерываниями</b> — MSI, IRQ affinity, авто-план</span>
-            </div>
-            <div class="pro-feat">
-              <span class="check"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg></span>
-              <span data-i18n-html="pro_f3"><b>GPU-разделы</b> — NVIDIA и AMD, включая питание драйвера</span>
-            </div>
-            <div class="pro-feat">
-              <span class="check"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 6.28a.75.75 0 0 1 0 1.06l-11.5 11.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 0 1 1.06-1.06l4.97 4.97L20.72 6.28a.75.75 0 0 1 1.06 0Z"/></svg></span>
-              <span data-i18n-html="pro_f4"><b>Ранний доступ</b> и приоритетные обновления</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="pro-cta">
-          <a href="#pricing" class="btn btn-primary">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M2.29 3.31a.75.75 0 0 1 .82-.18l18.5 7.5a.75.75 0 0 1 0 1.4l-18.5 7.5a.75.75 0 0 1-1.01-.9l1.71-6.83L14 11.28a.75.75 0 0 0 0-1.5L3.81 9.25 2.1 4.21a.75.75 0 0 1 .19-.9Z"/></svg>
-            <span data-i18n="pro_cta1">Активировать PRO</span>
-          </a>
-          <a href="#download" class="btn btn-ghost" data-i18n="pro_cta2">Сначала скачать приложение</a>
-          <p class="pro-note" data-i18n-html="pro_note">Ключ привязывается к устройству автоматически. Оплата картой или через СБП — ключ появится на этой странице сразу после платежа.</p>
-        </div>
       </div>
     </div>
   </div>
@@ -1464,7 +976,6 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
         <h5 data-i18n="foot_product">Продукт</h5>
         <a href="#home" data-i18n="nav_home">Главная</a>
         <a href="#features" data-i18n="nav_features">Возможности</a>
-        <a href="#optimization" data-i18n="nav_optimization">Оптимизация</a>
         <a href="#pricing" data-i18n="nav_pricing">Тарифы</a>
       </div>
       <div class="foot-col">
@@ -1758,8 +1269,8 @@ void main(){
 const I18N = {
   ru: {
     brand_sub: 'Оптимизатор Windows',
-    nav_home: 'Главная', nav_features: 'Возможности', nav_optimization: 'Оптимизация',
-    nav_compare: 'Сравнение', nav_tools: 'Инструменты', nav_pricing: 'Тарифы',
+    nav_home: 'Главная', nav_features: 'Возможности',
+    nav_pricing: 'Тарифы',
     nav_changelog: 'Changelog', nav_faq: 'FAQ', nav_download: 'Скачать',
     mm_tg: 'Поддержка в Telegram', mm_version: 'Версия',
     hero_title: '<span class="line"><span class="word" style="--w:0"><span>Система</span></span> <span class="word" style="--w:1"><span>в</span></span> <span class="word" style="--w:2"><span>тонусе.</span></span></span><span class="line"><span class="word" style="--w:3"><span class="grad-primary-text">Мощность</span></span></span><span class="line"><span class="word" style="--w:4"><span>под</span></span> <span class="word" style="--w:5"><span>контролем.</span></span></span>',
@@ -1781,52 +1292,6 @@ const I18N = {
     feat3_d: 'MSI, IRQ affinity и распределение по ядрам. Авто-план для AMD Dual-CCD и Double-CCX, учитывающий топологию чиплетов и CPPC.',
     feat4_t: 'Менеджер автозагрузки',
     feat4_d: 'Реестр, папка Startup, задачи планировщика и службы — с настоящими иконками приложений, как в Проводнике. Отключение в один клик.',
-    cmp_eyebrow: 'Сравнение',
-    cmp_title: 'Обычная Windows <span class="grad-primary-text">против</span> VOID TWEAKS',
-    cmp_desc: 'Один и тот же компьютер — но два совершенно разных подхода к производительности.',
-    cmp_bad_badge: 'Stock Windows', cmp_bad_title: 'Как есть',
-    cmp_bad_1: '100+ фоновых процессов съедают ресурсы',
-    cmp_bad_2: 'Телеметрия и рекламные ID работают фоном',
-    cmp_bad_3: 'Неоптимальные таймеры и схемы питания',
-    cmp_bad_4: 'Input lag в играх из-за прерываний',
-    cmp_bad_5: 'Стандартные настройки для всех конфигураций',
-    cmp_bad_6: 'Ручная чистка через десятки утилит',
-    cmp_good_badge: 'VOID TWEAKS', cmp_good_title: 'Как надо',
-    cmp_good_1: '40–60 активных процессов в системе',
-    cmp_good_2: 'Телеметрия отключена полностью',
-    cmp_good_3: 'Тонкая настройка таймеров и питания',
-    cmp_good_4: 'MSI + IRQ affinity — минимальный input lag',
-    cmp_good_5: 'Твики под конкретное железо',
-    cmp_good_6: 'Всё в одном окне, откат в один клик',
-    opt_eyebrow: 'Оптимизация',
-    opt_title: 'Восемь категорий —<br>от <span class="grad-primary-text">системы</span> до железа',
-    opt_desc: 'Каждый твик применяется отдельно и проверяется автоматически.',
-    optc1_t: 'Общее', optc1_d: 'Базовые твики системы, приложений и браузеров — работают на любой конфигурации.',
-    optc2_t: 'Железо', optc2_d: 'GPU, CPU, память, периферия и хранилище — тонкая настройка под конкретную конфигурацию.',
-    optc3_t: 'Электропитание', optc3_d: 'Схемы питания, готовые пресеты и тонкая настройка процессора на каждый сценарий.',
-    optc4_t: 'Прерывания', optc4_d: 'MSI, IRQ affinity и распределение по ядрам. Авто-план для AMD Dual-CCD и Double-CCX.',
-    optc5_t: 'Приватность', optc5_d: 'Телеметрия, рекламные ID и системные модули слежки — под надёжным замком.',
-    optc6_t: 'Сеть', optc6_d: 'TCP/IP, DNS, QoS и параметры сетевых адаптеров для минимальной задержки.',
-    optc7_t: 'Очистка', optc7_d: 'Безопасное удаление кэшей, логов и системного мусора — без риска для данных.',
-    optc8_t: 'Периферия', optc8_d: 'USB-питание, HID-устройства и параметры мыши и клавиатуры для отзывчивости.',
-    tools_eyebrow: 'Инструменты',
-    tools_title: 'Пять утилит,<br>которые всегда <span class="grad-primary-text">под рукой</span>',
-    tools_desc: 'Драйверы, обход DPI, активация, тихая установка и игровые конфиги — в одном окне.',
-    tool1_d: 'Visual C++, DirectX и файл подкачки — проверка и настройка в один клик.',
-    tool2_d: 'Каталог приложений: тихая установка с официальных сайтов, без мастеров.',
-    tool3_d: 'Последняя сборка Zapret (flowseal) для обхода DPI-блокировок YouTube и Discord.',
-    tool4_d: 'Локальная проверка активации Windows и Office — без отправки данных наружу.',
-    tool5_d: 'Пресеты конфигов для популярных игр и справочник флагов запуска Steam.',
-    tool_open: 'Открыть модуль', tool_catalog: 'Открыть каталог', tool_version: 'Проверить версию',
-    tool_status: 'Проверить статус', tool_game: 'Выбрать игру',
-    pro_title: 'Полный доступ<br>к <span class="grad-primary-text">каждому модулю</span>',
-    pro_desc: 'Снимает ограничения с продвинутых разделов. Ключ привязан к устройству по HWID — без e-mail и аккаунтов.',
-    pro_f1: '<b>Все твики реестра и служб</b> — включая скрытые модули',
-    pro_f2: '<b>Управление прерываниями</b> — MSI, IRQ affinity, авто-план',
-    pro_f3: '<b>GPU-разделы</b> — NVIDIA и AMD, включая питание драйвера',
-    pro_f4: '<b>Ранний доступ</b> и приоритетные обновления',
-    pro_cta1: 'Активировать PRO', pro_cta2: 'Сначала скачать приложение',
-    pro_note: 'Ключ привязывается к устройству автоматически. Оплата картой или через СБП — ключ появится на этой странице сразу после платежа.',
     price_eyebrow: 'Тарифы',
     price_title: 'Выбери <span class="grad-primary-text">свой план</span>',
     price_desc: 'Один платёж — без подписок. Ключ привязывается к устройству по HWID и остаётся навсегда.',
@@ -1914,8 +1379,8 @@ const I18N = {
   },
   en: {
     brand_sub: 'Windows Optimizer',
-    nav_home: 'Home', nav_features: 'Features', nav_optimization: 'Optimization',
-    nav_compare: 'Compare', nav_tools: 'Tools', nav_pricing: 'Pricing',
+    nav_home: 'Home', nav_features: 'Features',
+    nav_pricing: 'Pricing',
     nav_changelog: 'Changelog', nav_faq: 'FAQ', nav_download: 'Download',
     mm_tg: 'Support on Telegram', mm_version: 'Version',
     hero_title: '<span class="line"><span class="word" style="--w:0"><span>System</span></span> <span class="word" style="--w:1"><span>in</span></span> <span class="word" style="--w:2"><span>tune.</span></span></span><span class="line"><span class="word" style="--w:3"><span class="grad-primary-text">Power</span></span></span><span class="line"><span class="word" style="--w:4"><span>under</span></span> <span class="word" style="--w:5"><span>control.</span></span></span>',
@@ -1937,52 +1402,6 @@ const I18N = {
     feat3_d: 'MSI, IRQ affinity and per-core distribution. Auto-plan for AMD Dual-CCD and Double-CCX, aware of chiplet topology and CPPC.',
     feat4_t: 'Startup manager',
     feat4_d: 'Registry, Startup folder, scheduled tasks and services — with real app icons, just like in Explorer. One-click disable.',
-    cmp_eyebrow: 'Comparison',
-    cmp_title: 'Stock Windows <span class="grad-primary-text">vs</span> VOID TWEAKS',
-    cmp_desc: 'Same machine — two completely different approaches to performance.',
-    cmp_bad_badge: 'Stock Windows', cmp_bad_title: 'As is',
-    cmp_bad_1: '100+ background processes eat resources',
-    cmp_bad_2: 'Telemetry and ad IDs run in background',
-    cmp_bad_3: 'Sub-optimal timers and power plans',
-    cmp_bad_4: 'Input lag in games due to interrupts',
-    cmp_bad_5: 'Default settings for all configurations',
-    cmp_bad_6: 'Manual cleanup through dozens of utilities',
-    cmp_good_badge: 'VOID TWEAKS', cmp_good_title: 'As it should be',
-    cmp_good_1: '40–60 active processes in the system',
-    cmp_good_2: 'Telemetry fully disabled',
-    cmp_good_3: 'Fine-tuned timers and power',
-    cmp_good_4: 'MSI + IRQ affinity — minimal input lag',
-    cmp_good_5: 'Tweaks tailored to your hardware',
-    cmp_good_6: 'All in one window, one-click rollback',
-    opt_eyebrow: 'Optimization',
-    opt_title: 'Eight categories —<br>from <span class="grad-primary-text">system</span> to hardware',
-    opt_desc: 'Every tweak is applied separately and verified automatically.',
-    optc1_t: 'General', optc1_d: 'Basic system, app and browser tweaks — work on any configuration.',
-    optc2_t: 'Hardware', optc2_d: 'GPU, CPU, memory, peripherals and storage — fine-tuning for your specific setup.',
-    optc3_t: 'Power', optc3_d: 'Power plans, ready presets and fine CPU tuning for every scenario.',
-    optc4_t: 'Interrupts', optc4_d: 'MSI, IRQ affinity and per-core distribution. Auto-plan for AMD Dual-CCD and Double-CCX.',
-    optc5_t: 'Privacy', optc5_d: 'Telemetry, ad IDs and system tracking modules — securely locked down.',
-    optc6_t: 'Network', optc6_d: 'TCP/IP, DNS, QoS and NIC parameters for minimum latency.',
-    optc7_t: 'Cleanup', optc7_d: 'Safe removal of caches, logs and system junk — no risk to your data.',
-    optc8_t: 'Peripherals', optc8_d: 'USB power, HID devices, mouse and keyboard parameters for responsiveness.',
-    tools_eyebrow: 'Tools',
-    tools_title: 'Five utilities,<br>always <span class="grad-primary-text">at hand</span>',
-    tools_desc: 'Drivers, DPI bypass, activation check, silent install and game configs — in one window.',
-    tool1_d: 'Visual C++, DirectX and page file — check and configure in one click.',
-    tool2_d: 'App catalog: silent install from official sites, no wizards.',
-    tool3_d: 'Latest Zapret build (flowseal) to bypass DPI blocks on YouTube and Discord.',
-    tool4_d: 'Local check of Windows and Office activation — nothing sent outside.',
-    tool5_d: 'Config presets for popular games and a Steam launch flags reference.',
-    tool_open: 'Open module', tool_catalog: 'Open catalog', tool_version: 'Check version',
-    tool_status: 'Check status', tool_game: 'Pick a game',
-    pro_title: 'Full access<br>to <span class="grad-primary-text">every module</span>',
-    pro_desc: 'Removes limits from advanced sections. Key is tied to the device via HWID — no email, no accounts.',
-    pro_f1: '<b>All registry and service tweaks</b> — including hidden modules',
-    pro_f2: '<b>Interrupt control</b> — MSI, IRQ affinity, auto-plan',
-    pro_f3: '<b>GPU sections</b> — NVIDIA and AMD, including driver power',
-    pro_f4: '<b>Early access</b> and priority updates',
-    pro_cta1: 'Activate PRO', pro_cta2: 'Download the app first',
-    pro_note: 'The key binds to your device automatically. Pay by card or SBP — your key appears on this page right after payment.',
     price_eyebrow: 'Pricing',
     price_title: 'Pick <span class="grad-primary-text">your plan</span>',
     price_desc: 'One-time payment — no subscriptions. The key binds to your device via HWID and stays forever.',
