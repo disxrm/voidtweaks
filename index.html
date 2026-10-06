@@ -249,11 +249,6 @@ button { font: inherit; }
 }
 @keyframes navLine { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .nav-cta { display: flex; align-items: center; gap: 10px; }
-.nav-ver {
-  padding: 5px 10px; border-radius: 8px; background: rgba(255,255,255,0.05);
-  border: 1px solid var(--border); font-size: 11.5px; font-weight: 600; color: var(--text-2);
-}
-.nav-ver b { background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 700; }
 .nav .btn { height: 38px; padding: 0 18px; font-size: 13px; border-radius: 10px; }
 .lang-toggle {
   display: inline-flex; align-items: center; gap: 6px; height: 38px;
@@ -273,7 +268,7 @@ button { font: inherit; }
 .burger svg { width: 18px; height: 18px; }
 .burger:hover { border-color: var(--border-hover); transform: scale(1.05); }
 @media (max-width: 1080px) { .nav-links { display: none; } }
-@media (max-width: 900px) { .nav-ver { display: none; } .burger { display: inline-flex; } }
+@media (max-width: 900px) { .burger { display: inline-flex; } }
 @media (max-width: 480px) { .lang-toggle { padding: 0 9px; } .lang-toggle .lang-current { display: none; } }
 
 /* Mobile menu */
@@ -801,7 +796,6 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
         </svg>
         <span class="lang-current" id="langCurrent">RU</span>
       </button>
-      <span class="nav-ver">v<b>1.0.0</b></span>
       <a href="#download" class="btn btn-primary">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M12.75 3.25a.75.75 0 0 0-1.5 0v10.94l-4.22-4.22a.75.75 0 0 0-1.06 1.06l5.5 5.5a.75.75 0 0 0 1.06 0l5.5-5.5a.75.75 0 0 0-1.06-1.06l-4.22 4.22V3.25Z"/>
@@ -846,7 +840,7 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
   <div class="mm-foot">
     <div class="mm-meta">
       <span data-i18n="mm_version">Версия</span>
-      <b>1.0.0 · x64</b>
+      <b data-ver-x64>1.0.1 · x64</b>
     </div>
     <a href="#download" class="btn btn-primary" id="mmDownload">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1175,7 +1169,7 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow" data-i18n="dl_eyebrow">Скачать</span>
-      <h2 data-i18n-html="dl_title">Установщик VOID TWEAKS<br><span class="grad-primary-text">1.0.0</span></h2>
+      <h2 data-i18n-html="dl_title">Установщик VOID TWEAKS<br><span class="grad-primary-text">1.0.1</span></h2>
       <p data-i18n="dl_desc">Установщик сам проверит .NET 10 Runtime, поставит драйвер PawnIO и создаст ярлыки.</p>
     </div>
 
@@ -1197,9 +1191,9 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
         </div>
 
         <div class="dl-meta">
-          <div class="dl-meta-cell"><div class="lbl" data-i18n="dl_m1">Версия</div><div class="val">1.0.0</div></div>
+          <div class="dl-meta-cell"><div class="lbl" data-i18n="dl_m1">Версия</div><div class="val" data-ver>1.0.1</div></div>
           <div class="dl-meta-cell"><div class="lbl" data-i18n="dl_m2">Платформа</div><div class="val">Windows x64</div></div>
-          <div class="dl-meta-cell"><div class="lbl" data-i18n="dl_m3">Размер</div><div class="val">174 МБ</div></div>
+          <div class="dl-meta-cell"><div class="lbl" data-i18n="dl_m3">Размер</div><div class="val" data-asset-size>186 МБ</div></div>
           <div class="dl-meta-cell"><div class="lbl" data-i18n="dl_m4">Формат</div><div class="val">Self-contained</div></div>
         </div>
 
@@ -1252,7 +1246,7 @@ footer { padding: 60px 0 40px; border-top: 1px solid var(--border); margin-top: 
       </div>
     </div>
     <div class="foot-bottom">
-      <div>VoidTweaks © 2026 · <span class="accent" data-i18n="foot_version">Версия 1.0.0</span></div>
+      <div>VoidTweaks © 2026 · <span class="accent" data-i18n="foot_version">Версия 1.0.1</span></div>
       <div>Windows 10 / 11 x64 · .NET 10 · PawnIO</div>
     </div>
   </div>
@@ -1584,6 +1578,7 @@ const I18N = {
     log_desc: 'История версий и ключевые изменения прямо из GitHub.',
     log_loading: 'Загружаем релизы…',
     log_empty: 'Релизы пока не опубликованы или GitHub недоступен.',
+    log_open_gh: 'Открыть релизы на GitHub',
     log_latest: 'Актуальная',
     faq_eyebrow: 'FAQ',
     faq_title: 'Частые <span class="grad-primary-text">вопросы</span>',
@@ -1599,7 +1594,7 @@ const I18N = {
     faq_q5: 'Работает на ноутбуках?',
     faq_a5: 'Да. Есть отдельные твики для ноутбуков, которые учитывают тепловые лимиты, питание от батареи и агрессивные схемы энергосбережения. Приложение само определяет тип устройства.',
     dl_eyebrow: 'Скачать',
-    dl_title: 'Установщик VOID TWEAKS<br><span class="grad-primary-text">1.0.0</span>',
+    dl_title: 'Установщик VOID TWEAKS<br><span class="grad-primary-text">1.0.1</span>',
     dl_desc: 'Установщик сам проверит .NET 10 Runtime, поставит драйвер PawnIO и создаст ярлыки.',
     dl_badge: 'Стабильный релиз · 2026',
     dl_info: 'Self-contained: всё нужное уже внутри. Проверяет версию Windows, права администратора и .NET 10 Runtime перед установкой.',
@@ -1613,7 +1608,7 @@ const I18N = {
     dl_r4: '<b>~250 МБ свободного места</b> на системном диске',
     dl_r5: 'Встроенная точка восстановления перед первыми правками',
     foot_tag: 'Оптимизатор Windows с живым мониторингом железа, твиками системы и встроенными утилитами для повседневных задач.',
-    foot_product: 'Продукт', foot_support: 'Поддержка', foot_tg: 'Поддержка в Telegram', foot_version: 'Версия 1.0.0'
+    foot_product: 'Продукт', foot_support: 'Поддержка', foot_tg: 'Поддержка в Telegram', foot_version: 'Версия 1.0.1'
   },
   en: {
     brand_sub: 'Windows Optimizer',
@@ -1694,6 +1689,7 @@ const I18N = {
     log_desc: 'Version history and key changes straight from GitHub.',
     log_loading: 'Loading releases…',
     log_empty: 'No releases published yet or GitHub is unavailable.',
+    log_open_gh: 'Open releases on GitHub',
     log_latest: 'Latest',
     faq_eyebrow: 'FAQ',
     faq_title: 'Frequently asked <span class="grad-primary-text">questions</span>',
@@ -1709,7 +1705,7 @@ const I18N = {
     faq_q5: 'Does it work on laptops?',
     faq_a5: 'Yes. There are dedicated laptop tweaks that respect thermal limits, battery power and aggressive power-saving schemes. The app detects the device type automatically.',
     dl_eyebrow: 'Download',
-    dl_title: 'VOID TWEAKS Installer<br><span class="grad-primary-text">1.0.0</span>',
+    dl_title: 'VOID TWEAKS Installer<br><span class="grad-primary-text">1.0.1</span>',
     dl_desc: 'The installer checks .NET 10 Runtime, installs the PawnIO driver and creates shortcuts.',
     dl_badge: 'Stable release · 2026',
     dl_info: 'Self-contained: everything is inside. Verifies Windows version, administrator rights and .NET 10 Runtime before install.',
@@ -1723,7 +1719,7 @@ const I18N = {
     dl_r4: '<b>~250 MB free space</b> on the system drive',
     dl_r5: 'Built-in restore point before the first changes',
     foot_tag: 'Windows optimizer with live hardware monitoring, system tweaks and built-in utilities for everyday tasks.',
-    foot_product: 'Product', foot_support: 'Support', foot_tg: 'Telegram support', foot_version: 'Version 1.0.0'
+    foot_product: 'Product', foot_support: 'Support', foot_tg: 'Telegram support', foot_version: 'Version 1.0.1'
   }
 };
 
@@ -2214,109 +2210,168 @@ function applyLang(lang) {
     document.head.appendChild(style);
   }
 })();
+</script>
 
+<script>
 /* ============================================================
-   DOWNLOAD COUNTER
-============================================================ */
-(() => {
-  const el = document.querySelector('[data-download-count]');
-  if (!el) return;
-  const CACHE_KEY = 'void-dl-count-v1';
-  const CACHE_TTL = 60 * 60 * 1000;
-  function format(n, lang) {
-    try { return n.toLocaleString(lang === 'en' ? 'en-US' : 'ru-RU'); }
-    catch { return String(n); }
-  }
-  function render(n) { el.textContent = format(n, document.documentElement.lang); }
-  function readCache() {
-    try { return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); }
-    catch { return null; }
-  }
-  function writeCache(count) {
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), count })); }
-    catch {}
-  }
-  const cached = readCache();
-  if (cached && Date.now() - cached.ts < CACHE_TTL && cached.count > 0) {
-    render(cached.count);
-    return;
-  }
-  if (cached && cached.count > 0) render(cached.count);
-  else el.textContent = '—';
-
-  const ctrl = new AbortController();
-  const to = setTimeout(() => ctrl.abort(), 6000);
-  fetch('https://api.github.com/repos/disxrm/voidtweaks/releases', {
-    headers: { 'Accept': 'application/vnd.github+json' },
-    signal: ctrl.signal
-  })
-    .then(r => r.ok ? r.json() : Promise.reject(r.status))
-    .then(releases => {
-      const total = (Array.isArray(releases) ? releases : []).reduce(
-        (sum, rel) => sum + (rel.assets || []).reduce((s, a) => s + (a.download_count || 0), 0), 0
-      );
-      render(total);
-      writeCache(total);
-    })
-    .catch(() => { if (!(cached && cached.count > 0)) el.textContent = '—'; })
-    .finally(() => clearTimeout(to));
-})();
-
-/* ============================================================
-   CHANGELOG FROM GITHUB
+   RELEASES FROM GITHUB
+   One shared request feeds: version, installer size, download
+   counter and changelog. Lives in its own <script> so an error
+   elsewhere on the page can never leave the spinner stuck.
 ============================================================ */
 (() => {
   const REPO = 'disxrm/voidtweaks';
-  const API = `https://api.github.com/repos/${REPO}/releases`;
-  const CACHE_KEY = 'void-changelog-v1';
-  const CACHE_TTL = 60 * 60 * 1000;
+  const API = 'https://api.github.com/repos/' + REPO + '/releases?per_page=100';
+  const RELEASES_URL = 'https://github.com/' + REPO + '/releases';
+  const CACHE_KEY = 'void-releases-v2';
+  const FRESH_TTL = 10 * 60 * 1000;   // cache is considered fresh for 10 min
+  const TIMEOUT = 8000;
   const MAX_ENTRIES = 5;
 
-  const list = document.getElementById('logList');
-  if (!list) return;
-  const lang = () => document.documentElement.lang || 'ru';
+  // old cache keys held outdated data (e.g. only v1.0.0) — drop them
+  ['void-changelog-v1', 'void-dl-count-v1'].forEach(k => { try { localStorage.removeItem(k); } catch {} });
 
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[c]));
+  const docLang = () => document.documentElement.lang === 'en' ? 'en' : 'ru';
+  const dictOf = () => (typeof I18N !== 'undefined' && (I18N[docLang()] || I18N.ru)) || {};
+  const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+  const cleanVer = tag => String(tag || '').replace(/^v/i, '').trim();
+
+  const slim = r => ({
+    tag_name: r.tag_name, name: r.name,
+    draft: !!r.draft, prerelease: !!r.prerelease,
+    published_at: r.published_at,
+    body: String(r.body || '').slice(0, 4000),
+    assets: (r.assets || []).map(a => ({ name: a.name, size: a.size, download_count: a.download_count || 0 }))
+  });
+
+  function readCache() {
+    try {
+      const c = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      return c && Array.isArray(c.data) ? c : null;
+    } catch { return null; }
   }
+  function writeCache(data) {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch {}
+  }
+
+  // Plain GET without custom headers => no CORS preflight request.
+  // Always resolves: fresh data, stale cache, or null.
+  function load(cached) {
+    if (cached && Date.now() - cached.ts < FRESH_TTL) return Promise.resolve(cached.data);
+    return new Promise(resolve => {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), TIMEOUT);
+      fetch(API, { signal: ctrl.signal })
+        .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+        .then(list => {
+          if (!Array.isArray(list)) throw new Error('bad data');
+          const data = list.map(slim);
+          writeCache(data);
+          resolve(data);
+        })
+        .catch(err => {
+          console.warn('GitHub releases fetch failed:', err);
+          resolve(cached ? cached.data : null);
+        })
+        .finally(() => clearTimeout(timer));
+    });
+  }
+
+  let releases = null;       // slim releases array
+  let state = 'loading';     // loading | ready | error
+
+  const published = () => (releases || []).filter(r => !r.draft);
+  const latestStable = () => published().find(r => !r.prerelease) || published()[0];
+
+  /* ---------- version + installer size ---------- */
+  function renderVersion() {
+    const rel = latestStable();
+    const v = rel && cleanVer(rel.tag_name);
+    if (!v) return;
+    document.querySelectorAll('[data-ver]').forEach(el => { el.textContent = v; });
+    document.querySelectorAll('[data-ver-x64]').forEach(el => { el.textContent = v + ' · x64'; });
+
+    // keep translations in sync so switching language doesn't bring the old version back
+    if (typeof I18N !== 'undefined') {
+      Object.values(I18N).forEach(d => {
+        if (d.dl_title) d.dl_title = d.dl_title.replace(/(<span class="grad-primary-text">)[^<]*(<\/span>)/, (m, a, b) => a + escapeHtml(v) + b);
+        if (d.foot_version) d.foot_version = d.foot_version.replace(/[\w.\-]+$/, () => v);
+      });
+    }
+    const t = document.querySelector('[data-i18n-html="dl_title"] .grad-primary-text');
+    if (t) t.textContent = v;
+    const f = document.querySelector('[data-i18n="foot_version"]');
+    if (f && dictOf().foot_version) f.textContent = dictOf().foot_version;
+  }
+
+  function renderSize() {
+    const el = document.querySelector('[data-asset-size]');
+    const rel = latestStable();
+    if (!el || !rel) return;
+    const assets = rel.assets || [];
+    const asset = assets.find(a => /installer\.exe$/i.test(a.name)) || assets.find(a => /\.exe$/i.test(a.name));
+    if (!asset || !asset.size) return;
+    el.textContent = Math.round(asset.size / 1048576) + (docLang() === 'en' ? ' MB' : ' МБ');
+  }
+
+  /* ---------- download counter ---------- */
+  function renderCounter() {
+    const el = document.querySelector('[data-download-count]');
+    if (!el) return;
+    if (!releases) { el.textContent = '—'; return; }
+    const total = releases.reduce((s, r) => s + (r.assets || []).reduce((x, a) => x + (a.download_count || 0), 0), 0);
+    try { el.textContent = total.toLocaleString(docLang() === 'en' ? 'en-US' : 'ru-RU'); }
+    catch { el.textContent = String(total); }
+  }
+
+  /* ---------- changelog ---------- */
   function formatDate(iso, l) {
     if (!iso) return '';
     try {
-      const d = new Date(iso);
-      return d.toLocaleDateString(l === 'en' ? 'en-US' : 'ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      return new Date(iso).toLocaleDateString(l === 'en' ? 'en-US' : 'ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
     } catch { return ''; }
   }
+  function cleanLine(s) {
+    return s
+      .replace(/^[-*+]\s+/, '').replace(/^\d+\.\s+/, '')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/(\*\*|__|`)/g, '')
+      .trim();
+  }
 
-  function renderReleases(releases) {
-    const l = lang();
-    const dict = I18N[l] || I18N.ru;
-    const published = (releases || []).filter(r => !r.draft).slice(0, MAX_ENTRIES);
+  function renderLog() {
+    const list = document.getElementById('logList');
+    if (!list) return;
+    const l = docLang();
+    const dict = dictOf();
 
-    if (!published.length) {
-      list.innerHTML = `<div class="log-empty">${escapeHtml(dict.log_empty || 'Релизы пока не опубликованы.')}</div>`;
+    if (state === 'loading') {
+      list.innerHTML = `<div class="log-loading"><span class="spinner"></span><span>${escapeHtml(dict.log_loading || 'Загружаем релизы…')}</span></div>`;
       return;
     }
 
-    const html = published.map((rel, idx) => {
-      const tag = escapeHtml(rel.tag_name || rel.name || 'release');
+    const items = published().slice(0, MAX_ENTRIES);
+    if (state === 'error' || !items.length) {
+      list.innerHTML = `<div class="log-empty">${escapeHtml(dict.log_empty || 'Релизы пока не опубликованы или GitHub недоступен.')}<br><a href="${RELEASES_URL}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px;">${escapeHtml(dict.log_open_gh || 'Открыть релизы на GitHub')}</a></div>`;
+      return;
+    }
+
+    list.innerHTML = items.map((rel, idx) => {
+      const tag = escapeHtml('v' + cleanVer(rel.tag_name || rel.name || 'release'));
       const date = formatDate(rel.published_at, l);
       const isLatest = idx === 0;
       const prerelease = !!rel.prerelease;
 
-      let bodyLines = [];
-      if (rel.body) {
-        bodyLines = rel.body
-          .split(/\r?\n/)
-          .map(s => s.trim())
-          .filter(s => s && !/^#+\s*/.test(s) && !/^[-*_]{3,}$/.test(s))
-          .map(s => s.replace(/^[-*+]\s+/, '').replace(/^\d+\.\s+/, ''))
-          .slice(0, 8);
-      }
+      const lines = String(rel.body || '')
+        .split(/\r?\n/).map(s => s.trim())
+        .filter(s => s && !/^#+\s*/.test(s) && !/^[-*_]{3,}$/.test(s))
+        .map(cleanLine).filter(Boolean)
+        .slice(0, 8);
 
-      const bullets = bodyLines.length
-        ? bodyLines.map(b => `<li>${escapeHtml(b)}</li>`).join('')
+      const bullets = lines.length
+        ? lines.map(b => `<li>${escapeHtml(b)}</li>`).join('')
         : `<li>${escapeHtml(dict.log_latest || 'Обновление')}: ${tag}</li>`;
 
       const tagClass = prerelease ? 'beta' : (isLatest ? 'latest' : '');
@@ -2335,58 +2390,43 @@ function applyLang(lang) {
         </div>`;
     }).join('');
 
-    list.innerHTML = html;
-
     const reveals = list.querySelectorAll('.reveal');
-    const io2 = new IntersectionObserver((entries) => {
-      entries.forEach(en => {
-        if (en.isIntersecting) {
-          en.target.classList.add('in');
-          io2.unobserve(en.target);
-        }
-      });
-    }, { threshold: 0.01 });
-    reveals.forEach(el => io2.observe(el));
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+      }, { threshold: 0.01 });
+      reveals.forEach(el => io.observe(el));
+    } else {
+      reveals.forEach(el => el.classList.add('in'));
+    }
   }
 
-  function showLoading() {
-    const dict = I18N[lang()] || I18N.ru;
-    list.innerHTML = `<div class="log-loading"><span class="spinner"></span><span>${escapeHtml(dict.log_loading || 'Загружаем релизы…')}</span></div>`;
-  }
-  function showEmpty() {
-    const dict = I18N[lang()] || I18N.ru;
-    list.innerHTML = `<div class="log-empty">${escapeHtml(dict.log_empty || 'Релизы пока не опубликованы.')}</div>`;
+  function renderAll() {
+    [renderVersion, renderSize, renderCounter, renderLog].forEach(fn => {
+      try { fn(); } catch (e) { console.warn('render failed:', fn.name, e); }
+    });
   }
 
-  let cached = null;
-  try { cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); } catch {}
-  if (cached && Date.now() - cached.ts < CACHE_TTL && Array.isArray(cached.data)) {
-    renderReleases(cached.data);
-  } else {
-    showLoading();
-  }
+  // language switch: re-render texts that are generated here
+  const toggle = document.getElementById('langToggle');
+  if (toggle) toggle.addEventListener('click', () => setTimeout(renderAll, 0));
 
-  const ctrl = new AbortController();
-  const to = setTimeout(() => ctrl.abort(), 8000);
-  fetch(API, {
-    headers: { 'Accept': 'application/vnd.github+json' },
-    signal: ctrl.signal
-  })
-    .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
-    .then(releases => {
-      if (!Array.isArray(releases)) throw new Error('bad data');
-      renderReleases(releases);
-      try {
-        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: releases.slice(0, MAX_ENTRIES) }));
-      } catch {}
-    })
-    .catch(err => {
-      console.warn('Changelog fetch failed:', err);
-      if (!cached) showEmpty();
-    })
-    .finally(() => clearTimeout(to));
+  // 1) show cached data instantly (if any), 2) refresh from GitHub
+  const cached = readCache();
+  if (cached) { releases = cached.data; state = 'ready'; renderAll(); }
+
+  load(cached).then(data => {
+    if (data) { releases = data; state = 'ready'; }
+    else if (!releases) state = 'error';
+    renderAll();
+  }).catch(err => {
+    console.warn('releases init failed:', err);
+    if (!releases) state = 'error';
+    renderAll();
+  });
 })();
 </script>
+
 
 </body>
 </html>
