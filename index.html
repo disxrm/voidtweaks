@@ -557,6 +557,16 @@ section { padding: 64px 0; position: relative; }
   width: 5px; height: 5px; border-radius: 50%; background: var(--primary-light);
   box-shadow: 0 0 8px rgba(167,139,250,0.9);
 }
+.log-more {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
+  padding: 8px 14px; border-radius: 10px; font-size: 12.5px; font-weight: 700;
+  color: var(--primary-soft); background: rgba(124,58,237,0.10);
+  border: 1px solid rgba(167,139,250,0.28);
+  transition: color 0.25s ease, background 0.25s ease, border-color 0.25s ease, transform 0.35s var(--md-ease-spring);
+}
+.log-more svg { width: 14px; height: 14px; flex-shrink: 0; transition: transform 0.35s var(--md-ease-spring); }
+.log-more:hover { color: #fff; background: rgba(124,58,237,0.22); border-color: var(--border-hover); transform: translateY(-1px); }
+.log-more:hover svg { transform: translate(2px, -2px); }
 .log-empty {
   text-align: center; color: var(--text-3); font-size: 14px;
   padding: 40px 20px; border: 1px dashed var(--border); border-radius: var(--radius-lg);
@@ -1580,6 +1590,7 @@ const I18N = {
     log_empty: 'Релизы пока не опубликованы или GitHub недоступен.',
     log_open_gh: 'Открыть релизы на GitHub',
     log_latest: 'Актуальная',
+    log_read_full: 'Читать полностью на GitHub',
     faq_eyebrow: 'FAQ',
     faq_title: 'Частые <span class="grad-primary-text">вопросы</span>',
     faq_desc: 'Коротко о безопасности, откатах и лицензии. Если чего-то не хватает — пишите в Telegram.',
@@ -1691,6 +1702,7 @@ const I18N = {
     log_empty: 'No releases published yet or GitHub is unavailable.',
     log_open_gh: 'Open releases on GitHub',
     log_latest: 'Latest',
+    log_read_full: 'Read full changelog on GitHub',
     faq_eyebrow: 'FAQ',
     faq_title: 'Frequently asked <span class="grad-primary-text">questions</span>',
     faq_desc: 'Briefly about safety, rollbacks and licensing. If something is missing — ping us on Telegram.',
@@ -2239,7 +2251,7 @@ function applyLang(lang) {
   const cleanVer = tag => String(tag || '').replace(/^v/i, '').trim();
 
   const slim = r => ({
-    tag_name: r.tag_name, name: r.name,
+    tag_name: r.tag_name, name: r.name, html_url: r.html_url,
     draft: !!r.draft, prerelease: !!r.prerelease,
     published_at: r.published_at,
     body: String(r.body || '').slice(0, 4000),
@@ -2374,6 +2386,11 @@ function applyLang(lang) {
         ? lines.map(b => `<li>${escapeHtml(b)}</li>`).join('')
         : `<li>${escapeHtml(dict.log_latest || 'Обновление')}: ${tag}</li>`;
 
+      const relUrl = rel.html_url && /^https:\/\/github\.com\//.test(rel.html_url)
+        ? rel.html_url
+        : (rel.tag_name ? RELEASES_URL + '/tag/' + encodeURIComponent(rel.tag_name) : RELEASES_URL);
+      const moreLabel = escapeHtml(dict.log_read_full || 'Читать полностью на GitHub');
+
       const tagClass = prerelease ? 'beta' : (isLatest ? 'latest' : '');
       const tagLabel = prerelease
         ? (l === 'en' ? 'Beta' : 'Бета')
@@ -2387,6 +2404,10 @@ function applyLang(lang) {
             <span class="log-tag ${tagClass}">${escapeHtml(tagLabel)}</span>
           </div>
           <ul class="log-list-items">${bullets}</ul>
+          <a class="log-more" href="${escapeHtml(relUrl)}" target="_blank" rel="noopener noreferrer">
+            <span>${moreLabel}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
+          </a>
         </div>`;
     }).join('');
 
