@@ -2236,7 +2236,8 @@ function applyLang(lang) {
   const API = 'https://api.github.com/repos/' + REPO + '/releases?per_page=100';
   const RELEASES_URL = 'https://github.com/' + REPO + '/releases';
   const CACHE_KEY = 'void-releases-v2';
-  const FRESH_TTL = 10 * 60 * 1000;   // cache is considered fresh for 10 min
+  const MIN_GAP = 15 * 1000;          // never hit GitHub more often than every 15 s (60 req/h limit per IP)
+  const AUTO_REFRESH = 2 * 60 * 1000; // background refresh while the tab is visible
   const TIMEOUT = 8000;
   const MAX_ENTRIES = 5;
 
@@ -2271,11 +2272,10 @@ function applyLang(lang) {
   // Plain GET without custom headers => no CORS preflight request.
   // Always resolves: fresh data, stale cache, or null.
   function load(cached) {
-    if (cached && Date.now() - cached.ts < FRESH_TTL) return Promise.resolve(cached.data);
     return new Promise(resolve => {
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), TIMEOUT);
-      fetch(API, { signal: ctrl.signal })
+      fetch(API + '&_=' + Date.now(), { signal: ctrl.signal })
         .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
         .then(list => {
           if (!Array.isArray(list)) throw new Error('bad data');
@@ -2422,28 +2422,54 @@ function applyLang(lang) {
     }
   }
 
-  function renderAll() {
-    [renderVersion, renderSize, renderCounter, renderLog].forEach(fn => {
+  let lastLogSig = null;
+  const logSig = () => state + '|' + published().slice(0, MAX_ENTRIES)
+    .map(r => [r.tag_name, r.published_at, r.prerelease, r.body].join('~')).join('||');
+
+  function renderAll(forceLog) {
+    const sig = logSig();
+    const list = [renderVersion, renderSize, renderCounter];
+    if (forceLog === true || sig !== lastLogSig) { lastLogSig = sig; list.push(renderLog); }
+    list.forEach(fn => {
       try { fn(); } catch (e) { console.warn('render failed:', fn.name, e); }
     });
   }
 
   // language switch: re-render texts that are generated here
   const toggle = document.getElementById('langToggle');
-  if (toggle) toggle.addEventListener('click', () => setTimeout(renderAll, 0));
+  if (toggle) toggle.addEventListener('click', () => setTimeout(() => renderAll(true), 0));
 
   // 1) show cached data instantly (if any), 2) refresh from GitHub
   const cached = readCache();
   if (cached) { releases = cached.data; state = 'ready'; renderAll(); }
 
-  load(cached).then(data => {
-    if (data) { releases = data; state = 'ready'; }
-    else if (!releases) state = 'error';
-    renderAll();
-  }).catch(err => {
-    console.warn('releases init failed:', err);
-    if (!releases) state = 'error';
-    renderAll();
+  /* ---------- live refresh: no waiting for a cache to expire ---------- */
+  let busy = false, lastFetch = 0;
+  function refresh(force) {
+    if (busy) return;
+    if (!force && Date.now() - lastFetch < MIN_GAP) return;
+    busy = true; lastFetch = Date.now();
+    load(readCache()).then(data => {
+      if (data) { releases = data; state = 'ready'; }
+      else if (!releases) state = 'error';
+      renderAll();
+    }).catch(err => {
+      console.warn('releases refresh failed:', err);
+      if (!releases) state = 'error';
+      renderAll();
+    }).finally(() => { busy = false; });
+  }
+
+  refresh(true);                                                    // every page load asks GitHub
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+  window.addEventListener('focus', () => refresh());
+  setInterval(() => { if (!document.hidden) refresh(); }, AUTO_REFRESH);
+
+  // after a click on a download link, re-check the counter a few times
+  document.addEventListener('click', e => {
+    const a = e.target.closest && e.target.closest('a[href*="/releases/"][href$=".exe"], #downloadBtn');
+    if (!a) return;
+    [4000, 15000, 40000].forEach(ms => setTimeout(() => refresh(true), ms));
   });
 })();
 </script>
