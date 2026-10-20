@@ -183,8 +183,14 @@ section.block { padding: 96px 0; }
 .feat { padding: 26px; }
 .feat.wide { grid-column: span 2; }
 @media (max-width: 600px) { .feat.wide { grid-column: auto; } }
-.ico { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--grad-gray); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 18px; }
-.ico svg { width: 20px; height: 20px; }
+.ico {
+  width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; margin-bottom: 20px;
+  background: linear-gradient(180deg, #2C2C31 0%, #16161A 55%, #0E0E11 100%);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.6), 0 10px 24px -10px rgba(0,0,0,0.9);
+}
+.ico svg { width: 30px; height: 30px; }
+.ico .dim { fill: #fff; fill-opacity: 0.3; }
 .feat h3 { margin: 0 0 8px; font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .feat p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-2); }
 .pro { font-size: 10px; font-weight: 800; letter-spacing: 0.8px; padding: 3px 7px; border-radius: 6px; background: #fff; color: #09090B; }
@@ -279,6 +285,12 @@ footer { border-top: 1px solid var(--line); padding: 28px 0; }
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="icoWhite" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#C9C9D0"/></linearGradient>
+  </defs>
+</svg>
+
 <header class="nav">
   <div class="container nav-inner">
     <a href="#top" class="brand"><img src="logo.png" alt="" width="28" height="28"><span>VOID TWEAKS</span></a>
@@ -357,27 +369,46 @@ footer { border-top: 1px solid var(--line); padding: 28px 0; }
     </div>
     <div class="features">
       <div class="card feat">
-        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="4" y2="10"/><line x1="4" y1="14" x2="4" y2="20"/><line x1="12" y1="4" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="20"/><line x1="20" y1="4" x2="20" y2="8"/><line x1="20" y1="12" x2="20" y2="20"/><line x1="1" y1="10" x2="7" y2="10"/><line x1="9" y1="16" x2="15" y2="16"/><line x1="17" y1="8" x2="23" y2="8"/></svg></div>
+        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect class="dim" x="2.5" y="5.1" width="19" height="1.8" rx=".9"/><rect class="dim" x="2.5" y="11.1" width="19" height="1.8" rx=".9"/><rect class="dim" x="2.5" y="17.1" width="19" height="1.8" rx=".9"/>
+          <circle cx="8" cy="6" r="2.6" fill="url(#icoWhite)"/><circle cx="16" cy="12" r="2.6" fill="url(#icoWhite)"/><circle cx="10.5" cy="18" r="2.6" fill="url(#icoWhite)"/>
+        </svg></div>
         <h3 data-i18n="feat1_t">180+ твиков системы</h3>
         <p data-i18n="feat1_d">Реестр, службы, питание, таймеры и планировщик — с проверкой состояния и безопасным откатом.</p>
       </div>
       <div class="card feat">
-        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h3.5l2.5-6.5L13 18l2.5-6.5H21"/></svg></div>
+        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect class="dim" x="2" y="3.5" width="20" height="17" rx="4.5"/>
+          <path d="M5 12.6h2.9l1.9-4.4 3.3 8.3 2.1-4.6H19" fill="none" stroke="url(#icoWhite)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg></div>
         <h3 data-i18n="feat2_t">Мониторинг в реальном времени</h3>
         <p data-i18n="feat2_d">Загрузка и температуры CPU и GPU, частота памяти, скорость сети и пинг — без нагрузки на систему.</p>
       </div>
       <div class="card feat">
-        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg></div>
+        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
+          <g class="dim"><rect x="8" y="1.5" width="1.6" height="3" rx=".8"/><rect x="11.2" y="1.5" width="1.6" height="3" rx=".8"/><rect x="14.4" y="1.5" width="1.6" height="3" rx=".8"/><rect x="8" y="19.5" width="1.6" height="3" rx=".8"/><rect x="11.2" y="19.5" width="1.6" height="3" rx=".8"/><rect x="14.4" y="19.5" width="1.6" height="3" rx=".8"/><rect x="1.5" y="8" width="3" height="1.6" rx=".8"/><rect x="1.5" y="11.2" width="3" height="1.6" rx=".8"/><rect x="1.5" y="14.4" width="3" height="1.6" rx=".8"/><rect x="19.5" y="8" width="3" height="1.6" rx=".8"/><rect x="19.5" y="11.2" width="3" height="1.6" rx=".8"/><rect x="19.5" y="14.4" width="3" height="1.6" rx=".8"/><rect x="5.5" y="5.5" width="13" height="13" rx="3.2"/></g>
+          <path d="M12.9 7.4 9 12.7h2.6l-.5 3.9 3.9-5.4h-2.6l.5-3.8Z" fill="url(#icoWhite)"/>
+        </svg></div>
         <h3><span data-i18n="feat3_t">Прерывания и GPU</span> <span class="pro">PRO</span></h3>
         <p data-i18n="feat3_d">MSI, IRQ affinity и авто-план для AMD Dual-CCD. Отдельные разделы настроек NVIDIA и AMD.</p>
       </div>
       <div class="card feat">
-        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/></svg></div>
+        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect class="dim" x="2" y="3.5" width="20" height="7.5" rx="3.75"/>
+          <circle cx="18.2" cy="7.25" r="2.6" fill="url(#icoWhite)"/>
+          <rect class="dim" x="2" y="13" width="20" height="7.5" rx="3.75"/>
+          <circle cx="5.8" cy="16.75" r="2.6" fill="#fff" fill-opacity=".55"/>
+        </svg></div>
         <h3 data-i18n="feat4_t">Менеджер автозагрузки</h3>
         <p data-i18n="feat4_d">Реестр, папка Startup, задачи и службы — с настоящими иконками приложений. Отключение в один клик.</p>
       </div>
       <div class="card feat wide">
-        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4 2.6-2.6Z"/></svg></div>
+        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2.5" y="2.5" width="8.5" height="8.5" rx="2.6" fill="url(#icoWhite)"/>
+          <rect class="dim" x="13" y="2.5" width="8.5" height="8.5" rx="2.6"/>
+          <rect class="dim" x="2.5" y="13" width="8.5" height="8.5" rx="2.6"/>
+          <path d="M17.25 13.6v7.3M13.6 17.25h7.3" fill="none" stroke="url(#icoWhite)" stroke-width="2.1" stroke-linecap="round"/>
+        </svg></div>
         <h3 data-i18n="feat5_t">Встроенные инструменты</h3>
         <p data-i18n="feat5_d">Без скачивания сомнительных скриптов: всё ставится и откатывается из приложения.</p>
         <div class="chips">
