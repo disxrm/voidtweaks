@@ -76,7 +76,14 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 
 .container { width: 100%; max-width: var(--container); margin: 0 auto; padding: 0 24px; }
 @media (max-width: 480px) { .container { padding: 0 16px; } }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.card {
+  background: linear-gradient(180deg, #101013 0%, #0B0B0D 100%);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: var(--text-3); margin-bottom: 14px; }
+.eyebrow::before, .eyebrow::after { content: ""; width: 18px; height: 1px; background: var(--line-2); }
+.muted { color: var(--text-3); }
 .grad-text { background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 /* ---------- buttons ---------- */
@@ -111,12 +118,15 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 @media (max-width: 760px) { .nav-links { display: none; } }
 
 /* ---------- hero ---------- */
-.hero { padding: 88px 0 72px; text-align: center; }
-@media (max-width: 720px) { .hero { padding: 56px 0 48px; } }
+.hero {
+  padding: 96px 0 0; text-align: center; overflow: hidden;
+  background: radial-gradient(ellipse 55% 45% at 50% 0%, rgba(255,255,255,0.075), transparent 70%);
+}
+@media (max-width: 720px) { .hero { padding: 56px 0 0; } }
 .badge { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--text-2); padding: 6px 12px; border-radius: 100px; border: 1px solid var(--line-2); margin-bottom: 24px; }
 .badge i { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
 .badge b { color: #fff; }
-.hero h1 { font-size: clamp(36px, 6vw, 72px); line-height: 1.04; font-weight: 800; letter-spacing: -0.035em; margin: 0 auto 20px; max-width: 900px; }
+.hero h1 { font-size: clamp(36px, 6vw, 72px); line-height: 1.04; font-weight: 800; letter-spacing: -0.035em; margin: 0 auto 20px; max-width: 1100px; }
 .hero h1 .line { display: block; }
 .hero .lead { color: var(--text-2); font-size: clamp(16px, 1.5vw, 18px); line-height: 1.65; max-width: 600px; margin: 0 auto 32px; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
@@ -124,7 +134,13 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .hero .note b { color: var(--text-2); font-weight: 600; }
 
 /* ---------- app preview ---------- */
-.preview { margin: 56px auto 0; max-width: 960px; }
+.preview {
+  margin: 64px auto 0; max-width: 1040px; padding: 10px; border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.08);
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+          mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+}
 .app { display: grid; grid-template-columns: 190px 1fr; text-align: left; border-radius: 16px; border: 1px solid var(--line-2); background: #070708; overflow: hidden; }
 .app-bar { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; height: 36px; padding: 0 14px; border-bottom: 1px solid var(--line); font-size: 12px; font-weight: 700; color: var(--text-2); }
 .app-bar .t { display: flex; align-items: center; gap: 8px; }
@@ -153,7 +169,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .tg.on { background: var(--grad-white); border-color: #fff; }
 .tg.on::after { left: 16px; background: #09090B; }
 @media (max-width: 760px) { .app { grid-template-columns: 1fr; } .app-side { display: none; } .tiles { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 480px) { .preview { margin-top: 40px; } .tweaks { display: none; } }
+@media (max-width: 480px) { .preview { margin-top: 40px; padding: 6px; } .preview .tweaks { display: none; } }
 
 /* ---------- facts strip ---------- */
 .facts { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
@@ -177,25 +193,47 @@ section.block { padding: 96px 0; }
 .head p { margin: 0; font-size: 16px; line-height: 1.6; color: var(--text-2); }
 
 /* ---------- features ---------- */
-.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-@media (max-width: 900px) { .features { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 600px) { .features { grid-template-columns: 1fr; } }
-.feat { padding: 26px; }
-.feat.wide { grid-column: span 2; }
-@media (max-width: 600px) { .feat.wide { grid-column: auto; } }
+.features { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+.feat { grid-column: span 2; padding: 24px; display: flex; flex-direction: column; overflow: hidden; }
+.feat.w4 { grid-column: span 4; }
+@media (max-width: 900px) { .features { grid-template-columns: repeat(2, 1fr); } .feat, .feat.w4 { grid-column: span 1; } .feat.w4 { grid-column: span 2; } }
+@media (max-width: 600px) { .features { grid-template-columns: 1fr; } .feat, .feat.w4 { grid-column: auto; } }
+.feat-head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.feat-head h3 { margin: 0; }
 .ico {
-  width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; margin-bottom: 20px;
+  width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; flex-shrink: 0;
   background: linear-gradient(180deg, #2C2C31 0%, #16161A 55%, #0E0E11 100%);
   border: 1px solid rgba(255,255,255,0.10);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.6), 0 10px 24px -10px rgba(0,0,0,0.9);
 }
-.ico svg { width: 30px; height: 30px; }
+.ico svg { width: 26px; height: 26px; }
 .ico .dim { fill: #fff; fill-opacity: 0.3; }
 .feat h3 { margin: 0 0 8px; font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .feat p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-2); }
 .pro { font-size: 10px; font-weight: 800; letter-spacing: 0.8px; padding: 3px 7px; border-radius: 6px; background: #fff; color: #09090B; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
-.chips span { font-size: 13px; font-weight: 600; padding: 7px 12px; border-radius: 9px; background: var(--surface-2); border: 1px solid var(--line-2); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips span { font-size: 12.5px; font-weight: 600; padding: 7px 11px; border-radius: 9px; background: var(--surface-2); border: 1px solid var(--line-2); }
+
+/* mini-UI inside feature cards */
+.viz { margin-top: auto; padding-top: 22px; }
+.viz-box { border: 1px solid var(--line); border-radius: 14px; background: #08080A; padding: 14px; }
+.viz .tweaks { border: 0; background: transparent; }
+.viz .tw { padding: 10px 2px; }
+.spark { display: block; width: 100%; height: 72px; }
+.spark-stats { display: flex; justify-content: space-between; gap: 10px; margin-top: 12px; font-size: 12px; color: var(--text-3); }
+.spark-stats b { display: block; font-size: 16px; color: #fff; font-weight: 700; margin-top: 2px; }
+.cores { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; }
+.cores i { aspect-ratio: 1; border-radius: 5px; background: #18181B; border: 1px solid #222226; }
+.cores i.on { background: var(--grad-white); border-color: #fff; }
+.cores i.half { background: #3F3F46; border-color: #52525B; }
+.irq { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; color: var(--text-2); }
+.irq span b { color: #fff; font-weight: 600; }
+.apps { display: flex; flex-direction: column; gap: 10px; }
+.app-row { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
+.app-row .av { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font-size: 11px; font-weight: 800; background: #18181B; border: 1px solid var(--line-2); color: var(--text-2); flex-shrink: 0; }
+.app-row .nm { flex: 1; }
+.app-row .st { font-size: 11px; color: var(--text-3); font-weight: 500; }
+.app-row .tg { display: block; }
 
 /* ---------- pricing ---------- */
 .free { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; padding: 20px 24px; margin-bottom: 14px; }
@@ -206,7 +244,12 @@ section.block { padding: 96px 0; }
 .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 @media (max-width: 900px) { .plans { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; } .plan.best { order: -1; } }
 .plan { padding: 28px 24px 24px; display: flex; flex-direction: column; position: relative; }
-.plan.best { background: var(--surface-2); border-color: #52525B; }
+.plan.best {
+  border-color: transparent;
+  background: linear-gradient(180deg, #17171B 0%, #0D0D10 100%) padding-box,
+              linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.12) 45%, rgba(255,255,255,0.05) 100%) border-box;
+  box-shadow: 0 30px 80px -40px rgba(255,255,255,0.18);
+}
 .plan .tag { position: absolute; top: 18px; right: 18px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; background: #fff; color: #09090B; }
 .plan .nm { font-size: 13px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-2); margin-bottom: 14px; }
 .plan .pr { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
@@ -222,7 +265,11 @@ section.block { padding: 96px 0; }
 .pay { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 22px; margin-top: 14px; font-size: 13px; color: var(--text-3); }
 
 /* ---------- faq ---------- */
-.faq { max-width: 760px; margin: 0 auto; border-top: 1px solid var(--line); }
+.faq-wrap { display: grid; grid-template-columns: 1fr 1.6fr; gap: 56px; align-items: start; }
+@media (max-width: 860px) { .faq-wrap { grid-template-columns: 1fr; gap: 28px; } }
+.faq-side h2 { font-size: clamp(28px, 3.6vw, 42px); line-height: 1.1; letter-spacing: -0.03em; font-weight: 800; margin: 0 0 12px; }
+.faq-side p { margin: 0 0 22px; font-size: 15.5px; line-height: 1.6; color: var(--text-2); }
+.faq { border-top: 1px solid var(--line); }
 .faq details { border-bottom: 1px solid var(--line); }
 .faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 4px; font-size: 16px; font-weight: 600; }
 .faq summary::-webkit-details-marker { display: none; }
@@ -255,7 +302,12 @@ section.block { padding: 96px 0; }
 .log-empty { font-size: 14px; color: var(--text-3); }
 
 /* ---------- footer ---------- */
-footer { border-top: 1px solid var(--line); padding: 28px 0; }
+footer { border-top: 1px solid var(--line); padding: 28px 0 0; overflow: hidden; }
+.wordmark {
+  margin-top: 36px; text-align: center; white-space: nowrap; user-select: none;
+  font-size: clamp(56px, 14.5vw, 210px); font-weight: 800; letter-spacing: -0.05em; line-height: 0.78;
+  background: linear-gradient(180deg, #1D1D21 0%, #0B0B0D 85%); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
 .foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--text-3); }
 .foot .brand { font-size: 14px; color: #fff; }
 .foot .brand img { width: 24px; height: 24px; }
@@ -312,7 +364,7 @@ footer { border-top: 1px solid var(--line); padding: 28px 0; }
 <section class="hero">
   <div class="container">
     <a href="#download" class="badge"><i></i><span data-i18n="hero_badge">Версия</span> <b data-ver>1.0.1</b></a>
-    <h1 data-i18n-html="hero_title"><span class="line">Чистая Windows.</span><span class="line grad-text">Больше FPS. Меньше задержек.</span></h1>
+    <h1 data-i18n-html="hero_title"><span class="line">Чистая Windows.</span><span class="line muted">Больше FPS. Меньше задержек.</span></h1>
     <p class="lead" data-i18n="hero_lead">VOID TWEAKS отключает телеметрию и лишние службы, настраивает систему под игры и откатывает любое изменение в один клик.</p>
     <div class="actions">
       <a href="#download" class="btn btn-primary btn-lg">
@@ -364,61 +416,94 @@ footer { border-top: 1px solid var(--line); padding: 28px 0; }
 <section class="block" id="features">
   <div class="container">
     <div class="head">
+      <div class="eyebrow" data-i18n="nav_features">Возможности</div>
       <h2 data-i18n="features_title">Всё нужное — в одном окне</h2>
       <p data-i18n="features_desc">Тонкая настройка системы, мониторинг железа и утилиты, которые обычно ищут по форумам.</p>
     </div>
     <div class="features">
-      <div class="card feat">
-        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
-          <rect class="dim" x="2.5" y="5.1" width="19" height="1.8" rx=".9"/><rect class="dim" x="2.5" y="11.1" width="19" height="1.8" rx=".9"/><rect class="dim" x="2.5" y="17.1" width="19" height="1.8" rx=".9"/>
-          <circle cx="8" cy="6" r="2.6" fill="url(#icoWhite)"/><circle cx="16" cy="12" r="2.6" fill="url(#icoWhite)"/><circle cx="10.5" cy="18" r="2.6" fill="url(#icoWhite)"/>
-        </svg></div>
-        <h3 data-i18n="feat1_t">180+ твиков системы</h3>
+      <div class="card feat w4">
+        <div class="feat-head">
+          <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect class="dim" x="2.5" y="5.1" width="19" height="1.8" rx=".9"/><rect class="dim" x="2.5" y="11.1" width="19" height="1.8" rx=".9"/><rect class="dim" x="2.5" y="17.1" width="19" height="1.8" rx=".9"/>
+            <circle cx="8" cy="6" r="2.6" fill="url(#icoWhite)"/><circle cx="16" cy="12" r="2.6" fill="url(#icoWhite)"/><circle cx="10.5" cy="18" r="2.6" fill="url(#icoWhite)"/>
+          </svg></div>
+          <h3 data-i18n="feat1_t">180+ твиков системы</h3>
+        </div>
         <p data-i18n="feat1_d">Реестр, службы, питание, таймеры и планировщик — с проверкой состояния и безопасным откатом.</p>
+        <div class="viz" aria-hidden="true"><div class="viz-box" style="padding:4px 14px">
+          <div class="tw"><div><div class="n" data-i18n="app_tw1">Отключить телеметрию</div><div class="d" data-i18n="app_tw1d">Службы, задачи и политики сбора данных</div></div><div class="tg on"></div></div>
+          <div class="tw"><div><div class="n" data-i18n="app_tw2">Игровой приоритет планировщика</div><div class="d" data-i18n="app_tw2d">Больше процессорного времени для игры</div></div><div class="tg on"></div></div>
+          <div class="tw"><div><div class="n" data-i18n="viz_tw3">Энергосбережение USB</div><div class="d" data-i18n="viz_tw3d">Мышь и клавиатура без задержек после простоя</div></div><div class="tg on"></div></div>
+        </div></div>
       </div>
       <div class="card feat">
-        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
-          <rect class="dim" x="2" y="3.5" width="20" height="17" rx="4.5"/>
-          <path d="M5 12.6h2.9l1.9-4.4 3.3 8.3 2.1-4.6H19" fill="none" stroke="url(#icoWhite)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg></div>
-        <h3 data-i18n="feat2_t">Мониторинг в реальном времени</h3>
+        <div class="feat-head">
+          <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect class="dim" x="2" y="3.5" width="20" height="17" rx="4.5"/>
+            <path d="M5 12.6h2.9l1.9-4.4 3.3 8.3 2.1-4.6H19" fill="none" stroke="url(#icoWhite)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg></div>
+          <h3 data-i18n="feat2_t">Мониторинг в реальном времени</h3>
+        </div>
         <p data-i18n="feat2_d">Загрузка и температуры CPU и GPU, частота памяти, скорость сети и пинг — без нагрузки на систему.</p>
+        <div class="viz" aria-hidden="true"><div class="viz-box">
+          <svg class="spark" viewBox="0 0 200 72" preserveAspectRatio="none">
+            <defs><linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0 52 L14 48 L28 50 L42 38 L56 42 L70 26 L84 34 L98 22 L112 30 L126 16 L140 26 L154 18 L168 24 L184 12 L200 16 L200 72 L0 72 Z" fill="url(#sparkFill)"/>
+            <path d="M0 52 L14 48 L28 50 L42 38 L56 42 L70 26 L84 34 L98 22 L112 30 L126 16 L140 26 L154 18 L168 24 L184 12 L200 16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+          </svg>
+          <div class="spark-stats"><span>CPU<b>41 °C</b></span><span>GPU<b>38 °C</b></span><span data-i18n-html="viz_ping">Пинг<b>14 ms</b></span></div>
+        </div></div>
       </div>
       <div class="card feat">
+        <div class="feat-head">
         <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
           <g class="dim"><rect x="8" y="1.5" width="1.6" height="3" rx=".8"/><rect x="11.2" y="1.5" width="1.6" height="3" rx=".8"/><rect x="14.4" y="1.5" width="1.6" height="3" rx=".8"/><rect x="8" y="19.5" width="1.6" height="3" rx=".8"/><rect x="11.2" y="19.5" width="1.6" height="3" rx=".8"/><rect x="14.4" y="19.5" width="1.6" height="3" rx=".8"/><rect x="1.5" y="8" width="3" height="1.6" rx=".8"/><rect x="1.5" y="11.2" width="3" height="1.6" rx=".8"/><rect x="1.5" y="14.4" width="3" height="1.6" rx=".8"/><rect x="19.5" y="8" width="3" height="1.6" rx=".8"/><rect x="19.5" y="11.2" width="3" height="1.6" rx=".8"/><rect x="19.5" y="14.4" width="3" height="1.6" rx=".8"/><rect x="5.5" y="5.5" width="13" height="13" rx="3.2"/></g>
           <path d="M12.9 7.4 9 12.7h2.6l-.5 3.9 3.9-5.4h-2.6l.5-3.8Z" fill="url(#icoWhite)"/>
         </svg></div>
-        <h3><span data-i18n="feat3_t">Прерывания и GPU</span> <span class="pro">PRO</span></h3>
+          <h3><span data-i18n="feat3_t">Прерывания и GPU</span> <span class="pro">PRO</span></h3>
+        </div>
         <p data-i18n="feat3_d">MSI, IRQ affinity и авто-план для AMD Dual-CCD. Отдельные разделы настроек NVIDIA и AMD.</p>
+        <div class="viz" aria-hidden="true"><div class="viz-box">
+          <div class="cores"><i></i><i></i><i class="on"></i><i></i><i class="half"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="half"></i><i></i><i></i><i></i><i></i></div>
+          <div class="irq"><span>GPU  → <b>Core 2</b></span><span>USB  → <b>Core 4</b></span><span>NIC  → <b>Core 11</b></span></div>
+        </div></div>
       </div>
       <div class="card feat">
-        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
-          <rect class="dim" x="2" y="3.5" width="20" height="7.5" rx="3.75"/>
-          <circle cx="18.2" cy="7.25" r="2.6" fill="url(#icoWhite)"/>
-          <rect class="dim" x="2" y="13" width="20" height="7.5" rx="3.75"/>
-          <circle cx="5.8" cy="16.75" r="2.6" fill="#fff" fill-opacity=".55"/>
-        </svg></div>
-        <h3 data-i18n="feat4_t">Менеджер автозагрузки</h3>
+        <div class="feat-head">
+          <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect class="dim" x="2" y="3.5" width="20" height="7.5" rx="3.75"/>
+            <circle cx="18.2" cy="7.25" r="2.6" fill="url(#icoWhite)"/>
+            <rect class="dim" x="2" y="13" width="20" height="7.5" rx="3.75"/>
+            <circle cx="5.8" cy="16.75" r="2.6" fill="#fff" fill-opacity=".55"/>
+          </svg></div>
+          <h3 data-i18n="feat4_t">Менеджер автозагрузки</h3>
+        </div>
         <p data-i18n="feat4_d">Реестр, папка Startup, задачи и службы — с настоящими иконками приложений. Отключение в один клик.</p>
+        <div class="viz" aria-hidden="true"><div class="viz-box apps">
+          <div class="app-row"><span class="av">D</span><span class="nm">Discord</span><span class="st" data-i18n="viz_on">вкл</span><span class="tg on"></span></div>
+          <div class="app-row"><span class="av">S</span><span class="nm">Steam</span><span class="st" data-i18n="viz_off">выкл</span><span class="tg"></span></div>
+          <div class="app-row"><span class="av">E</span><span class="nm">Epic Games</span><span class="st" data-i18n="viz_off">выкл</span><span class="tg"></span></div>
+        </div></div>
       </div>
-      <div class="card feat wide">
-        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="2.5" y="2.5" width="8.5" height="8.5" rx="2.6" fill="url(#icoWhite)"/>
-          <rect class="dim" x="13" y="2.5" width="8.5" height="8.5" rx="2.6"/>
-          <rect class="dim" x="2.5" y="13" width="8.5" height="8.5" rx="2.6"/>
-          <path d="M17.25 13.6v7.3M13.6 17.25h7.3" fill="none" stroke="url(#icoWhite)" stroke-width="2.1" stroke-linecap="round"/>
-        </svg></div>
-        <h3 data-i18n="feat5_t">Встроенные инструменты</h3>
+      <div class="card feat">
+        <div class="feat-head">
+          <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="2.5" y="2.5" width="8.5" height="8.5" rx="2.6" fill="url(#icoWhite)"/>
+            <rect class="dim" x="13" y="2.5" width="8.5" height="8.5" rx="2.6"/>
+            <rect class="dim" x="2.5" y="13" width="8.5" height="8.5" rx="2.6"/>
+            <path d="M17.25 13.6v7.3M13.6 17.25h7.3" fill="none" stroke="url(#icoWhite)" stroke-width="2.1" stroke-linecap="round"/>
+          </svg></div>
+          <h3 data-i18n="feat5_t">Встроенные инструменты</h3>
+        </div>
         <p data-i18n="feat5_d">Без скачивания сомнительных скриптов: всё ставится и откатывается из приложения.</p>
-        <div class="chips">
+        <div class="viz"><div class="chips">
           <span data-i18n="chip1">Visual C++ и DirectX</span>
           <span data-i18n="chip2">Zapret и TgWsProxy</span>
           <span>Windows Defender</span>
           <span>Windows Update</span>
           <span data-i18n="chip5">20+ программ в один клик</span>
           <span data-i18n="chip6">Конфиги для игр</span>
-        </div>
+        </div></div>
       </div>
     </div>
   </div>
@@ -428,6 +513,7 @@ footer { border-top: 1px solid var(--line); padding: 28px 0; }
 <section class="block" id="pricing" style="padding-top:0">
   <div class="container">
     <div class="head">
+      <div class="eyebrow" data-i18n="nav_pricing">Тарифы</div>
       <h2 data-i18n="price_title">Начните бесплатно</h2>
       <p data-i18n="price_desc">PRO — когда захотите больше. Разовая оплата без автопродления, ключ сразу после оплаты.</p>
     </div>
@@ -470,13 +556,20 @@ footer { border-top: 1px solid var(--line); padding: 28px 0; }
 <!-- ================= FAQ ================= -->
 <section class="block" id="faq" style="padding-top:0">
   <div class="container">
-    <div class="head"><h2 data-i18n="faq_title">Частые вопросы</h2></div>
+    <div class="faq-wrap">
+    <div class="faq-side">
+      <div class="eyebrow">FAQ</div>
+      <h2 data-i18n="faq_title">Частые вопросы</h2>
+      <p data-i18n="faq_side">Не нашли ответ? Напишите — отвечаем лично.</p>
+      <a href="https://t.me/disxrm" target="_blank" rel="noopener" class="btn btn-ghost" data-i18n="faq_cta">Написать в Telegram</a>
+    </div>
     <div class="faq">
       <details><summary><span data-i18n="faq_q1">Это безопасно для системы?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a" data-i18n="faq_a1">Да. Твики применяются через официальные API Windows, а перед первым изменением создаётся точка восстановления. Откатить можно отдельный твик или всю сессию.</div></details>
       <details><summary><span data-i18n="faq_q2">Могут ли забанить в играх?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a" data-i18n="faq_a2">Нет. VOID TWEAKS не трогает файлы игр, не внедряется в процессы и не меняет их память — только настройки системы и реестра.</div></details>
       <details><summary><span data-i18n="faq_q3">Windows пишет «Система Windows защитила ваш компьютер»</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a" data-i18n="faq_a3">Это SmartScreen — он предупреждает о любых новых программах. Скачивайте установщик только с этой страницы или из GitHub Releases, нажмите «Подробнее» → «Выполнить в любом случае».</div></details>
       <details><summary><span data-i18n="faq_q4">Нужен ли PRO для обычной оптимизации?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a" data-i18n="faq_a4">Нет. Твики, мониторинг, автозагрузка и встроенные утилиты бесплатны навсегда. PRO нужен для прерываний, GPU-разделов и раннего доступа.</div></details>
       <details><summary><span data-i18n="faq_q5">Как оплатить и получить ключ?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a" data-i18n-html="faq_a5">Оплата через ЮKassa. После оплаты вы вернётесь на сайт, и ключ появится прямо на странице — вставьте его в приложение. Вопросы — в <a href="https://t.me/disxrm" target="_blank" rel="noopener" style="color:#fff;text-decoration:underline">Telegram</a>.</div></details>
+    </div>
     </div>
   </div>
 </section>
@@ -521,6 +614,7 @@ footer { border-top: 1px solid var(--line); padding: 28px 0; }
     </nav>
     <span>© 2026 VoidTweaks</span>
   </div>
+  <div class="wordmark" aria-hidden="true">VOID TWEAKS</div>
 </footer>
 
 <div class="ord-backdrop" id="ordModal" data-state="wait" role="dialog" aria-modal="true" aria-label="VOID TWEAKS">
@@ -569,7 +663,10 @@ const I18N = {
   ru: {
     nav_features: 'Возможности', nav_pricing: 'Тарифы', nav_faq: 'FAQ', nav_download: 'Скачать',
     hero_badge: 'Версия',
-    hero_title: '<span class="line">Чистая Windows.</span><span class="line grad-text">Больше FPS. Меньше задержек.</span>',
+    hero_title: '<span class="line">Чистая Windows.</span><span class="line muted">Больше FPS. Меньше задержек.</span>',
+    viz_tw3: 'Энергосбережение USB', viz_tw3d: 'Мышь и клавиатура без задержек после простоя',
+    viz_ping: 'Пинг<b>14 ms</b>', viz_on: 'вкл', viz_off: 'выкл',
+    faq_side: 'Не нашли ответ? Напишите — отвечаем лично.', faq_cta: 'Написать в Telegram',
     hero_lead: 'VOID TWEAKS отключает телеметрию и лишние службы, настраивает систему под игры и откатывает любое изменение в один клик.',
     cta_free: 'Скачать бесплатно', cta_pro: 'PRO от 99 ₽',
     hero_note: 'Бесплатная версия навсегда · <b>Windows 10 / 11 x64</b>',
@@ -630,7 +727,10 @@ const I18N = {
   en: {
     nav_features: 'Features', nav_pricing: 'Pricing', nav_faq: 'FAQ', nav_download: 'Download',
     hero_badge: 'Version',
-    hero_title: '<span class="line">Clean Windows.</span><span class="line grad-text">More FPS. Less latency.</span>',
+    hero_title: '<span class="line">Clean Windows.</span><span class="line muted">More FPS. Less latency.</span>',
+    viz_tw3: 'USB power saving', viz_tw3d: 'Mouse and keyboard without wake-up lag',
+    viz_ping: 'Ping<b>14 ms</b>', viz_on: 'on', viz_off: 'off',
+    faq_side: 'Didn’t find an answer? Message us — we reply personally.', faq_cta: 'Message on Telegram',
     hero_lead: 'VOID TWEAKS disables telemetry and useless services, tunes the system for gaming and rolls back any change in one click.',
     cta_free: 'Download free', cta_pro: 'PRO from 99 ₽',
     hero_note: 'Free version forever · <b>Windows 10 / 11 x64</b>',
