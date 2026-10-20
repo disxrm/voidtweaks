@@ -35,7 +35,7 @@
     { "@type": "Offer", "name": "FREE",    "price": "0",   "priceCurrency": "RUB" },
     { "@type": "Offer", "name": "Месяц",   "price": "99",  "priceCurrency": "RUB" },
     { "@type": "Offer", "name": "Полгода", "price": "299", "priceCurrency": "RUB" },
-    { "@type": "Offer", "name": "Год",     "price": "499", "priceCurrency": "RUB" }
+    { "@type": "Offer", "name": "Навсегда", "price": "499", "priceCurrency": "RUB" }
   ]
 }
 </script>
@@ -797,7 +797,7 @@ footer { padding: 52px 0 36px; border-top: 1px solid var(--border-soft); }
     <div class="sec-head center reveal">
       <span class="eyebrow" data-i18n="price_eyebrow">Тарифы</span>
       <h2 data-i18n-html="price_title">Начните бесплатно. <span class="grad-primary-text">PRO — когда захотите больше</span></h2>
-      <p data-i18n="price_desc">Разовая оплата за выбранный срок, без автопродления. Ключ приходит сразу после оплаты и привязывается к ПК по HWID.</p>
+      <p data-i18n="price_desc">Разовая оплата, без автопродления. Ключ приходит сразу после оплаты и привязывается к ПК по HWID.</p>
     </div>
 
     <div class="card free-strip reveal">
@@ -830,12 +830,12 @@ footer { padding: 52px 0 36px; border-top: 1px solid var(--border-soft); }
 
       <div class="card price-card featured reveal">
         <span class="price-tag" data-i18n="price_tag_popular">Выгоднее всего</span>
-        <div class="price-name" data-i18n="price4_name">Год</div>
-        <div class="price-val"><span class="amount">499</span><span class="curr">₽</span><s>1188 ₽</s></div>
-        <div class="price-per" data-i18n-html="price4_per"><b>≈ 42 ₽</b> в месяц <span class="save">−58%</span></div>
-        <div class="price-note" data-i18n="price4_note">Один платёж на 12 месяцев</div>
-        <p class="price-desc" data-i18n="price4_desc">Максимум возможностей по лучшей цене. Все обновления PRO в течение года.</p>
-        <a href="#pricing" data-buy="forever" class="btn btn-primary" data-i18n="price4_cta">Купить на год</a>
+        <div class="price-name" data-i18n="price4_name">Навсегда</div>
+        <div class="price-val"><span class="amount">499</span><span class="curr">₽</span></div>
+        <div class="price-per" data-i18n-html="price4_per"><b>Без срока действия</b></div>
+        <div class="price-note" data-i18n="price4_note">Один платёж — PRO навсегда</div>
+        <p class="price-desc" data-i18n="price4_desc">Все PRO-модули без ограничения по времени. Дешевле, чем полгода на тарифе «Месяц».</p>
+        <a href="#pricing" data-buy="forever" class="btn btn-primary" data-i18n="price4_cta">Купить навсегда</a>
       </div>
     </div>
 
@@ -1080,15 +1080,15 @@ const I18N = {
     tool6_t: 'Игровые конфиги', tool6_d: 'Готовые пресеты и конструктор autoexec.cfg с параметрами запуска Steam. Сейчас — Dota 2, дальше больше.',
     price_eyebrow: 'Тарифы',
     price_title: 'Начните бесплатно. <span class="grad-primary-text">PRO — когда захотите больше</span>',
-    price_desc: 'Разовая оплата за выбранный срок, без автопродления. Ключ приходит сразу после оплаты и привязывается к ПК по HWID.',
+    price_desc: 'Разовая оплата, без автопродления. Ключ приходит сразу после оплаты и привязывается к ПК по HWID.',
     price_tag_popular: 'Выгоднее всего',
     price1_name: 'FREE', price1_desc: '180+ твиков, мониторинг, автозагрузка и встроенные утилиты — навсегда.', price1_cta: 'Скачать бесплатно',
     price2_name: 'Месяц', price2_per: 'за 30 дней', price2_note: 'Чтобы попробовать PRO',
     price2_desc: 'Все PRO-модули на месяц: прерывания, GPU-разделы, скрытые твики и бета-версии.', price2_cta: 'Купить на месяц',
     price3_name: 'Полгода', price3_per: '<b>≈ 50 ₽</b> в месяц <span class="save">−50%</span>', price3_note: 'Один платёж на 6 месяцев',
     price3_desc: 'Всё из тарифа «Месяц» в два раза дешевле в пересчёте на месяц.', price3_cta: 'Купить на полгода',
-    price4_name: 'Год', price4_per: '<b>≈ 42 ₽</b> в месяц <span class="save">−58%</span>', price4_note: 'Один платёж на 12 месяцев',
-    price4_desc: 'Максимум возможностей по лучшей цене. Все обновления PRO в течение года.', price4_cta: 'Купить на год',
+    price4_name: 'Навсегда', price4_per: '<b>Без срока действия</b>', price4_note: 'Один платёж — PRO навсегда',
+    price4_desc: 'Все PRO-модули без ограничения по времени. Дешевле, чем полгода на тарифе «Месяц».', price4_cta: 'Купить навсегда',
     pay1: 'Оплата через ЮKassa — карты и СБП', pay2: 'Ключ сразу на странице', pay3: 'Без автопродления',
     cmp_h: 'Что входит', cmp1: '180+ твиков реестра и служб', cmp2: 'Мониторинг в реальном времени', cmp3: 'Менеджер автозагрузки',
     cmp4: 'Встроенные утилиты', cmp5: 'Управление прерываниями (MSI, IRQ)', cmp6: 'GPU-разделы NVIDIA и AMD',
@@ -1202,15 +1202,15 @@ const I18N = {
     tool6_t: 'Game configs', tool6_d: 'Ready-made presets and an autoexec.cfg builder with Steam launch options. Dota 2 for now, more coming.',
     price_eyebrow: 'Pricing',
     price_title: 'Start free. <span class="grad-primary-text">Go PRO when you want more</span>',
-    price_desc: 'One-time payment for the chosen period, no auto-renewal. The key arrives right after payment and binds to your PC via HWID.',
+    price_desc: 'One-time payment, no auto-renewal. The key arrives right after payment and binds to your PC via HWID.',
     price_tag_popular: 'Best value',
     price1_name: 'FREE', price1_desc: '180+ tweaks, monitoring, startup manager and built-in utilities — forever.', price1_cta: 'Download free',
     price2_name: 'Month', price2_per: 'for 30 days', price2_note: 'To try PRO',
     price2_desc: 'All PRO modules for a month: interrupts, GPU sections, hidden tweaks and betas.', price2_cta: 'Buy 1 month',
     price3_name: '6 months', price3_per: '<b>≈ 50 ₽</b> per month <span class="save">−50%</span>', price3_note: 'One payment for 6 months',
     price3_desc: 'Everything from “Month” at half the monthly price.', price3_cta: 'Buy 6 months',
-    price4_name: 'Year', price4_per: '<b>≈ 42 ₽</b> per month <span class="save">−58%</span>', price4_note: 'One payment for 12 months',
-    price4_desc: 'Maximum power at the best price. All PRO updates for a year.', price4_cta: 'Buy 1 year',
+    price4_name: 'Lifetime', price4_per: '<b>No expiry</b>', price4_note: 'One payment — PRO forever',
+    price4_desc: 'All PRO modules with no time limit. Costs less than six months on the monthly plan.', price4_cta: 'Buy lifetime',
     pay1: 'Payment via YooKassa — cards and SBP', pay2: 'Key shown right on the page', pay3: 'No auto-renewal',
     cmp_h: 'What’s included', cmp1: '180+ registry and service tweaks', cmp2: 'Real-time monitoring', cmp3: 'Startup manager',
     cmp4: 'Built-in utilities', cmp5: 'Interrupt control (MSI, IRQ)', cmp6: 'NVIDIA and AMD GPU sections',
