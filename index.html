@@ -19,7 +19,7 @@
 <link rel="apple-touch-icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -32,925 +32,447 @@
   "downloadUrl": "https://github.com/disxrm/voidtweaks/releases/latest/download/VOIDTWEAKSInstaller.exe",
   "image": "https://disxrm.github.io/voidtweaks/logo.png",
   "offers": [
-    { "@type": "Offer", "name": "FREE",    "price": "0",   "priceCurrency": "RUB" },
-    { "@type": "Offer", "name": "Месяц",   "price": "99",  "priceCurrency": "RUB" },
-    { "@type": "Offer", "name": "Полгода", "price": "299", "priceCurrency": "RUB" },
+    { "@type": "Offer", "name": "FREE",     "price": "0",   "priceCurrency": "RUB" },
+    { "@type": "Offer", "name": "Месяц",    "price": "99",  "priceCurrency": "RUB" },
+    { "@type": "Offer", "name": "Полгода",  "price": "299", "priceCurrency": "RUB" },
     { "@type": "Offer", "name": "Навсегда", "price": "499", "priceCurrency": "RUB" }
   ]
 }
 </script>
 <style>
 /* ============================================================
-   TOKENS — взяты из App.xaml приложения VOID TWEAKS
-   (BackgroundColor, SurfaceColor, BorderColor, PrimaryGradientBrush,
-    ToggleOnBrush, PrimaryTextGradientBrush)
+   TOKENS — из App.xaml приложения VOID TWEAKS
 ============================================================ */
 :root {
-  --bg:            #030303;
-  --bg-2:          #09090A;
-  --surface:       #0D0D0F;
-  --surface-hover: #18181B;
-  --border:        #2A2A2E;
-  --border-soft:   rgba(255,255,255,0.08);
-  --border-hover:  rgba(255,255,255,0.55);
-  --text:          #FFFFFF;
-  --text-2:        #A1A1AA;
-  --text-3:        #71717A;
-  --zinc-700:      #3F3F46;
-  --zinc-800:      #27272A;
-  --success:       #22C55E;
-  --warning:       #F59E0B;
-  --danger:        #EF4444;
+  --bg:         #030303;
+  --surface:    #0D0D0F;
+  --surface-2:  #131316;
+  --line:       #1F1F23;
+  --line-2:     #2A2A2E;
+  --text:       #FFFFFF;
+  --text-2:     #A1A1AA;
+  --text-3:     #71717A;
+  --success:    #22C55E;
+  --warning:    #F59E0B;
   --grad-gray:  linear-gradient(135deg, #52525B 0%, #3F3F46 55%, #27272A 100%);
   --grad-white: linear-gradient(135deg, #FFFFFF 0%, #D4D4D8 100%);
-  --grad-text:  linear-gradient(90deg, #FFFFFF 0%, #FFFFFF 55%, #A1A1AA 100%);
-  --grad-card:  linear-gradient(180deg, rgba(24,24,27,0.72) 0%, rgba(13,13,15,0.72) 100%);
-  --radius-sm: 10px; --radius-md: 14px; --radius-lg: 20px; --radius-xl: 26px;
-  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-std:    cubic-bezier(0.2, 0, 0, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --container: 1200px;
+  --grad-text:  linear-gradient(90deg, #FFFFFF 0%, #FFFFFF 50%, #A1A1AA 100%);
+  --radius: 18px;
+  --container: 1120px;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 html, body {
   margin: 0; padding: 0; background: var(--bg); color: var(--text);
   font-family: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
 }
-body { min-height: 100vh; position: relative; isolation: isolate; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; }
 img { max-width: 100%; }
 [hidden] { display: none !important; }
-::selection { background: rgba(255,255,255,0.22); color: #fff; }
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #27272A; border-radius: 5px; border: 3px solid transparent; background-clip: content-box; }
-::-webkit-scrollbar-thumb:hover { background: #3F3F46; background-clip: content-box; }
-a:focus-visible, button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+::selection { background: rgba(255,255,255,0.22); }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
-/* ============================================================
-   BACKGROUND — «пустота»: чистый чёрный, мягкий белый свет сверху
-============================================================ */
-.void-bg { position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden; background: var(--bg); }
-.void-bg::before {
-  content: ""; position: absolute; left: 50%; top: -38vh; width: 120vw; height: 90vh;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at center, rgba(255,255,255,0.075) 0%, rgba(255,255,255,0.025) 35%, transparent 68%);
-}
-.void-bg::after {
-  content: ""; position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
-  background-size: 64px 64px;
-  -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, #000 0%, transparent 75%);
-          mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, #000 0%, transparent 75%);
-}
-.noise {
-  position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.04; mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-}
-.scroll-progress {
-  position: fixed; top: 0; left: 0; height: 2px; width: 100%; z-index: 300;
-  background: linear-gradient(90deg, #52525B, #FFFFFF);
-  transform-origin: 0 50%; transform: scaleX(0); pointer-events: none;
-}
-
-.container { width: 100%; max-width: var(--container); margin: 0 auto; padding: 0 24px; position: relative; }
+.container { width: 100%; max-width: var(--container); margin: 0 auto; padding: 0 24px; }
 @media (max-width: 480px) { .container { padding: 0 16px; } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.grad-text { background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
-.card {
-  position: relative; background: var(--grad-card);
-  border: 1px solid var(--border-soft); border-radius: var(--radius-lg);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 30px 60px -30px rgba(0,0,0,0.8);
-}
-.grad-text, .grad-primary-text { background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.muted { color: var(--text-3); }
-
-/* ============================================================
-   BUTTONS — белая (ToggleOnBrush) и серая (PrimaryGradientBrush)
-============================================================ */
+/* ---------- buttons ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 9px;
-  height: 48px; padding: 0 24px; border-radius: 12px;
-  font-weight: 600; font-size: 14.5px; letter-spacing: 0.1px; white-space: nowrap;
-  cursor: pointer; border: 1px solid transparent; position: relative; overflow: hidden;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform 0.35s var(--ease-spring), box-shadow 0.35s var(--ease-std),
-              background 0.25s var(--ease-std), color 0.25s var(--ease-std), border-color 0.25s var(--ease-std);
+  height: 48px; padding: 0 22px; border-radius: 12px; border: 1px solid transparent;
+  font-weight: 600; font-size: 14.5px; white-space: nowrap; cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
-.btn svg { flex-shrink: 0; width: 16px; height: 16px; }
-.btn:active { transform: scale(0.97); }
-.btn-primary {
-  background: var(--grad-white); color: #09090B;
-  box-shadow: 0 10px 30px -10px rgba(255,255,255,0.35), 0 0 0 1px rgba(255,255,255,0.6) inset;
-}
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 16px 40px -10px rgba(255,255,255,0.45), 0 0 0 1px #fff inset; }
-.btn-primary::after {
-  content: ""; position: absolute; top: 0; left: -80%; width: 50%; height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.8), transparent);
-  transform: skewX(-22deg); pointer-events: none;
-}
-.btn-primary:hover::after { animation: shine 0.9s ease forwards; }
-@keyframes shine { from { left: -80%; } to { left: 130%; } }
-.btn-gray { background: var(--grad-gray); color: #fff; border-color: rgba(255,255,255,0.10); }
-.btn-gray:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.28); box-shadow: 0 14px 32px -14px rgba(0,0,0,0.9); }
-.btn-ghost { background: rgba(255,255,255,0.03); color: var(--text-2); border-color: var(--border); }
-.btn-ghost:hover { color: #fff; border-color: var(--border-hover); background: rgba(255,255,255,0.06); }
-.btn-lg { height: 54px; padding: 0 28px; font-size: 15.5px; border-radius: 14px; }
+.btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+.btn-primary { background: var(--grad-white); color: #09090B; }
+.btn-primary:hover { background: #fff; }
+.btn-gray { background: var(--grad-gray); color: #fff; border-color: rgba(255,255,255,0.1); }
+.btn-gray:hover { border-color: rgba(255,255,255,0.3); }
+.btn-ghost { background: transparent; color: var(--text-2); border-color: var(--line-2); }
+.btn-ghost:hover { color: #fff; border-color: #52525B; }
+.btn-lg { height: 52px; padding: 0 26px; font-size: 15px; }
 .btn-block { width: 100%; }
 
-.pill {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 12px; font-weight: 600; color: var(--text-2);
-  padding: 6px 12px 6px 8px; border-radius: 100px;
-  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-  transition: border-color 0.25s ease, color 0.25s ease;
-}
-.pill:hover { border-color: var(--border-hover); color: #fff; }
-.pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); box-shadow: 0 0 10px var(--success); }
-.pill b { color: #fff; font-weight: 700; }
-
-/* ============================================================
-   NAV
-============================================================ */
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 14px 0;
-  border-bottom: 1px solid transparent;
-  transition: padding 0.3s var(--ease-std), background 0.3s ease, border-color 0.3s ease;
-}
-.nav.scrolled {
-  padding: 10px 0; background: rgba(3,3,3,0.78);
-  backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border-bottom-color: var(--border-soft);
-}
-.nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -0.2px; font-size: 15.5px; }
-.brand img { width: 28px; height: 28px; flex-shrink: 0; }
-.brand-sub { color: var(--text-3); font-weight: 500; font-size: 12.5px; margin-left: 4px; padding-left: 12px; border-left: 1px solid var(--border); }
-.brand-sub { white-space: nowrap; }
-@media (max-width: 1180px) { .brand-sub { display: none; } }
-.nav-links { display: flex; align-items: center; gap: 2px; font-size: 13.5px; font-weight: 500; }
-.nav-links a { padding: 8px 12px; border-radius: 9px; color: var(--text-2); transition: color 0.2s ease, background 0.2s ease; position: relative; }
-.nav-links a:hover { color: #fff; background: rgba(255,255,255,0.05); }
-.nav-links a.active { color: #fff; }
-.nav-links a.active::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 3px; height: 2px; border-radius: 2px; background: #fff; }
+/* ---------- nav ---------- */
+.nav { position: sticky; top: 0; z-index: 100; background: rgba(3,3,3,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px; letter-spacing: -0.2px; }
+.brand img { width: 28px; height: 28px; }
+.nav-links { display: flex; gap: 4px; font-size: 14px; font-weight: 500; }
+.nav-links a { padding: 8px 12px; border-radius: 8px; color: var(--text-2); }
+.nav-links a:hover { color: #fff; }
 .nav-cta { display: flex; align-items: center; gap: 8px; }
-.nav .btn { height: 38px; padding: 0 16px; font-size: 13px; border-radius: 10px; }
-.lang-toggle {
-  display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 12px; border-radius: 10px;
-  background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-2);
-  font-size: 12.5px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer;
-  transition: color 0.2s ease, border-color 0.2s ease;
-}
-.lang-toggle:hover { color: #fff; border-color: var(--border-hover); }
-.lang-toggle svg { width: 14px; height: 14px; }
-.burger {
-  display: none; width: 40px; height: 40px; background: transparent; border: 1px solid var(--border);
-  border-radius: 10px; cursor: pointer; align-items: center; justify-content: center; color: #fff;
-}
-.burger svg { width: 18px; height: 18px; }
-@media (max-width: 1020px) { .nav-links { display: none; } .burger { display: inline-flex; } }
-@media (max-width: 480px) { .nav-cta .btn { display: none; } .lang-toggle .lang-current { display: none; } .lang-toggle { padding: 0 11px; } }
+.nav .btn { height: 38px; padding: 0 16px; font-size: 13.5px; border-radius: 10px; }
+.lang-toggle { height: 38px; padding: 0 12px; border-radius: 10px; background: transparent; border: 1px solid var(--line-2); color: var(--text-2); font-size: 12.5px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; }
+.lang-toggle:hover { color: #fff; border-color: #52525B; }
+@media (max-width: 760px) { .nav-links { display: none; } }
 
-.mobile-menu {
-  position: fixed; top: 0; right: 0; bottom: 0; width: min(340px, 90vw); z-index: 200;
-  background: rgba(9,9,10,0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border-left: 1px solid var(--border); padding: 82px 20px 24px;
-  transform: translateX(100%); transition: transform 0.45s var(--ease-out);
-  display: flex; flex-direction: column; gap: 4px; overflow-y: auto;
-}
-.mobile-menu.open { transform: translateX(0); }
-.mm-links { display: flex; flex-direction: column; gap: 2px; }
-.mm-links a { display: block; padding: 13px 14px; font-size: 15.5px; font-weight: 600; color: var(--text-2); border-radius: 12px; transition: background 0.2s ease, color 0.2s ease; }
-.mm-links a:hover, .mm-links a.active { background: rgba(255,255,255,0.05); color: #fff; }
-.mm-divider { height: 1px; margin: 14px 4px; background: var(--border); }
-.mm-tg { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; font-size: 13.5px; font-weight: 600; color: var(--text-2); border: 1px solid var(--border); }
-.mm-tg:hover { color: #fff; border-color: var(--border-hover); }
-.mm-tg svg { width: 16px; height: 16px; }
-.mm-foot { display: flex; flex-direction: column; gap: 12px; margin-top: auto; padding-top: 20px; }
-.mm-meta { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); font-size: 12.5px; color: var(--text-2); }
-.mm-meta b { color: #fff; font-weight: 700; }
-.mobile-close {
-  position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 10px;
-  border: 1px solid var(--border); background: transparent; color: var(--text-2); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-.mobile-close svg { width: 16px; height: 16px; }
-.mobile-close:hover { color: #fff; border-color: var(--border-hover); }
-.menu-backdrop { position: fixed; inset: 0; z-index: 150; background: rgba(0,0,0,0.6); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-.menu-backdrop.open { opacity: 1; pointer-events: auto; }
-
-/* ============================================================
-   HERO
-============================================================ */
-.hero { padding: 132px 0 40px; text-align: center; }
-@media (max-width: 720px) { .hero { padding: 108px 0 28px; } }
-.hero .pill { margin-bottom: 26px; }
-.hero h1 {
-  font-size: clamp(38px, 6.4vw, 80px); line-height: 1.02; font-weight: 800;
-  letter-spacing: -0.035em; margin: 0 auto 22px; max-width: 980px;
-}
+/* ---------- hero ---------- */
+.hero { padding: 88px 0 72px; text-align: center; }
+@media (max-width: 720px) { .hero { padding: 56px 0 48px; } }
+.badge { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--text-2); padding: 6px 12px; border-radius: 100px; border: 1px solid var(--line-2); margin-bottom: 24px; }
+.badge i { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+.badge b { color: #fff; }
+.hero h1 { font-size: clamp(36px, 6vw, 72px); line-height: 1.04; font-weight: 800; letter-spacing: -0.035em; margin: 0 auto 20px; max-width: 900px; }
 .hero h1 .line { display: block; }
-.hero p.lead { color: var(--text-2); font-size: clamp(16px, 1.6vw, 18.5px); line-height: 1.65; max-width: 640px; margin: 0 auto 34px; }
-.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 22px; }
-.hero-note { display: flex; flex-wrap: wrap; gap: 8px 22px; justify-content: center; color: var(--text-3); font-size: 13px; font-weight: 500; }
-.hero-note > span { display: inline-flex; align-items: center; gap: 7px; }
-.hero-note svg { width: 15px; height: 15px; color: var(--text-2); }
-.hero-note b { color: #fff; font-variant-numeric: tabular-nums; }
-.rise { animation: rise 0.7s var(--ease-out) both; }
-.rise.d1 { animation-delay: 0.06s; } .rise.d2 { animation-delay: 0.12s; } .rise.d3 { animation-delay: 0.18s; } .rise.d4 { animation-delay: 0.26s; }
-@keyframes rise { from { opacity: 0.001; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.hero .lead { color: var(--text-2); font-size: clamp(16px, 1.5vw, 18px); line-height: 1.65; max-width: 600px; margin: 0 auto 32px; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.hero .note { margin-top: 18px; font-size: 13px; color: var(--text-3); }
+.hero .note b { color: var(--text-2); font-weight: 600; }
 
-/* ---------- App preview (стилизовано под окно VOID TWEAKS) ---------- */
-.preview-wrap { margin: 56px auto 0; max-width: 1040px; position: relative; }
-.preview-wrap::before {
-  content: ""; position: absolute; left: 10%; right: 10%; top: -40px; height: 160px; z-index: -1;
-  background: radial-gradient(ellipse at center, rgba(255,255,255,0.12), transparent 70%); filter: blur(30px);
-}
-.app {
-  display: grid; grid-template-columns: 200px 1fr; text-align: left; overflow: hidden;
-  border-radius: 18px; border: 1px solid var(--border); background: #070708;
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset, 0 50px 120px -40px rgba(0,0,0,1), 0 0 80px -30px rgba(255,255,255,0.12);
-}
-.app-titlebar { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; height: 38px; padding: 0 14px; border-bottom: 1px solid var(--border-soft); background: #050506; }
-.app-titlebar .t { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--text-2); }
-.app-titlebar .t img { width: 16px; height: 16px; }
-.app-titlebar .wc { display: flex; gap: 14px; color: var(--text-3); font-size: 12px; }
-.app-side { border-right: 1px solid var(--border-soft); padding: 14px 10px; display: flex; flex-direction: column; gap: 4px; background: #060607; }
-.app-nav { display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 12px; border-radius: 10px; font-size: 12.5px; font-weight: 600; color: var(--text-3); }
-.app-nav svg { width: 16px; height: 16px; }
-.app-nav.on { color: #fff; background: linear-gradient(90deg, rgba(255,255,255,0.09), rgba(255,255,255,0.02)); box-shadow: inset 2px 0 0 #fff; }
-.app-side .lic { margin-top: auto; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border-soft); font-size: 11px; color: var(--text-3); }
-.app-side .lic b { display: block; color: #fff; font-size: 12px; margin-top: 2px; }
-.app-main { padding: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-.app-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.app-head h4 { margin: 0; font-size: 17px; font-weight: 800; }
+/* ---------- app preview ---------- */
+.preview { margin: 56px auto 0; max-width: 960px; }
+.app { display: grid; grid-template-columns: 190px 1fr; text-align: left; border-radius: 16px; border: 1px solid var(--line-2); background: #070708; overflow: hidden; }
+.app-bar { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; height: 36px; padding: 0 14px; border-bottom: 1px solid var(--line); font-size: 12px; font-weight: 700; color: var(--text-2); }
+.app-bar .t { display: flex; align-items: center; gap: 8px; }
+.app-bar img { width: 16px; height: 16px; }
+.app-bar .wc { display: flex; gap: 14px; color: var(--text-3); font-weight: 500; }
+.app-side { border-right: 1px solid var(--line); padding: 12px 10px; display: flex; flex-direction: column; gap: 4px; }
+.app-nav { display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 12px; border-radius: 9px; font-size: 12.5px; font-weight: 600; color: var(--text-3); }
+.app-nav svg { width: 15px; height: 15px; }
+.app-nav.on { color: #fff; background: var(--surface-2); }
+.app-main { padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.app-head { display: flex; justify-content: space-between; align-items: baseline; }
+.app-head h4 { margin: 0; font-size: 16px; font-weight: 800; }
 .app-head span { font-size: 11.5px; color: var(--text-3); }
 .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-.tile { padding: 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border-soft); }
+.tile { padding: 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
 .tile .k { font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-3); }
-.tile .v { font-size: 20px; font-weight: 800; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.tile .v { font-size: 19px; font-weight: 800; margin-top: 4px; }
 .tile .s { font-size: 11px; color: var(--text-2); margin-top: 2px; }
-.tile .bar { height: 4px; border-radius: 4px; background: #1c1c1f; margin-top: 10px; overflow: hidden; }
-.tile .bar i { display: block; height: 100%; border-radius: 4px; background: var(--grad-white); }
-.tweaks { border-radius: 12px; border: 1px solid var(--border-soft); background: var(--surface); }
-.tw { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 14px; border-top: 1px solid var(--border-soft); }
+.tweaks { border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+.tw { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 14px; border-top: 1px solid var(--line); }
 .tw:first-child { border-top: 0; }
 .tw .n { font-size: 12.5px; font-weight: 600; }
 .tw .d { font-size: 11px; color: var(--text-3); margin-top: 2px; }
-.tg { width: 34px; height: 20px; border-radius: 20px; background: #27272A; position: relative; flex-shrink: 0; border: 1px solid #3F3F46; }
-.tg::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #71717A; transition: transform 0.3s var(--ease-spring); }
+.tg { width: 34px; height: 20px; border-radius: 20px; background: #27272A; border: 1px solid #3F3F46; position: relative; flex-shrink: 0; }
+.tg::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #71717A; }
 .tg.on { background: var(--grad-white); border-color: #fff; }
-.tg.on::after { transform: translateX(14px); background: #09090B; }
-.app-run { display: flex; justify-content: flex-end; }
-.app-run span { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 10px; background: var(--grad-gray); border: 1px solid rgba(255,255,255,0.12); font-size: 12.5px; font-weight: 700; }
-@media (max-width: 820px) { .app { grid-template-columns: 1fr; } .app-side { display: none; } .tiles { grid-template-columns: repeat(2, 1fr); } }
+.tg.on::after { left: 16px; background: #09090B; }
+@media (max-width: 760px) { .app { grid-template-columns: 1fr; } .app-side { display: none; } .tiles { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .preview { margin-top: 40px; } .tweaks { display: none; } }
 
-/* ============================================================
-   TRUST STRIP
-============================================================ */
-.trust { padding: 56px 0 8px; }
-.trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-@media (max-width: 900px) { .trust-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 480px) { .trust-grid { grid-template-columns: 1fr; } }
-.trust-item { display: flex; gap: 12px; align-items: flex-start; padding: 16px 18px; }
-.trust-item svg { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; }
-.trust-item b { display: block; font-size: 14px; font-weight: 700; margin-bottom: 3px; }
-.trust-item span { font-size: 12.5px; color: var(--text-2); line-height: 1.5; }
-
-/* ============================================================
-   SECTIONS
-============================================================ */
-section { padding: 72px 0; position: relative; }
-@media (max-width: 720px) { section { padding: 52px 0; } }
-.sec-head { max-width: 720px; margin-bottom: 44px; }
-.sec-head.center { margin-left: auto; margin-right: auto; text-align: center; }
-.eyebrow {
-  display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase;
-  color: var(--text-2); margin-bottom: 14px; padding: 5px 12px; border-radius: 100px;
-  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+/* ---------- facts strip ---------- */
+.facts { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.facts-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+.fact { padding: 28px 24px; border-left: 1px solid var(--line); }
+.fact:first-child { border-left: 0; }
+.fact b { display: block; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+.fact span { font-size: 13.5px; color: var(--text-2); }
+@media (max-width: 760px) {
+  .facts-grid { grid-template-columns: repeat(2, 1fr); }
+  .fact { padding: 20px 16px; }
+  .fact:nth-child(3) { border-left: 0; }
+  .fact:nth-child(n+3) { border-top: 1px solid var(--line); }
 }
-.sec-head h2 { font-size: clamp(28px, 3.8vw, 46px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 800; margin: 0 0 14px; }
-.sec-head p { font-size: 16px; line-height: 1.65; color: var(--text-2); margin: 0; }
-.sec-head.center p { margin-left: auto; margin-right: auto; max-width: 600px; }
 
-.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.7s var(--ease-out), transform 0.8s var(--ease-out); transition-delay: calc(var(--i, 0) * 60ms); }
-.reveal.in { opacity: 1; transform: none; }
-
-/* ---------- metrics ---------- */
-.metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-@media (max-width: 820px) { .metrics-grid { grid-template-columns: repeat(2, 1fr); } }
-.metric { padding: 20px; }
-.metric .num { font-size: 40px; font-weight: 900; letter-spacing: -1.4px; line-height: 1; margin-bottom: 8px; font-variant-numeric: tabular-nums; background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.metric .lbl { font-size: 13px; color: var(--text-2); font-weight: 500; line-height: 1.45; }
-
-/* ---------- steps ---------- */
-.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; counter-reset: step; }
-@media (max-width: 860px) { .steps { grid-template-columns: 1fr; } }
-.step { padding: 26px; }
-.step .no { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; font-size: 15px; background: var(--grad-white); color: #09090B; margin-bottom: 18px; }
-.step h3 { margin: 0 0 8px; font-size: 18px; font-weight: 700; }
-.step p { margin: 0; color: var(--text-2); font-size: 14px; line-height: 1.6; }
+/* ---------- sections ---------- */
+section.block { padding: 96px 0; }
+@media (max-width: 720px) { section.block { padding: 64px 0; } }
+.head { max-width: 640px; margin: 0 auto 44px; text-align: center; }
+.head h2 { font-size: clamp(28px, 3.6vw, 42px); line-height: 1.1; letter-spacing: -0.03em; font-weight: 800; margin: 0 0 12px; }
+.head p { margin: 0; font-size: 16px; line-height: 1.6; color: var(--text-2); }
 
 /* ---------- features ---------- */
-.features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-@media (max-width: 760px) { .features-grid { grid-template-columns: 1fr; } }
-.feat { padding: 28px; overflow: hidden; transition: border-color 0.3s ease, transform 0.4s var(--ease-out); }
-.feat:hover { border-color: rgba(255,255,255,0.18); transform: translateY(-3px); }
-.feat::after {
-  content: ""; position: absolute; width: 360px; height: 360px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.07), transparent 65%);
-  top: var(--my, 50%); left: var(--mx, 50%); transform: translate(-50%, -50%);
-  opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
-}
-.feat:hover::after { opacity: 1; }
-.icon-box {
-  width: 46px; height: 46px; border-radius: 13px; display: flex; align-items: center; justify-content: center;
-  background: var(--grad-gray); border: 1px solid rgba(255,255,255,0.12); color: #fff; margin-bottom: 18px;
-}
-.icon-box svg { width: 21px; height: 21px; }
-.feat h3 { font-size: 18px; font-weight: 700; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.feat p { color: var(--text-2); font-size: 14px; line-height: 1.6; margin: 0; }
-.tag-pro { font-size: 10px; font-weight: 800; letter-spacing: 0.8px; padding: 3px 8px; border-radius: 6px; background: #fff; color: #09090B; }
+.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 900px) { .features { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .features { grid-template-columns: 1fr; } }
+.feat { padding: 26px; }
+.feat.wide { grid-column: span 2; }
+@media (max-width: 600px) { .feat.wide { grid-column: auto; } }
+.ico { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--grad-gray); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 18px; }
+.ico svg { width: 20px; height: 20px; }
+.feat h3 { margin: 0 0 8px; font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.feat p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-2); }
+.pro { font-size: 10px; font-weight: 800; letter-spacing: 0.8px; padding: 3px 7px; border-radius: 6px; background: #fff; color: #09090B; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.chips span { font-size: 13px; font-weight: 600; padding: 7px 12px; border-radius: 9px; background: var(--surface-2); border: 1px solid var(--line-2); }
 
-/* ---------- tools ---------- */
-.tools-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-@media (max-width: 900px) { .tools-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .tools-grid { grid-template-columns: 1fr; } }
-.tool { padding: 20px; display: flex; gap: 14px; align-items: flex-start; transition: border-color 0.3s ease; }
-.tool:hover { border-color: rgba(255,255,255,0.18); }
-.tool .icon-box { width: 40px; height: 40px; border-radius: 11px; margin: 0; flex-shrink: 0; }
-.tool .icon-box svg { width: 19px; height: 19px; }
-.tool h3 { margin: 2px 0 6px; font-size: 15.5px; font-weight: 700; }
-.tool p { margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-2); }
+/* ---------- pricing ---------- */
+.free { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; padding: 20px 24px; margin-bottom: 14px; }
+.free .l { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.free .nm { font-size: 13px; font-weight: 800; letter-spacing: 1.2px; color: var(--text-2); }
+.free .pr { font-size: 24px; font-weight: 800; }
+.free .ds { font-size: 14px; color: var(--text-2); }
+.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 900px) { .plans { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; } .plan.best { order: -1; } }
+.plan { padding: 28px 24px 24px; display: flex; flex-direction: column; position: relative; }
+.plan.best { background: var(--surface-2); border-color: #52525B; }
+.plan .tag { position: absolute; top: 18px; right: 18px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; background: #fff; color: #09090B; }
+.plan .nm { font-size: 13px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-2); margin-bottom: 14px; }
+.plan .pr { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.plan .pr .amount { font-size: 44px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; }
+.plan .pr .cur { font-size: 18px; font-weight: 700; color: var(--text-2); }
+.plan .pr s { font-size: 15px; color: var(--text-3); font-weight: 600; }
+.plan .per { font-size: 13.5px; color: var(--text-2); margin: 8px 0 18px; min-height: 22px; }
+.plan .per b { color: #fff; }
+.save { display: inline-block; font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 6px; background: rgba(34,197,94,0.12); color: #86EFAC; margin-left: 4px; }
+.plan .ds { margin: 0 0 22px; font-size: 14px; line-height: 1.55; color: var(--text-2); flex: 1; }
+.pro-list { margin: 26px auto 0; max-width: 820px; text-align: center; font-size: 14px; line-height: 1.7; color: var(--text-2); }
+.pro-list b { color: #fff; }
+.pay { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 22px; margin-top: 14px; font-size: 13px; color: var(--text-3); }
 
-/* ============================================================
-   PRICING
-============================================================ */
-.free-strip { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 20px 24px; margin-bottom: 16px; flex-wrap: wrap; }
-.free-strip .l { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.free-strip .nm { font-size: 13px; font-weight: 800; letter-spacing: 1.2px; color: var(--text-2); }
-.free-strip .pr { font-size: 26px; font-weight: 900; }
-.free-strip .ds { font-size: 13.5px; color: var(--text-2); }
-.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
-@media (max-width: 960px) { .pricing-grid { grid-template-columns: 1fr; max-width: 460px; margin: 0 auto; } .price-card.featured { order: -1; } }
-.price-card { padding: 30px 26px 26px; display: flex; flex-direction: column; }
-.price-card.featured {
-  background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(13,13,15,0.9) 55%);
-  border-color: rgba(255,255,255,0.35);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.06) inset, 0 40px 90px -40px rgba(255,255,255,0.25);
-}
-.price-tag { position: absolute; top: 18px; right: 18px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; background: #fff; color: #09090B; }
-.price-name { font-size: 13px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-2); margin: 0 0 12px; }
-.price-val { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
-.price-val .amount { font-size: 44px; font-weight: 900; letter-spacing: -1.6px; line-height: 1; font-variant-numeric: tabular-nums; }
-.price-val .curr { font-size: 18px; font-weight: 700; color: var(--text-2); }
-.price-val s { font-size: 15px; color: var(--text-3); font-weight: 600; }
-.price-per { font-size: 13px; color: var(--text-2); margin-bottom: 6px; min-height: 20px; }
-.price-per b { color: #fff; }
-.save { display: inline-block; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: rgba(34,197,94,0.12); color: #86EFAC; border: 1px solid rgba(34,197,94,0.3); margin-left: 6px; }
-.price-note { font-size: 12px; color: var(--text-3); margin-bottom: 18px; font-weight: 500; }
-.price-desc { font-size: 14px; color: var(--text-2); line-height: 1.55; margin: 0 0 22px; flex: 1; }
-.price-card .btn { width: 100%; }
-.pay-note { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; margin-top: 22px; font-size: 13px; color: var(--text-3); }
-.pay-note span { display: inline-flex; align-items: center; gap: 7px; }
-.pay-note svg { width: 15px; height: 15px; color: var(--text-2); }
+/* ---------- faq ---------- */
+.faq { max-width: 760px; margin: 0 auto; border-top: 1px solid var(--line); }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 4px; font-size: 16px; font-weight: 600; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary svg { width: 20px; height: 20px; color: var(--text-3); flex-shrink: 0; }
+.faq details[open] summary svg { transform: rotate(45deg); color: #fff; }
+.faq .a { padding: 0 4px 22px; margin-top: -6px; font-size: 14.5px; line-height: 1.7; color: var(--text-2); }
 
-.compare { margin-top: 36px; overflow-x: auto; }
-.compare table { width: 100%; border-collapse: collapse; min-width: 440px; }
-.compare th, .compare td { padding: 14px 18px; text-align: left; font-size: 14px; border-top: 1px solid var(--border-soft); }
-.compare thead th { border-top: 0; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--text-2); }
-.compare th:not(:first-child), .compare td:not(:first-child) { text-align: center; width: 120px; }
-.compare td { color: var(--text-2); }
-.compare td svg { width: 16px; height: 16px; vertical-align: middle; }
-.compare .y { color: #fff; } .compare .n { color: #3F3F46; }
-.compare thead th:last-child { color: #fff; }
+/* ---------- download ---------- */
+.dl { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; }
+@media (max-width: 860px) { .dl { grid-template-columns: 1fr; } }
+.dl-main { padding: 32px; display: flex; flex-direction: column; }
+.dl-main img { width: 56px; height: 56px; margin-bottom: 18px; }
+.dl-main h3 { margin: 0 0 6px; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+.dl-main .meta { font-size: 14px; color: var(--text-2); margin-bottom: 24px; }
+.dl-main .meta b { color: #fff; font-weight: 600; }
+.req { margin: 22px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--text-2); }
+.req li { display: flex; gap: 10px; }
+.req li::before { content: "—"; color: var(--text-3); }
+.dl-main .dl-count { margin-top: auto; padding-top: 22px; font-size: 13px; color: var(--text-3); }
+.dl-main .dl-count b { color: #86EFAC; }
+.news { padding: 32px; display: flex; flex-direction: column; }
+.news h4 { margin: 0 0 4px; font-size: 13px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-2); }
+.log-ver { font-size: 22px; font-weight: 800; margin: 0 0 4px; }
+.log-date { font-size: 13px; color: var(--text-3); margin-bottom: 18px; }
+.log-items { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.log-items li { font-size: 14px; line-height: 1.55; color: var(--text-2); padding-left: 16px; position: relative; }
+.log-items li::before { content: ""; position: absolute; left: 2px; top: 9px; width: 5px; height: 5px; border-radius: 50%; background: var(--text-3); }
+.log-more { margin-top: auto; padding-top: 20px; font-size: 13.5px; font-weight: 600; color: var(--text-2); }
+.log-more:hover { color: #fff; }
+.log-empty { font-size: 14px; color: var(--text-3); }
 
-/* ============================================================
-   CHANGELOG
-============================================================ */
-.log-list { position: relative; max-width: 820px; margin: 0 auto; padding-left: 40px; min-height: 200px; }
-.log-list::before { content: ""; position: absolute; left: 13px; top: 14px; bottom: 14px; width: 2px; background: linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.04)); border-radius: 2px; }
-.log-entry { margin-bottom: 18px; padding: 22px 24px; }
-.log-entry::before { content: ""; position: absolute; left: -33px; top: 28px; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px var(--bg), 0 0 14px rgba(255,255,255,0.6); }
-.log-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
-.log-ver { font-size: 15px; font-weight: 800; }
-.log-date { font-size: 11.5px; color: var(--text-3); font-weight: 600; padding: 3px 9px; border-radius: 6px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); }
-.log-tag { font-size: 10px; font-weight: 800; letter-spacing: 0.6px; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; background: rgba(255,255,255,0.05); color: var(--text-2); border: 1px solid var(--border); }
-.log-tag.latest { background: rgba(34,197,94,0.12); color: #86EFAC; border-color: rgba(34,197,94,0.32); }
-.log-tag.beta { background: rgba(245,158,11,0.12); color: #FCD34D; border-color: rgba(245,158,11,0.32); }
-.log-list-items { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 7px; }
-.log-list-items li { font-size: 13.5px; color: var(--text-2); line-height: 1.6; padding-left: 16px; position: relative; }
-.log-list-items li::before { content: ""; position: absolute; left: 2px; top: 9px; width: 5px; height: 5px; border-radius: 50%; background: var(--text-2); }
-.log-more { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 8px 14px; border-radius: 10px; font-size: 12.5px; font-weight: 700; color: var(--text-2); background: rgba(255,255,255,0.04); border: 1px solid var(--border); transition: color 0.2s ease, border-color 0.2s ease; }
-.log-more svg { width: 14px; height: 14px; }
-.log-more:hover { color: #fff; border-color: var(--border-hover); }
-.log-empty { text-align: center; color: var(--text-3); font-size: 14px; padding: 40px 20px; border: 1px dashed var(--border); border-radius: var(--radius-lg); }
-.log-loading { text-align: center; color: var(--text-3); font-size: 14px; padding: 40px 20px; display: flex; align-items: center; justify-content: center; gap: 12px; }
-.spinner { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); border-top-color: #fff; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+/* ---------- footer ---------- */
+footer { border-top: 1px solid var(--line); padding: 28px 0; }
+.foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--text-3); }
+.foot .brand { font-size: 14px; color: #fff; }
+.foot .brand img { width: 24px; height: 24px; }
+.foot nav { display: flex; gap: 20px; flex-wrap: wrap; }
+.foot nav a:hover { color: #fff; }
 
-/* ============================================================
-   FAQ
-============================================================ */
-.faq-list { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
-.faq-item { overflow: hidden; transition: border-color 0.3s ease, background 0.3s ease; }
-.faq-item:hover { border-color: rgba(255,255,255,0.16); }
-.faq-item.is-open { border-color: rgba(255,255,255,0.24); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(13,13,15,0.8)); }
-.faq-toggle { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 22px; background: transparent; border: 0; cursor: pointer; font-size: 15.5px; font-weight: 600; color: #fff; text-align: left; line-height: 1.4; -webkit-tap-highlight-color: transparent; }
-.faq-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--text-2); transition: transform 0.45s var(--ease-spring), color 0.2s ease; }
-.faq-item.is-open .faq-icon { transform: rotate(180deg); color: #fff; }
-.faq-body { height: 0; overflow: hidden; opacity: 0; transition: height 0.5s var(--ease-out), opacity 0.4s ease; }
-.faq-item.is-open .faq-body { opacity: 1; }
-.faq-body-content { padding: 0 22px 22px; color: var(--text-2); font-size: 14px; line-height: 1.7; }
-.faq-body-content a { color: #fff; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
-
-/* ============================================================
-   DOWNLOAD
-============================================================ */
-.dl-wrap { display: grid; grid-template-columns: 1.15fr 1fr; gap: 20px; align-items: start; }
-@media (max-width: 880px) { .dl-wrap { grid-template-columns: 1fr; } }
-.dl-card { padding: 32px; }
-.dl-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-2); padding: 5px 11px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 100px; margin-bottom: 18px; }
-.dl-badge i { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 10px var(--success); }
-.dl-card h3 { font-size: clamp(22px, 3vw, 28px); font-weight: 800; letter-spacing: -0.6px; margin: 0 0 10px; word-break: break-word; }
-.dl-info { font-size: 14px; color: var(--text-2); line-height: 1.65; margin: 0 0 22px; }
-.dl-downloads { display: flex; align-items: center; gap: 10px; padding: 12px 16px; margin-bottom: 18px; border-radius: 12px; background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.22); font-size: 13px; color: var(--text-2); }
-.dl-downloads svg { width: 16px; height: 16px; color: #86EFAC; flex-shrink: 0; }
-.dl-downloads b { color: #86EFAC; font-weight: 800; font-variant-numeric: tabular-nums; }
-.dl-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 22px; }
-.dl-meta-cell { padding: 13px 15px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-soft); }
-.dl-meta-cell .lbl { font-size: 10.5px; font-weight: 700; letter-spacing: 0.7px; color: var(--text-3); text-transform: uppercase; margin-bottom: 5px; }
-.dl-meta-cell .val { font-size: 14px; font-weight: 600; font-family: ui-monospace, Consolas, monospace; }
-.dl-req { padding: 28px; }
-.dl-req h4 { font-size: 15px; font-weight: 700; margin: 0 0 18px; color: var(--text-2); }
-.dl-req ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 13px; }
-.dl-req li { display: flex; align-items: flex-start; gap: 12px; font-size: 13.5px; color: var(--text-2); line-height: 1.5; }
-.dl-req li svg { width: 16px; height: 16px; color: #fff; flex-shrink: 0; margin-top: 2px; }
-.dl-req li b { color: #fff; font-weight: 600; }
-.dl-hint { margin-top: 18px; padding: 14px 16px; border-radius: 12px; border: 1px dashed var(--border); font-size: 12.5px; line-height: 1.55; color: var(--text-2); }
-.dl-hint b { color: #fff; }
-
-/* ---------- final CTA ---------- */
-.final { padding: 40px 0 88px; }
-.final-card { padding: 56px 28px; text-align: center; overflow: hidden; }
-.final-card::before { content: ""; position: absolute; left: 50%; top: -120px; width: 600px; height: 260px; transform: translateX(-50%); background: radial-gradient(ellipse, rgba(255,255,255,0.14), transparent 70%); pointer-events: none; }
-.final-card img { width: 64px; height: 64px; margin-bottom: 18px; position: relative; }
-.final-card h2 { font-size: clamp(28px, 4vw, 44px); letter-spacing: -0.03em; margin: 0 0 12px; font-weight: 800; position: relative; }
-.final-card p { color: var(--text-2); margin: 0 auto 28px; max-width: 520px; line-height: 1.6; position: relative; }
-.final-card .hero-actions { margin: 0; position: relative; }
-
-/* ============================================================
-   FOOTER
-============================================================ */
-footer { padding: 52px 0 36px; border-top: 1px solid var(--border-soft); }
-.foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 36px; margin-bottom: 36px; }
-@media (max-width: 780px) { .foot-grid { grid-template-columns: 1fr; gap: 26px; } }
-.foot-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.foot-brand img { width: 30px; height: 30px; }
-.foot-brand span { font-size: 16px; font-weight: 800; }
-.foot-tag { font-size: 13px; color: var(--text-2); line-height: 1.6; max-width: 340px; margin: 0; }
-.foot-col h5 { font-size: 11.5px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--text-3); margin: 0 0 14px; }
-.foot-col a { display: block; font-size: 13.5px; color: var(--text-2); padding: 5px 0; font-weight: 500; transition: color 0.2s ease; }
-.foot-col a:hover { color: #fff; }
-.foot-bottom { padding-top: 22px; border-top: 1px solid var(--border-soft); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 12.5px; color: var(--text-3); }
-.foot-bottom .accent { color: #fff; font-weight: 700; }
-
-/* ============================================================
-   CHECKOUT MODAL
-============================================================ */
-.ord-backdrop { position: fixed; inset: 0; z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-.ord-backdrop.open { display: flex; animation: ordFade 0.3s ease; }
-@keyframes ordFade { from { opacity: 0; } to { opacity: 1; } }
-.ord-card { width: 100%; max-width: 440px; max-height: calc(100dvh - 40px); overflow-y: auto; padding: 34px 26px 26px; text-align: center; background: #0B0B0D; animation: ordPop 0.45s var(--ease-spring); }
-@keyframes ordPop { from { opacity: 0; transform: translateY(18px) scale(0.97); } to { opacity: 1; transform: none; } }
-.ord-x { position: absolute; top: 10px; right: 12px; z-index: 2; width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: var(--text-3); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+/* ---------- checkout modal ---------- */
+.ord-backdrop { position: fixed; inset: 0; z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(0,0,0,0.82); }
+.ord-backdrop.open { display: flex; }
+.ord-card { position: relative; width: 100%; max-width: 440px; max-height: calc(100dvh - 40px); overflow-y: auto; padding: 34px 26px 26px; text-align: center; }
+.ord-x { position: absolute; top: 10px; right: 12px; width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: var(--text-3); cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .ord-x svg { width: 16px; height: 16px; }
-.ord-x:hover { color: #fff; background: rgba(255,255,255,0.06); }
+.ord-x:hover { color: #fff; }
 .ord-state { display: none; }
 .ord-backdrop[data-state="wait"] .s-wait, .ord-backdrop[data-state="done"] .s-done, .ord-backdrop[data-state="canceled"] .s-canceled,
 .ord-backdrop[data-state="slow"] .s-slow, .ord-backdrop[data-state="error"] .s-error { display: block; }
 .ord-state h3 { margin: 0 0 10px; font-size: 22px; font-weight: 800; }
 .ord-state p { margin: 0 0 22px; font-size: 14px; line-height: 1.55; color: var(--text-2); }
 .ord-state .btn { width: 100%; margin-top: 10px; }
-.ord-spin { width: 34px; height: 34px; margin: 0 auto 18px; border-radius: 50%; border: 3px solid var(--border); border-top-color: #fff; animation: spin 0.9s linear infinite; }
-.ord-key { margin: 18px 0 0; padding: 16px 12px; border-radius: var(--radius-md); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.3); font-family: ui-monospace, Consolas, monospace; font-size: clamp(17px, 5vw, 22px); font-weight: 700; letter-spacing: 1.5px; word-break: break-all; user-select: all; }
+.ord-spin { width: 32px; height: 32px; margin: 0 auto 18px; border-radius: 50%; border: 3px solid var(--line-2); border-top-color: #fff; animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.ord-key { margin: 18px 0 0; padding: 16px 12px; border-radius: 14px; background: var(--surface-2); border: 1px solid #52525B; font-family: ui-monospace, Consolas, monospace; font-size: clamp(17px, 5vw, 22px); font-weight: 700; letter-spacing: 1.5px; word-break: break-all; user-select: all; }
 .ord-state p.ord-plan { margin: 10px 0 16px; font-size: 13px; color: var(--text-3); }
 .ord-steps { margin: 22px 0 14px; padding-left: 20px; text-align: left; font-size: 13.5px; line-height: 1.65; color: var(--text-2); }
 .ord-state p.ord-warn { margin: 0 0 6px; text-align: left; font-size: 12.5px; color: var(--warning); }
-
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
-  .reveal { opacity: 1; transform: none; }
-}
 </style>
 </head>
 <body>
 
-<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-<div class="void-bg" aria-hidden="true"></div>
-<div class="noise" aria-hidden="true"></div>
-
-<header class="nav" id="nav">
+<header class="nav">
   <div class="container nav-inner">
-    <a href="#home" class="brand">
-      <img src="logo.png" alt="" width="28" height="28">
-      <span>VOID TWEAKS</span>
-      <span class="brand-sub" data-i18n="brand_sub">Оптимизатор Windows</span>
-    </a>
+    <a href="#top" class="brand"><img src="logo.png" alt="" width="28" height="28"><span>VOID TWEAKS</span></a>
     <nav class="nav-links" aria-label="Разделы">
       <a href="#features" data-i18n="nav_features">Возможности</a>
-      <a href="#tools" data-i18n="nav_tools">Инструменты</a>
       <a href="#pricing" data-i18n="nav_pricing">Тарифы</a>
-      <a href="#changelog" data-i18n="nav_changelog">Обновления</a>
       <a href="#faq" data-i18n="nav_faq">FAQ</a>
     </nav>
     <div class="nav-cta">
-      <button class="lang-toggle" id="langToggle" aria-label="Switch language" title="Switch language">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg>
-        <span class="lang-current" id="langCurrent">RU</span>
-      </button>
-      <a href="#download" class="btn btn-primary">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.75 3.25a.75.75 0 0 0-1.5 0v10.94l-4.22-4.22a.75.75 0 0 0-1.06 1.06l5.5 5.5a.75.75 0 0 0 1.06 0l5.5-5.5a.75.75 0 0 0-1.06-1.06l-4.22 4.22V3.25Z"/><path d="M4 15.75a.75.75 0 0 0-1.5 0v2.5A3.25 3.25 0 0 0 5.75 21.5h12.5A3.25 3.25 0 0 0 21.5 18.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .966-.784 1.75-1.75 1.75H5.75c-.966 0-1.75-.784-1.75-1.75v-2.5Z"/></svg>
-        <span data-i18n="nav_download">Скачать</span>
-      </a>
-      <button class="burger" id="burger" aria-label="Меню">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6.5a1 1 0 0 1 1-1h16a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Zm0 5.5a1 1 0 0 1 1-1h16a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Zm0 5.5a1 1 0 0 1 1-1h16a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Z"/></svg>
-      </button>
+      <button class="lang-toggle" id="langToggle" aria-label="Switch language"><span id="langCurrent">RU</span></button>
+      <a href="#download" class="btn btn-primary" data-i18n="nav_download">Скачать</a>
     </div>
   </div>
 </header>
 
-<div class="menu-backdrop" id="menuBackdrop"></div>
-<aside class="mobile-menu" id="mobileMenu" aria-label="Меню">
-  <button class="mobile-close" id="menuClose" aria-label="Закрыть">
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5.293 5.293a1 1 0 0 1 1.414 0L12 10.586l5.293-5.293a1 1 0 1 1 1.414 1.414L13.414 12l5.293 5.293a1 1 0 0 1-1.414 1.414L12 13.414l-5.293 5.293a1 1 0 0 1-1.414-1.414L10.586 12 5.293 6.707a1 1 0 0 1 0-1.414Z"/></svg>
-  </button>
-  <nav class="mm-links">
-    <a href="#features" data-i18n="nav_features">Возможности</a>
-    <a href="#tools" data-i18n="nav_tools">Инструменты</a>
-    <a href="#pricing" data-i18n="nav_pricing">Тарифы</a>
-    <a href="#changelog" data-i18n="nav_changelog">Обновления</a>
-    <a href="#faq" data-i18n="nav_faq">FAQ</a>
-  </nav>
-  <div class="mm-divider"></div>
-  <a href="https://t.me/disxrm" target="_blank" rel="noopener" class="mm-tg">
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.5 4.4c-.3-.3-.75-.4-1.16-.25L2.9 11.1c-.5.2-.8.7-.75 1.23.05.53.45.97.96 1.09l4.05 1.02 1.5 4.5c.15.46.55.79 1.03.84h.16c.42 0 .82-.2 1.07-.55l2.18-3.07 4.13 3.03c.28.2.61.31.95.31.15 0 .3-.02.44-.06.5-.15.86-.57.94-1.08l2.35-15.4c.06-.4-.08-.81-.4-1.11Z"/></svg>
-    <span data-i18n="mm_tg">Поддержка в Telegram</span>
-  </a>
-  <div class="mm-foot">
-    <div class="mm-meta"><span data-i18n="mm_version">Версия</span><b data-ver-x64>1.0.1 · x64</b></div>
-    <a href="#download" class="btn btn-primary">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.75 3.25a.75.75 0 0 0-1.5 0v10.94l-4.22-4.22a.75.75 0 0 0-1.06 1.06l5.5 5.5a.75.75 0 0 0 1.06 0l5.5-5.5a.75.75 0 0 0-1.06-1.06l-4.22 4.22V3.25Z"/><path d="M4 15.75a.75.75 0 0 0-1.5 0v2.5A3.25 3.25 0 0 0 5.75 21.5h12.5A3.25 3.25 0 0 0 21.5 18.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .966-.784 1.75-1.75 1.75H5.75c-.966 0-1.75-.784-1.75-1.75v-2.5Z"/></svg>
-      <span data-i18n="hero_cta1">Скачать бесплатно</span>
-    </a>
-  </div>
-</aside>
-
-<main>
+<main id="top">
 
 <!-- ================= HERO ================= -->
-<section class="hero" id="home">
+<section class="hero">
   <div class="container">
-    <a href="#changelog" class="pill rise">
-      <span class="dot"></span>
-      <span><span data-i18n="hero_pill">Вышла версия</span> <b data-ver>1.0.1</b></span>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-    </a>
-    <h1 class="rise d1" data-i18n-html="hero_title"><span class="line">Чистая Windows.</span><span class="line grad-text">Больше FPS. Меньше задержек.</span></h1>
-    <p class="lead rise d2" data-i18n="hero_lead">VOID TWEAKS отключает телеметрию и лишние службы, настраивает систему под игры и откатывает любое изменение в один клик.</p>
-    <div class="hero-actions rise d3">
+    <a href="#download" class="badge"><i></i><span data-i18n="hero_badge">Версия</span> <b data-ver>1.0.1</b></a>
+    <h1 data-i18n-html="hero_title"><span class="line">Чистая Windows.</span><span class="line grad-text">Больше FPS. Меньше задержек.</span></h1>
+    <p class="lead" data-i18n="hero_lead">VOID TWEAKS отключает телеметрию и лишние службы, настраивает систему под игры и откатывает любое изменение в один клик.</p>
+    <div class="actions">
       <a href="#download" class="btn btn-primary btn-lg">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.75 3.25a.75.75 0 0 0-1.5 0v10.94l-4.22-4.22a.75.75 0 0 0-1.06 1.06l5.5 5.5a.75.75 0 0 0 1.06 0l5.5-5.5a.75.75 0 0 0-1.06-1.06l-4.22 4.22V3.25Z"/><path d="M4 15.75a.75.75 0 0 0-1.5 0v2.5A3.25 3.25 0 0 0 5.75 21.5h12.5A3.25 3.25 0 0 0 21.5 18.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .966-.784 1.75-1.75 1.75H5.75c-.966 0-1.75-.784-1.75-1.75v-2.5Z"/></svg>
-        <span data-i18n="hero_cta1">Скачать бесплатно</span>
+        <span data-i18n="cta_free">Скачать бесплатно</span>
       </a>
-      <a href="#pricing" class="btn btn-gray btn-lg"><span data-i18n="hero_cta2">PRO от 99 ₽</span></a>
+      <a href="#pricing" class="btn btn-gray btn-lg" data-i18n="cta_pro">PRO от 99 ₽</a>
     </div>
-    <div class="hero-note rise d4">
-      <span><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg><span data-i18n="hero_note1">Бесплатная версия навсегда</span></span>
-      <span><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5v6h7.5v-6.6L3 5.5Zm8.5-.65V11.5H21V4.4l-9.5 1.45v-.99ZM3 12.5v6l7.5 1.1v-7.1H3Zm8.5 0v7.1l9.5-1.45V12.5h-9.5Z"/></svg>Windows 10 / 11 x64</span>
-      <span data-count-wrap data-min="100" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.75 3.25a.75.75 0 0 0-1.5 0v10.94l-4.22-4.22a.75.75 0 0 0-1.06 1.06l5.5 5.5a.75.75 0 0 0 1.06 0l5.5-5.5a.75.75 0 0 0-1.06-1.06l-4.22 4.22V3.25Z"/></svg><span><span data-i18n="dl_downloads_label">Скачано</span> <b data-download-count>—</b> <span data-i18n="dl_downloads_times">раз</span></span></span>
-    </div>
+    <p class="note" data-i18n-html="hero_note">Бесплатная версия навсегда · <b>Windows 10 / 11 x64</b></p>
 
-    <div class="preview-wrap rise d4" aria-hidden="true">
+    <div class="preview" aria-hidden="true">
       <div class="app">
-        <div class="app-titlebar">
-          <div class="t"><img src="logo.png" alt="">VOID TWEAKS</div>
-          <div class="wc"><span>—</span><span>☐</span><span>✕</span></div>
-        </div>
+        <div class="app-bar"><div class="t"><img src="logo.png" alt="">VOID TWEAKS</div><div class="wc"><span>—</span><span>☐</span><span>✕</span></div></div>
         <div class="app-side">
           <div class="app-nav on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3.5l2.5-6.5L13 18l2.5-6.5H21"/></svg><span data-i18n="app_home">Главная</span></div>
           <div class="app-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg><span data-i18n="app_opt">Оптимизация</span></div>
-          <div class="app-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4 2.6-2.6Z"/></svg><span data-i18n="nav_tools">Инструменты</span></div>
-          <div class="lic"><span data-i18n="app_lic">Лицензия</span><b>PRO · HWID</b></div>
+          <div class="app-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4 2.6-2.6Z"/></svg><span data-i18n="app_tools">Инструменты</span></div>
         </div>
         <div class="app-main">
           <div class="app-head"><h4 data-i18n="app_monitor">Мониторинг</h4><span data-i18n="app_live">в реальном времени</span></div>
           <div class="tiles">
-            <div class="tile"><div class="k">CPU</div><div class="v">9%</div><div class="s">41 °C · 5.2 GHz</div><div class="bar"><i style="width:9%"></i></div></div>
-            <div class="tile"><div class="k">GPU</div><div class="v">3%</div><div class="s">38 °C</div><div class="bar"><i style="width:3%"></i></div></div>
-            <div class="tile"><div class="k" data-i18n="app_ram">ОЗУ</div><div class="v">5.1 GB</div><div class="s">6000 MT/s</div><div class="bar"><i style="width:16%"></i></div></div>
-            <div class="tile"><div class="k" data-i18n="app_ping">Пинг</div><div class="v">14 ms</div><div class="s">1 Gbit/s</div><div class="bar"><i style="width:22%"></i></div></div>
+            <div class="tile"><div class="k">CPU</div><div class="v">9%</div><div class="s">41 °C · 5.2 GHz</div></div>
+            <div class="tile"><div class="k">GPU</div><div class="v">3%</div><div class="s">38 °C</div></div>
+            <div class="tile"><div class="k" data-i18n="app_ram">ОЗУ</div><div class="v">5.1 GB</div><div class="s">6000 MT/s</div></div>
+            <div class="tile"><div class="k" data-i18n="app_ping">Пинг</div><div class="v">14 ms</div><div class="s">1 Gbit/s</div></div>
           </div>
           <div class="tweaks">
             <div class="tw"><div><div class="n" data-i18n="app_tw1">Отключить телеметрию</div><div class="d" data-i18n="app_tw1d">Службы, задачи и политики сбора данных</div></div><div class="tg on"></div></div>
             <div class="tw"><div><div class="n" data-i18n="app_tw2">Игровой приоритет планировщика</div><div class="d" data-i18n="app_tw2d">Больше процессорного времени для игры</div></div><div class="tg on"></div></div>
             <div class="tw"><div><div class="n" data-i18n="app_tw3">MSI-режим для видеокарты</div><div class="d" data-i18n="app_tw3d">Меньше задержка прерываний · PRO</div></div><div class="tg"></div></div>
           </div>
-          <div class="app-run"><span data-i18n="app_run">Запустить оптимизацию</span></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= TRUST ================= -->
-<section class="trust" aria-label="Почему это безопасно">
-  <div class="container">
-    <div class="trust-grid">
-      <div class="card trust-item reveal">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.45 2.15a.75.75 0 0 0-.9 0L4.35 6.78a.75.75 0 0 0-.35.63v4.77c0 5.03 3.1 9.05 7.83 10.76a.75.75 0 0 0 .52 0c4.72-1.71 7.83-5.73 7.83-10.76V7.41a.75.75 0 0 0-.35-.63L12.45 2.15Zm5.3 8.13-5.75 5.75a.75.75 0 0 1-1.06 0L8.19 13.28a.75.75 0 1 1 1.06-1.06l2.22 2.22 5.22-5.22a.75.75 0 0 1 1.06 1.06Z"/></svg>
-        <div><b data-i18n="trust1_t">Точка восстановления</b><span data-i18n="trust1_d">Создаётся автоматически перед первыми изменениями</span></div>
-      </div>
-      <div class="card trust-item reveal">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 .75.75 0 0 0-1.5 0A7.5 7.5 0 1 1 12 4.5a7.44 7.44 0 0 1 4.93 1.86l-1.66.55a.75.75 0 0 0 .47 1.43l3.13-1.04a.75.75 0 0 0 .5-.86l-.68-3.24a.75.75 0 0 0-1.47.31l.29 1.38A8.96 8.96 0 0 0 12 3Z"/></svg>
-        <div><b data-i18n="trust2_t">Откат в один клик</b><span data-i18n="trust2_d">Отдельного твика или всей сессии настроек</span></div>
-      </div>
-      <div class="card trust-item reveal">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4"/><circle cx="16" cy="11" r="1"/><circle cx="18" cy="13" r="1"/></svg>
-        <div><b data-i18n="trust3_t">Безопасно для игр</b><span data-i18n="trust3_d">Не трогает файлы и память игр, без инжектов</span></div>
-      </div>
-      <div class="card trust-item reveal">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.5 4.4c-.3-.3-.75-.4-1.16-.25L2.9 11.1c-.5.2-.8.7-.75 1.23.05.53.45.97.96 1.09l4.05 1.02 1.5 4.5c.15.46.55.79 1.03.84h.16c.42 0 .82-.2 1.07-.55l2.18-3.07 4.13 3.03c.28.2.61.31.95.31.15 0 .3-.02.44-.06.5-.15.86-.57.94-1.08l2.35-15.4c.06-.4-.08-.81-.4-1.11Z"/></svg>
-        <div><b data-i18n="trust4_t">Живая поддержка</b><span data-i18n="trust4_d">Отвечаем лично в Telegram — @disxrm</span></div>
-      </div>
-    </div>
+<!-- ================= FACTS ================= -->
+<div class="facts">
+  <div class="container facts-grid">
+    <div class="fact"><b>180+</b><span data-i18n="fact1">твиков системы</span></div>
+    <div class="fact"><b data-i18n="fact2_b">1 клик</b><span data-i18n="fact2">откат любого изменения</span></div>
+    <div class="fact"><b data-i18n="fact3_b">Авто</b><span data-i18n="fact3">точка восстановления</span></div>
+    <div class="fact"><b>0</b><span data-i18n="fact4">вмешательств в файлы игр</span></div>
   </div>
-</section>
-
-<!-- ================= METRICS ================= -->
-<section class="metrics" style="padding-top:24px">
-  <div class="container">
-    <div class="metrics-grid">
-      <div class="card metric reveal"><div class="num" data-count="180" data-suffix="+">0</div><div class="lbl" data-i18n-html="metric_1">готовых твиков<br>реестра, служб и питания</div></div>
-      <div class="card metric reveal"><div class="num" data-count="8">0</div><div class="lbl" data-i18n-html="metric_2">сценариев<br>восстановления Windows</div></div>
-      <div class="card metric reveal"><div class="num" data-count="5">0</div><div class="lbl" data-i18n-html="metric_3">встроенных утилит<br>для повседневных задач</div></div>
-      <div class="card metric reveal"><div class="num" data-count="1">0</div><div class="lbl" data-i18n-html="metric_4">клик до отката<br>любого изменения</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= HOW IT WORKS ================= -->
-<section id="how">
-  <div class="container">
-    <div class="sec-head center reveal">
-      <span class="eyebrow" data-i18n="how_eyebrow">Как это работает</span>
-      <h2 data-i18n-html="how_title">Три шага до <span class="grad-primary-text">быстрой системы</span></h2>
-      <p data-i18n="how_desc">Не нужно разбираться в реестре и службах — всё уже собрано и проверено.</p>
-    </div>
-    <div class="steps">
-      <div class="card step reveal"><div class="no">1</div><h3 data-i18n="step1_t">Скачайте и установите</h3><p data-i18n="step1_d">Установщик сам проверит Windows, права администратора и .NET 10 Runtime.</p></div>
-      <div class="card step reveal"><div class="no">2</div><h3 data-i18n="step2_t">Нажмите «Запустить оптимизацию»</h3><p data-i18n="step2_d">Приложение создаст точку восстановления и применит твики под ваше железо.</p></div>
-      <div class="card step reveal"><div class="no">3</div><h3 data-i18n="step3_t">Играйте — или откатите</h3><p data-i18n="step3_d">Не понравилось? Любое изменение возвращается одним кликом.</p></div>
-    </div>
-  </div>
-</section>
+</div>
 
 <!-- ================= FEATURES ================= -->
-<section id="features">
+<section class="block" id="features">
   <div class="container">
-    <div class="sec-head reveal">
-      <span class="eyebrow" data-i18n="features_eyebrow">Возможности</span>
-      <h2 data-i18n-html="features_title">Всё, чтобы выжать <span class="grad-primary-text">максимум</span></h2>
-      <p data-i18n="features_desc">Ключевые модули работают вместе: от мониторинга в реальном времени до тонкой настройки каждого ядра процессора.</p>
+    <div class="head">
+      <h2 data-i18n="features_title">Всё нужное — в одном окне</h2>
+      <p data-i18n="features_desc">Тонкая настройка системы, мониторинг железа и утилиты, которые обычно ищут по форумам.</p>
     </div>
-    <div class="features-grid">
-      <div class="card feat reveal" data-spotlight>
-        <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h3.5l2.5-6.5L13 18l2.5-6.5H21"/></svg></div>
-        <h3 data-i18n="feat1_t">Мониторинг в реальном времени</h3>
-        <p data-i18n="feat1_d">Загрузка CPU и GPU, температуры, частота памяти, скорость сети и пинг — с плавной анимацией и без нагрузки на систему.</p>
+    <div class="features">
+      <div class="card feat">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="4" y2="10"/><line x1="4" y1="14" x2="4" y2="20"/><line x1="12" y1="4" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="20"/><line x1="20" y1="4" x2="20" y2="8"/><line x1="20" y1="12" x2="20" y2="20"/><line x1="1" y1="10" x2="7" y2="10"/><line x1="9" y1="16" x2="15" y2="16"/><line x1="17" y1="8" x2="23" y2="8"/></svg></div>
+        <h3 data-i18n="feat1_t">180+ твиков системы</h3>
+        <p data-i18n="feat1_d">Реестр, службы, питание, таймеры и планировщик — с проверкой состояния и безопасным откатом.</p>
       </div>
-      <div class="card feat reveal" data-spotlight>
-        <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="4" y2="10"/><line x1="4" y1="14" x2="4" y2="20"/><line x1="12" y1="4" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="20"/><line x1="20" y1="4" x2="20" y2="8"/><line x1="20" y1="12" x2="20" y2="20"/><line x1="1" y1="10" x2="7" y2="10"/><line x1="9" y1="16" x2="15" y2="16"/><line x1="17" y1="8" x2="23" y2="8"/></svg></div>
-        <h3 data-i18n="feat2_t">180+ твиков системы</h3>
-        <p data-i18n="feat2_d">Реестр, службы, электропитание, таймеры, планировщик и периферия — всё с автоматической проверкой состояния и безопасным откатом.</p>
+      <div class="card feat">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h3.5l2.5-6.5L13 18l2.5-6.5H21"/></svg></div>
+        <h3 data-i18n="feat2_t">Мониторинг в реальном времени</h3>
+        <p data-i18n="feat2_d">Загрузка и температуры CPU и GPU, частота памяти, скорость сети и пинг — без нагрузки на систему.</p>
       </div>
-      <div class="card feat reveal" data-spotlight>
-        <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg></div>
-        <h3><span data-i18n="feat3_t">Управление прерываниями</span> <span class="tag-pro">PRO</span></h3>
-        <p data-i18n="feat3_d">MSI, IRQ affinity и распределение по ядрам. Авто-план для AMD Dual-CCD и Double-CCX, учитывающий топологию чиплетов и CPPC.</p>
+      <div class="card feat">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg></div>
+        <h3><span data-i18n="feat3_t">Прерывания и GPU</span> <span class="pro">PRO</span></h3>
+        <p data-i18n="feat3_d">MSI, IRQ affinity и авто-план для AMD Dual-CCD. Отдельные разделы настроек NVIDIA и AMD.</p>
       </div>
-      <div class="card feat reveal" data-spotlight>
-        <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div>
+      <div class="card feat">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/></svg></div>
         <h3 data-i18n="feat4_t">Менеджер автозагрузки</h3>
-        <p data-i18n="feat4_d">Реестр, папка Startup, задачи планировщика и службы — с настоящими иконками приложений, как в Проводнике. Отключение в один клик.</p>
+        <p data-i18n="feat4_d">Реестр, папка Startup, задачи и службы — с настоящими иконками приложений. Отключение в один клик.</p>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= TOOLS ================= -->
-<section id="tools">
-  <div class="container">
-    <div class="sec-head reveal">
-      <span class="eyebrow" data-i18n="tools_eyebrow">Инструменты</span>
-      <h2 data-i18n-html="tools_title">Утилиты, которые <span class="grad-primary-text">обычно ищут по форумам</span></h2>
-      <p data-i18n="tools_desc">Всё в одном окне и без скачивания сомнительных скриптов.</p>
-    </div>
-    <div class="tools-grid">
-      <div class="card tool reveal">
-        <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg></div>
-        <div><h3 data-i18n="tool1_t">Драйверы и библиотеки</h3><p data-i18n="tool1_d">Visual C++ 2015–2022, DirectX (июнь 2010) и проверка файла подкачки — то, без чего не запускаются игры.</p></div>
-      </div>
-      <div class="card tool reveal">
-        <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div>
-        <div><h3 data-i18n="tool2_t">Zapret и TgWsProxy</h3><p data-i18n="tool2_d">Доступ к YouTube, Discord и Telegram без VPN. Установка и обновление сборок flowseal в пару кликов.</p></div>
-      </div>
-      <div class="card tool reveal">
-        <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <div><h3 data-i18n="tool3_t">Windows Defender</h3><p data-i18n="tool3_d">Полное отключение и возврат к системным настройкам по умолчанию — с понятным статусом каждого компонента.</p></div>
-      </div>
-      <div class="card tool reveal">
-        <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>
-        <div><h3 data-i18n="tool4_t">Windows Update</h3><p data-i18n="tool4_d">Отключение Центра обновления или пауза на 35 дней штатным способом — обновления больше не придут посреди катки.</p></div>
-      </div>
-      <div class="card tool reveal">
-        <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/></svg></div>
-        <div><h3 data-i18n="tool5_t">Установка программ</h3><p data-i18n="tool5_d">Steam, Discord, браузеры, 7-Zip, MSI Afterburner, HWiNFO и ещё 15+ программ — выберите галочками и поставьте разом.</p></div>
-      </div>
-      <div class="card tool reveal">
-        <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4"/><circle cx="16" cy="11" r="1"/><circle cx="18" cy="13" r="1"/></svg></div>
-        <div><h3 data-i18n="tool6_t">Игровые конфиги</h3><p data-i18n="tool6_d">Готовые пресеты и конструктор autoexec.cfg с параметрами запуска Steam. Сейчас — Dota 2, дальше больше.</p></div>
+      <div class="card feat wide">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4 2.6-2.6Z"/></svg></div>
+        <h3 data-i18n="feat5_t">Встроенные инструменты</h3>
+        <p data-i18n="feat5_d">Без скачивания сомнительных скриптов: всё ставится и откатывается из приложения.</p>
+        <div class="chips">
+          <span data-i18n="chip1">Visual C++ и DirectX</span>
+          <span data-i18n="chip2">Zapret и TgWsProxy</span>
+          <span>Windows Defender</span>
+          <span>Windows Update</span>
+          <span data-i18n="chip5">20+ программ в один клик</span>
+          <span data-i18n="chip6">Конфиги для игр</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ================= PRICING ================= -->
-<section id="pricing">
+<section class="block" id="pricing" style="padding-top:0">
   <div class="container">
-    <div class="sec-head center reveal">
-      <span class="eyebrow" data-i18n="price_eyebrow">Тарифы</span>
-      <h2 data-i18n-html="price_title">Начните бесплатно. <span class="grad-primary-text">PRO — когда захотите больше</span></h2>
-      <p data-i18n="price_desc">Разовая оплата, без автопродления. Ключ приходит сразу после оплаты и привязывается к ПК по HWID.</p>
+    <div class="head">
+      <h2 data-i18n="price_title">Начните бесплатно</h2>
+      <p data-i18n="price_desc">PRO — когда захотите больше. Разовая оплата без автопродления, ключ сразу после оплаты.</p>
     </div>
 
-    <div class="card free-strip reveal">
-      <div class="l">
-        <span class="nm" data-i18n="price1_name">FREE</span>
-        <span class="pr">0 ₽</span>
-        <span class="ds" data-i18n="price1_desc">180+ твиков, мониторинг, автозагрузка и встроенные утилиты — навсегда.</span>
-      </div>
-      <a href="#download" class="btn btn-ghost" data-i18n="price1_cta">Скачать бесплатно</a>
+    <div class="card free">
+      <div class="l"><span class="nm">FREE</span><span class="pr">0 ₽</span><span class="ds" data-i18n="free_desc">Твики, мониторинг, автозагрузка и утилиты — навсегда.</span></div>
+      <a href="#download" class="btn btn-ghost" data-i18n="cta_free">Скачать бесплатно</a>
     </div>
 
-    <div class="pricing-grid">
-      <div class="card price-card reveal">
-        <div class="price-name" data-i18n="price2_name">Месяц</div>
-        <div class="price-val"><span class="amount">99</span><span class="curr">₽</span></div>
-        <div class="price-per" data-i18n-html="price2_per">за 30 дней</div>
-        <div class="price-note" data-i18n="price2_note">Чтобы попробовать PRO</div>
-        <p class="price-desc" data-i18n="price2_desc">Все PRO-модули на месяц: прерывания, GPU-разделы, скрытые твики и бета-версии.</p>
-        <a href="#pricing" data-buy="month" class="btn btn-gray" data-i18n="price2_cta">Купить на месяц</a>
+    <div class="plans">
+      <div class="card plan">
+        <div class="nm" data-i18n="p1_name">Месяц</div>
+        <div class="pr"><span class="amount">99</span><span class="cur">₽</span></div>
+        <div class="per" data-i18n-html="p1_per">за 30 дней</div>
+        <p class="ds" data-i18n="p1_desc">Чтобы попробовать все PRO-модули.</p>
+        <a href="#pricing" data-buy="month" class="btn btn-gray" data-i18n="p1_cta">Купить на месяц</a>
       </div>
-
-      <div class="card price-card reveal">
-        <div class="price-name" data-i18n="price3_name">Полгода</div>
-        <div class="price-val"><span class="amount">299</span><span class="curr">₽</span><s>594 ₽</s></div>
-        <div class="price-per" data-i18n-html="price3_per"><b>≈ 50 ₽</b> в месяц <span class="save">−50%</span></div>
-        <div class="price-note" data-i18n="price3_note">Один платёж на 6 месяцев</div>
-        <p class="price-desc" data-i18n="price3_desc">Всё из тарифа «Месяц» в два раза дешевле в пересчёте на месяц.</p>
-        <a href="#pricing" data-buy="half" class="btn btn-gray" data-i18n="price3_cta">Купить на полгода</a>
+      <div class="card plan">
+        <div class="nm" data-i18n="p2_name">Полгода</div>
+        <div class="pr"><span class="amount">299</span><span class="cur">₽</span><s>594 ₽</s></div>
+        <div class="per" data-i18n-html="p2_per"><b>≈ 50 ₽</b> в месяц <span class="save">−50%</span></div>
+        <p class="ds" data-i18n="p2_desc">В два раза дешевле помесячной оплаты.</p>
+        <a href="#pricing" data-buy="half" class="btn btn-gray" data-i18n="p2_cta">Купить на полгода</a>
       </div>
-
-      <div class="card price-card featured reveal">
-        <span class="price-tag" data-i18n="price_tag_popular">Выгоднее всего</span>
-        <div class="price-name" data-i18n="price4_name">Навсегда</div>
-        <div class="price-val"><span class="amount">499</span><span class="curr">₽</span></div>
-        <div class="price-per" data-i18n-html="price4_per"><b>Без срока действия</b></div>
-        <div class="price-note" data-i18n="price4_note">Один платёж — PRO навсегда</div>
-        <p class="price-desc" data-i18n="price4_desc">Все PRO-модули без ограничения по времени. Дешевле, чем полгода на тарифе «Месяц».</p>
-        <a href="#pricing" data-buy="forever" class="btn btn-primary" data-i18n="price4_cta">Купить навсегда</a>
+      <div class="card plan best">
+        <span class="tag" data-i18n="p3_tag">Выгоднее всего</span>
+        <div class="nm" data-i18n="p3_name">Навсегда</div>
+        <div class="pr"><span class="amount">499</span><span class="cur">₽</span></div>
+        <div class="per" data-i18n-html="p3_per"><b>Без срока действия</b></div>
+        <p class="ds" data-i18n="p3_desc">Один платёж — PRO навсегда. Дешевле, чем полгода на тарифе «Месяц».</p>
+        <a href="#pricing" data-buy="forever" class="btn btn-primary" data-i18n="p3_cta">Купить навсегда</a>
       </div>
     </div>
 
-    <div class="pay-note reveal">
-      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span data-i18n="pay1">Оплата через ЮKassa — карты и СБП</span></span>
-      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg><span data-i18n="pay2">Ключ сразу на странице</span></span>
-      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg><span data-i18n="pay3">Без автопродления</span></span>
-    </div>
-
-    <div class="card compare reveal">
-      <table>
-        <thead><tr><th data-i18n="cmp_h">Что входит</th><th>FREE</th><th>PRO</th></tr></thead>
-        <tbody>
-          <tr><td data-i18n="cmp1">180+ твиков реестра и служб</td><td class="y"><svg viewBox="0 0 24 24" fill="currentColor" aria-label="да"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg></td><td class="y"><svg viewBox="0 0 24 24" fill="currentColor" aria-label="да"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg></td></tr>
-          <tr><td data-i18n="cmp2">Мониторинг в реальном времени</td><td class="y"><svg viewBox="0 0 24 24" fill="currentColor" aria-label="да"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg></td><td class="y"><svg viewBox="0 0 24 24" fill="currentColor" aria-label="да"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg></td></tr>
-          <tr><td data-i18n="cmp3">Менеджер автозагрузки</td><td class="y"><svg viewBox="0 0 24 24" fill="currentColor" aria-label="да"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg></td><td class="y"><svg viewBox="0 0 24 24" fill="currentColor" aria-label="да"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg></td></tr>
-          <tr><td data-i18n="cmp4">Встроенные утилиты</td><td class="y"><svg viewBox="0 0 24 24" fill="currentColor" aria-label="да"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg></td><td class="y"><svg viewBox="0 0 24 24" fill="currentColor" aria-label="да"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg></td></tr>
-          <tr><td data-i18n="cmp5">Управление прерываниями (MSI, IRQ)</td><td class="n">—</td><td class="y"><svg viewBox="0 0 24 24" fill="currentColor" aria-label="да"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg></td></tr>
-          <tr><td data-i18n="cmp6">GPU-разделы NVIDIA и AMD</td><td class="n">—</td><td class="y"><svg viewBox="0 0 24 24" fill="currentColor" aria-label="да"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg></td></tr>
-          <tr><td data-i18n="cmp7">Скрытые и продвинутые твики</td><td class="n">—</td><td class="y"><svg viewBox="0 0 24 24" fill="currentColor" aria-label="да"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg></td></tr>
-          <tr><td data-i18n="cmp8">Ранний доступ к бета-версиям</td><td class="n">—</td><td class="y"><svg viewBox="0 0 24 24" fill="currentColor" aria-label="да"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg></td></tr>
-          <tr><td data-i18n="cmp9">Приоритетные обновления</td><td class="n">—</td><td class="y"><svg viewBox="0 0 24 24" fill="currentColor" aria-label="да"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg></td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- ================= CHANGELOG ================= -->
-<section id="changelog">
-  <div class="container">
-    <div class="sec-head center reveal">
-      <span class="eyebrow" data-i18n="log_eyebrow">Обновления</span>
-      <h2 data-i18n-html="log_title">Что нового в <span class="grad-primary-text">VOID TWEAKS</span></h2>
-      <p data-i18n="log_desc">История версий и ключевые изменения прямо из GitHub.</p>
-    </div>
-    <div class="log-list" id="logList">
-      <div class="log-loading" id="logLoading"><span class="spinner"></span><span data-i18n="log_loading">Загружаем релизы…</span></div>
-    </div>
+    <p class="pro-list" data-i18n-html="pro_list"><b>PRO открывает:</b> управление прерываниями (MSI, IRQ), разделы NVIDIA и AMD, скрытые твики, бета-версии и приоритетные обновления.</p>
+    <div class="pay"><span data-i18n="pay1">Оплата через ЮKassa — карты и СБП</span><span data-i18n="pay2">Ключ привязывается к ПК по HWID</span></div>
   </div>
 </section>
 
 <!-- ================= FAQ ================= -->
-<section id="faq">
+<section class="block" id="faq" style="padding-top:0">
   <div class="container">
-    <div class="sec-head center reveal">
-      <span class="eyebrow" data-i18n="faq_eyebrow">FAQ</span>
-      <h2 data-i18n-html="faq_title">Частые <span class="grad-primary-text">вопросы</span></h2>
-      <p data-i18n="faq_desc">Коротко о безопасности, откатах и лицензии. Если чего-то не хватает — пишите в Telegram.</p>
-    </div>
-    <div class="faq-list" id="faqList">
-      <div class="card faq-item reveal"><button type="button" class="faq-toggle" aria-expanded="false"><span data-i18n="faq_q1">Это безопасно для системы?</span><svg class="faq-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.22 8.72a.75.75 0 0 1 1.06 0L12 15.44l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.78a.75.75 0 0 1 0-1.06Z"/></svg></button><div class="faq-body"><div class="faq-body-content" data-i18n="faq_a1">Да. Все твики применяются через официальные API Windows, а перед первым изменением автоматически создаётся точка восстановления. Откатить можно как отдельный твик, так и всю сессию настроек.</div></div></div>
-      <div class="card faq-item reveal"><button type="button" class="faq-toggle" aria-expanded="false"><span data-i18n="faq_q2">Могут ли забанить в играх?</span><svg class="faq-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.22 8.72a.75.75 0 0 1 1.06 0L12 15.44l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.78a.75.75 0 0 1 0-1.06Z"/></svg></button><div class="faq-body"><div class="faq-body-content" data-i18n="faq_a2">Нет. VOID TWEAKS не затрагивает игровые файлы, не внедряется в процесс и не изменяет память игры. Все изменения — на уровне системы и реестра.</div></div></div>
-      <div class="card faq-item reveal"><button type="button" class="faq-toggle" aria-expanded="false"><span data-i18n="faq_q6">Windows пишет «Система Windows защитила ваш компьютер». Что делать?</span><svg class="faq-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.22 8.72a.75.75 0 0 1 1.06 0L12 15.44l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.78a.75.75 0 0 1 0-1.06Z"/></svg></button><div class="faq-body"><div class="faq-body-content" data-i18n="faq_a6">Это фильтр SmartScreen: он предупреждает о любых новых программах, которые ещё не набрали «репутацию» у Microsoft, — даже о подписанных. Скачивайте установщик только с этой страницы или из GitHub Releases, нажмите «Подробнее» → «Выполнить в любом случае». Если сомневаетесь — напишите в Telegram.</div></div></div>
-      <div class="card faq-item reveal"><button type="button" class="faq-toggle" aria-expanded="false"><span data-i18n="faq_q3">Что если что-то сломается?</span><svg class="faq-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.22 8.72a.75.75 0 0 1 1.06 0L12 15.44l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.78a.75.75 0 0 1 0-1.06Z"/></svg></button><div class="faq-body"><div class="faq-body-content" data-i18n="faq_a3">Любое изменение откатывается в один клик. Плюс есть 8 сценариев восстановления Windows, включая сброс сетевых настроек, служб и планировщика.</div></div></div>
-      <div class="card faq-item reveal"><button type="button" class="faq-toggle" aria-expanded="false"><span data-i18n="faq_q4">Нужен ли PRO для базовой оптимизации?</span><svg class="faq-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.22 8.72a.75.75 0 0 1 1.06 0L12 15.44l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.78a.75.75 0 0 1 0-1.06Z"/></svg></button><div class="faq-body"><div class="faq-body-content" data-i18n="faq_a4">Нет. 180+ твиков, мониторинг в реальном времени, менеджер автозагрузки и встроенные утилиты доступны бесплатно навсегда. PRO открывает продвинутые модули — прерывания, GPU-разделы и ранний доступ.</div></div></div>
-      <div class="card faq-item reveal"><button type="button" class="faq-toggle" aria-expanded="false"><span data-i18n="faq_q7">Как я получу ключ и как оплатить?</span><svg class="faq-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.22 8.72a.75.75 0 0 1 1.06 0L12 15.44l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.78a.75.75 0 0 1 0-1.06Z"/></svg></button><div class="faq-body"><div class="faq-body-content" data-i18n="faq_a7">Оплата проходит через ЮKassa. После оплаты вы вернётесь на сайт, и ключ появится прямо на странице — скопируйте его и вставьте в приложение. Автопродления нет: деньги списываются один раз.</div></div></div>
-      <div class="card faq-item reveal"><button type="button" class="faq-toggle" aria-expanded="false"><span data-i18n="faq_q5">Работает на ноутбуках?</span><svg class="faq-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.22 8.72a.75.75 0 0 1 1.06 0L12 15.44l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.78a.75.75 0 0 1 0-1.06Z"/></svg></button><div class="faq-body"><div class="faq-body-content" data-i18n="faq_a5">Да. Есть отдельные твики для ноутбуков, которые учитывают тепловые лимиты, питание от батареи и агрессивные схемы энергосбережения. Приложение само определяет тип устройства.</div></div></div>
+    <div class="head"><h2 data-i18n="faq_title">Частые вопросы</h2></div>
+    <div class="faq">
+      <details><summary><span data-i18n="faq_q1">Это безопасно для системы?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a" data-i18n="faq_a1">Да. Твики применяются через официальные API Windows, а перед первым изменением создаётся точка восстановления. Откатить можно отдельный твик или всю сессию.</div></details>
+      <details><summary><span data-i18n="faq_q2">Могут ли забанить в играх?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a" data-i18n="faq_a2">Нет. VOID TWEAKS не трогает файлы игр, не внедряется в процессы и не меняет их память — только настройки системы и реестра.</div></details>
+      <details><summary><span data-i18n="faq_q3">Windows пишет «Система Windows защитила ваш компьютер»</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a" data-i18n="faq_a3">Это SmartScreen — он предупреждает о любых новых программах. Скачивайте установщик только с этой страницы или из GitHub Releases, нажмите «Подробнее» → «Выполнить в любом случае».</div></details>
+      <details><summary><span data-i18n="faq_q4">Нужен ли PRO для обычной оптимизации?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a" data-i18n="faq_a4">Нет. Твики, мониторинг, автозагрузка и встроенные утилиты бесплатны навсегда. PRO нужен для прерываний, GPU-разделов и раннего доступа.</div></details>
+      <details><summary><span data-i18n="faq_q5">Как оплатить и получить ключ?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a" data-i18n-html="faq_a5">Оплата через ЮKassa. После оплаты вы вернётесь на сайт, и ключ появится прямо на странице — вставьте его в приложение. Вопросы — в <a href="https://t.me/disxrm" target="_blank" rel="noopener" style="color:#fff;text-decoration:underline">Telegram</a>.</div></details>
     </div>
   </div>
 </section>
 
 <!-- ================= DOWNLOAD ================= -->
-<section id="download">
+<section class="block" id="download" style="padding-top:0">
   <div class="container">
-    <div class="sec-head center reveal">
-      <span class="eyebrow" data-i18n="dl_eyebrow">Скачать</span>
-      <h2 data-i18n-html="dl_title">Установщик VOID TWEAKS <span class="grad-primary-text">1.0.1</span></h2>
-      <p data-i18n="dl_desc">Установщик сам проверит .NET 10 Runtime, поставит драйвер PawnIO и создаст ярлыки.</p>
-    </div>
-    <div class="dl-wrap">
-      <div class="card dl-card reveal">
-        <span class="dl-badge"><i></i><span data-i18n="dl_badge">Стабильный релиз</span></span>
-        <h3>VOIDTWEAKSInstaller.exe</h3>
-        <p class="dl-info" data-i18n="dl_info">Self-contained: всё нужное уже внутри. Проверяет версию Windows, права администратора и .NET 10 Runtime перед установкой.</p>
-        <div class="dl-downloads">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.75 3.25a.75.75 0 0 0-1.5 0v10.94l-4.22-4.22a.75.75 0 0 0-1.06 1.06l5.5 5.5a.75.75 0 0 0 1.06 0l5.5-5.5a.75.75 0 0 0-1.06-1.06l-4.22 4.22V3.25Z"/><path d="M4 15.75a.75.75 0 0 0-1.5 0v2.5A3.25 3.25 0 0 0 5.75 21.5h12.5A3.25 3.25 0 0 0 21.5 18.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .966-.784 1.75-1.75 1.75H5.75c-.966 0-1.75-.784-1.75-1.75v-2.5Z"/></svg>
-          <span><span data-i18n="dl_downloads_label">Скачано</span> <b data-download-count>—</b> <span data-i18n="dl_downloads_times">раз</span></span>
-        </div>
-        <div class="dl-meta">
-          <div class="dl-meta-cell"><div class="lbl" data-i18n="dl_m1">Версия</div><div class="val" data-ver>1.0.1</div></div>
-          <div class="dl-meta-cell"><div class="lbl" data-i18n="dl_m2">Платформа</div><div class="val">Windows x64</div></div>
-          <div class="dl-meta-cell"><div class="lbl" data-i18n="dl_m3">Размер</div><div class="val" data-asset-size>186 МБ</div></div>
-          <div class="dl-meta-cell"><div class="lbl" data-i18n="dl_m4">Формат</div><div class="val">Self-contained</div></div>
-        </div>
+    <div class="dl">
+      <div class="card dl-main">
+        <img src="logo.png" alt="" width="56" height="56" loading="lazy">
+        <h3 data-i18n="dl_title">Скачать VOID TWEAKS</h3>
+        <div class="meta"><span data-i18n="dl_version">Версия</span> <b data-ver>1.0.1</b> · Windows x64 · <span data-asset-size>186 МБ</span></div>
         <a href="https://github.com/disxrm/voidtweaks/releases/latest/download/VOIDTWEAKSInstaller.exe" class="btn btn-primary btn-lg btn-block" id="downloadBtn">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.75 3.25a.75.75 0 0 0-1.5 0v10.94l-4.22-4.22a.75.75 0 0 0-1.06 1.06l5.5 5.5a.75.75 0 0 0 1.06 0l5.5-5.5a.75.75 0 0 0-1.06-1.06l-4.22 4.22V3.25Z"/><path d="M4 15.75a.75.75 0 0 0-1.5 0v2.5A3.25 3.25 0 0 0 5.75 21.5h12.5A3.25 3.25 0 0 0 21.5 18.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .966-.784 1.75-1.75 1.75H5.75c-.966 0-1.75-.784-1.75-1.75v-2.5Z"/></svg>
-          <span data-i18n="dl_btn">Скачать VOID TWEAKS</span>
+          <span data-i18n="dl_btn">Скачать установщик</span>
         </a>
-      </div>
-      <div class="card dl-req reveal">
-        <h4 data-i18n="dl_req_title">Системные требования</h4>
-        <ul>
-          <li><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg><span data-i18n-html="dl_r1"><b>Windows 10 (64-bit)</b> или новее, включая Windows 11 24H2+</span></li>
-          <li><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg><span data-i18n-html="dl_r2"><b>Права администратора</b> — для установки служб и драйвера PawnIO</span></li>
-          <li><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg><span data-i18n-html="dl_r3"><b>.NET 10 Runtime</b> — устанавливается автоматически при необходимости</span></li>
-          <li><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg><span data-i18n-html="dl_r4"><b>~250 МБ свободного места</b> на системном диске</span></li>
-          <li><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.707 6.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L10 16.586 20.293 6.293a1 1 0 0 1 1.414 0Z"/></svg><span data-i18n="dl_r5">Встроенная точка восстановления перед первыми правками</span></li>
+        <ul class="req">
+          <li data-i18n="req1">Windows 10 / 11, 64-bit</li>
+          <li data-i18n="req2">Права администратора</li>
+          <li data-i18n="req3">.NET 10 и драйвер PawnIO ставятся автоматически</li>
+          <li data-i18n="req4">~250 МБ на системном диске</li>
         </ul>
-        <div class="dl-hint" data-i18n-html="dl_hint"><b>SmartScreen ругается?</b> Нажмите «Подробнее» → «Выполнить в любом случае». Так Windows реагирует на любые новые программы.</div>
+        <div class="dl-count" data-count-wrap data-min="100" hidden><span data-i18n="dl_downloads">Скачано</span> <b data-download-count>—</b></div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= FINAL CTA ================= -->
-<section class="final">
-  <div class="container">
-    <div class="card final-card reveal">
-      <img src="logo.png" alt="" width="64" height="64" loading="lazy">
-      <h2 data-i18n-html="final_title">Верните Windows <span class="grad-primary-text">скорость</span></h2>
-      <p data-i18n="final_desc">Бесплатная версия — навсегда. PRO можно подключить в любой момент прямо из приложения.</p>
-      <div class="hero-actions">
-        <a href="#download" class="btn btn-primary btn-lg"><span data-i18n="hero_cta1">Скачать бесплатно</span></a>
-        <a href="#pricing" class="btn btn-gray btn-lg"><span data-i18n="final_cta2">Смотреть тарифы</span></a>
+      <div class="card news" id="logList">
+        <h4 data-i18n="log_title">Что нового</h4>
+        <p class="log-empty" data-i18n="log_loading">Загружаем релизы…</p>
       </div>
     </div>
   </div>
@@ -959,30 +481,14 @@ footer { padding: 52px 0 36px; border-top: 1px solid var(--border-soft); }
 </main>
 
 <footer>
-  <div class="container">
-    <div class="foot-grid">
-      <div>
-        <div class="foot-brand"><img src="logo.png" alt="" width="30" height="30" loading="lazy"><span>VOID TWEAKS</span></div>
-        <p class="foot-tag" data-i18n="foot_tag">Оптимизатор Windows с живым мониторингом железа, твиками системы и встроенными утилитами для повседневных задач.</p>
-      </div>
-      <div class="foot-col">
-        <h5 data-i18n="foot_product">Продукт</h5>
-        <a href="#features" data-i18n="nav_features">Возможности</a>
-        <a href="#tools" data-i18n="nav_tools">Инструменты</a>
-        <a href="#pricing" data-i18n="nav_pricing">Тарифы</a>
-        <a href="#changelog" data-i18n="nav_changelog">Обновления</a>
-      </div>
-      <div class="foot-col">
-        <h5 data-i18n="foot_support">Поддержка</h5>
-        <a href="https://t.me/disxrm" target="_blank" rel="noopener" data-i18n="foot_tg">Поддержка в Telegram</a>
-        <a href="#download" data-i18n="nav_download">Скачать</a>
-        <a href="#faq" data-i18n="nav_faq">FAQ</a>
-      </div>
-    </div>
-    <div class="foot-bottom">
-      <div>VoidTweaks © 2026 · <span class="accent" data-i18n="foot_version">Версия 1.0.1</span></div>
-      <div>Windows 10 / 11 x64 · .NET 10 · PawnIO</div>
-    </div>
+  <div class="container foot">
+    <a href="#top" class="brand"><img src="logo.png" alt="" width="24" height="24" loading="lazy"><span>VOID TWEAKS</span></a>
+    <nav>
+      <a href="#features" data-i18n="nav_features">Возможности</a>
+      <a href="#pricing" data-i18n="nav_pricing">Тарифы</a>
+      <a href="https://t.me/disxrm" target="_blank" rel="noopener" data-i18n="foot_tg">Поддержка в Telegram</a>
+    </nav>
+    <span>© 2026 VoidTweaks</span>
   </div>
 </footer>
 
@@ -1030,69 +536,53 @@ footer { padding: 52px 0 36px; border-top: 1px solid var(--border-soft); }
 ============================================================ */
 const I18N = {
   ru: {
-    brand_sub: 'Оптимизатор Windows',
-    nav_features: 'Возможности', nav_tools: 'Инструменты', nav_pricing: 'Тарифы',
-    nav_changelog: 'Обновления', nav_faq: 'FAQ', nav_download: 'Скачать',
-    mm_tg: 'Поддержка в Telegram', mm_version: 'Версия',
-    hero_pill: 'Вышла версия',
+    nav_features: 'Возможности', nav_pricing: 'Тарифы', nav_faq: 'FAQ', nav_download: 'Скачать',
+    hero_badge: 'Версия',
     hero_title: '<span class="line">Чистая Windows.</span><span class="line grad-text">Больше FPS. Меньше задержек.</span>',
     hero_lead: 'VOID TWEAKS отключает телеметрию и лишние службы, настраивает систему под игры и откатывает любое изменение в один клик.',
-    hero_cta1: 'Скачать бесплатно', hero_cta2: 'PRO от 99 ₽', hero_note1: 'Бесплатная версия навсегда',
-    app_home: 'Главная', app_opt: 'Оптимизация', app_lic: 'Лицензия', app_monitor: 'Мониторинг', app_live: 'в реальном времени',
+    cta_free: 'Скачать бесплатно', cta_pro: 'PRO от 99 ₽',
+    hero_note: 'Бесплатная версия навсегда · <b>Windows 10 / 11 x64</b>',
+    app_home: 'Главная', app_opt: 'Оптимизация', app_tools: 'Инструменты', app_monitor: 'Мониторинг', app_live: 'в реальном времени',
     app_ram: 'ОЗУ', app_ping: 'Пинг',
     app_tw1: 'Отключить телеметрию', app_tw1d: 'Службы, задачи и политики сбора данных',
     app_tw2: 'Игровой приоритет планировщика', app_tw2d: 'Больше процессорного времени для игры',
     app_tw3: 'MSI-режим для видеокарты', app_tw3d: 'Меньше задержка прерываний · PRO',
-    app_run: 'Запустить оптимизацию',
-    trust1_t: 'Точка восстановления', trust1_d: 'Создаётся автоматически перед первыми изменениями',
-    trust2_t: 'Откат в один клик', trust2_d: 'Отдельного твика или всей сессии настроек',
-    trust3_t: 'Безопасно для игр', trust3_d: 'Не трогает файлы и память игр, без инжектов',
-    trust4_t: 'Живая поддержка', trust4_d: 'Отвечаем лично в Telegram — @disxrm',
-    metric_1: 'готовых твиков<br>реестра, служб и питания',
-    metric_2: 'сценариев<br>восстановления Windows',
-    metric_3: 'встроенных утилит<br>для повседневных задач',
-    metric_4: 'клик до отката<br>любого изменения',
-    how_eyebrow: 'Как это работает',
-    how_title: 'Три шага до <span class="grad-primary-text">быстрой системы</span>',
-    how_desc: 'Не нужно разбираться в реестре и службах — всё уже собрано и проверено.',
-    step1_t: 'Скачайте и установите', step1_d: 'Установщик сам проверит Windows, права администратора и .NET 10 Runtime.',
-    step2_t: 'Нажмите «Запустить оптимизацию»', step2_d: 'Приложение создаст точку восстановления и применит твики под ваше железо.',
-    step3_t: 'Играйте — или откатите', step3_d: 'Не понравилось? Любое изменение возвращается одним кликом.',
-    features_eyebrow: 'Возможности',
-    features_title: 'Всё, чтобы выжать <span class="grad-primary-text">максимум</span>',
-    features_desc: 'Ключевые модули работают вместе: от мониторинга в реальном времени до тонкой настройки каждого ядра процессора.',
-    feat1_t: 'Мониторинг в реальном времени',
-    feat1_d: 'Загрузка CPU и GPU, температуры, частота памяти, скорость сети и пинг — с плавной анимацией и без нагрузки на систему.',
-    feat2_t: '180+ твиков системы',
-    feat2_d: 'Реестр, службы, электропитание, таймеры, планировщик и периферия — всё с автоматической проверкой состояния и безопасным откатом.',
-    feat3_t: 'Управление прерываниями',
-    feat3_d: 'MSI, IRQ affinity и распределение по ядрам. Авто-план для AMD Dual-CCD и Double-CCX, учитывающий топологию чиплетов и CPPC.',
-    feat4_t: 'Менеджер автозагрузки',
-    feat4_d: 'Реестр, папка Startup, задачи планировщика и службы — с настоящими иконками приложений, как в Проводнике. Отключение в один клик.',
-    tools_eyebrow: 'Инструменты',
-    tools_title: 'Утилиты, которые <span class="grad-primary-text">обычно ищут по форумам</span>',
-    tools_desc: 'Всё в одном окне и без скачивания сомнительных скриптов.',
-    tool1_t: 'Драйверы и библиотеки', tool1_d: 'Visual C++ 2015–2022, DirectX (июнь 2010) и проверка файла подкачки — то, без чего не запускаются игры.',
-    tool2_t: 'Zapret и TgWsProxy', tool2_d: 'Доступ к YouTube, Discord и Telegram без VPN. Установка и обновление сборок flowseal в пару кликов.',
-    tool3_t: 'Windows Defender', tool3_d: 'Полное отключение и возврат к системным настройкам по умолчанию — с понятным статусом каждого компонента.',
-    tool4_t: 'Windows Update', tool4_d: 'Отключение Центра обновления или пауза на 35 дней штатным способом — обновления больше не придут посреди катки.',
-    tool5_t: 'Установка программ', tool5_d: 'Steam, Discord, браузеры, 7-Zip, MSI Afterburner, HWiNFO и ещё 15+ программ — выберите галочками и поставьте разом.',
-    tool6_t: 'Игровые конфиги', tool6_d: 'Готовые пресеты и конструктор autoexec.cfg с параметрами запуска Steam. Сейчас — Dota 2, дальше больше.',
-    price_eyebrow: 'Тарифы',
-    price_title: 'Начните бесплатно. <span class="grad-primary-text">PRO — когда захотите больше</span>',
-    price_desc: 'Разовая оплата, без автопродления. Ключ приходит сразу после оплаты и привязывается к ПК по HWID.',
-    price_tag_popular: 'Выгоднее всего',
-    price1_name: 'FREE', price1_desc: '180+ твиков, мониторинг, автозагрузка и встроенные утилиты — навсегда.', price1_cta: 'Скачать бесплатно',
-    price2_name: 'Месяц', price2_per: 'за 30 дней', price2_note: 'Чтобы попробовать PRO',
-    price2_desc: 'Все PRO-модули на месяц: прерывания, GPU-разделы, скрытые твики и бета-версии.', price2_cta: 'Купить на месяц',
-    price3_name: 'Полгода', price3_per: '<b>≈ 50 ₽</b> в месяц <span class="save">−50%</span>', price3_note: 'Один платёж на 6 месяцев',
-    price3_desc: 'Всё из тарифа «Месяц» в два раза дешевле в пересчёте на месяц.', price3_cta: 'Купить на полгода',
-    price4_name: 'Навсегда', price4_per: '<b>Без срока действия</b>', price4_note: 'Один платёж — PRO навсегда',
-    price4_desc: 'Все PRO-модули без ограничения по времени. Дешевле, чем полгода на тарифе «Месяц».', price4_cta: 'Купить навсегда',
-    pay1: 'Оплата через ЮKassa — карты и СБП', pay2: 'Ключ сразу на странице', pay3: 'Без автопродления',
-    cmp_h: 'Что входит', cmp1: '180+ твиков реестра и служб', cmp2: 'Мониторинг в реальном времени', cmp3: 'Менеджер автозагрузки',
-    cmp4: 'Встроенные утилиты', cmp5: 'Управление прерываниями (MSI, IRQ)', cmp6: 'GPU-разделы NVIDIA и AMD',
-    cmp7: 'Скрытые и продвинутые твики', cmp8: 'Ранний доступ к бета-версиям', cmp9: 'Приоритетные обновления',
+    fact1: 'твиков системы', fact2_b: '1 клик', fact2: 'откат любого изменения',
+    fact3_b: 'Авто', fact3: 'точка восстановления', fact4: 'вмешательств в файлы игр',
+    features_title: 'Всё нужное — в одном окне',
+    features_desc: 'Тонкая настройка системы, мониторинг железа и утилиты, которые обычно ищут по форумам.',
+    feat1_t: '180+ твиков системы', feat1_d: 'Реестр, службы, питание, таймеры и планировщик — с проверкой состояния и безопасным откатом.',
+    feat2_t: 'Мониторинг в реальном времени', feat2_d: 'Загрузка и температуры CPU и GPU, частота памяти, скорость сети и пинг — без нагрузки на систему.',
+    feat3_t: 'Прерывания и GPU', feat3_d: 'MSI, IRQ affinity и авто-план для AMD Dual-CCD. Отдельные разделы настроек NVIDIA и AMD.',
+    feat4_t: 'Менеджер автозагрузки', feat4_d: 'Реестр, папка Startup, задачи и службы — с настоящими иконками приложений. Отключение в один клик.',
+    feat5_t: 'Встроенные инструменты', feat5_d: 'Без скачивания сомнительных скриптов: всё ставится и откатывается из приложения.',
+    chip1: 'Visual C++ и DirectX', chip2: 'Zapret и TgWsProxy', chip5: '20+ программ в один клик', chip6: 'Конфиги для игр',
+    price_title: 'Начните бесплатно',
+    price_desc: 'PRO — когда захотите больше. Разовая оплата без автопродления, ключ сразу после оплаты.',
+    free_desc: 'Твики, мониторинг, автозагрузка и утилиты — навсегда.',
+    p1_name: 'Месяц', p1_per: 'за 30 дней', p1_desc: 'Чтобы попробовать все PRO-модули.', p1_cta: 'Купить на месяц',
+    p2_name: 'Полгода', p2_per: '<b>≈ 50 ₽</b> в месяц <span class="save">−50%</span>', p2_desc: 'В два раза дешевле помесячной оплаты.', p2_cta: 'Купить на полгода',
+    p3_tag: 'Выгоднее всего', p3_name: 'Навсегда', p3_per: '<b>Без срока действия</b>',
+    p3_desc: 'Один платёж — PRO навсегда. Дешевле, чем полгода на тарифе «Месяц».', p3_cta: 'Купить навсегда',
+    pro_list: '<b>PRO открывает:</b> управление прерываниями (MSI, IRQ), разделы NVIDIA и AMD, скрытые твики, бета-версии и приоритетные обновления.',
+    pay1: 'Оплата через ЮKassa — карты и СБП', pay2: 'Ключ привязывается к ПК по HWID',
+    faq_title: 'Частые вопросы',
+    faq_q1: 'Это безопасно для системы?',
+    faq_a1: 'Да. Твики применяются через официальные API Windows, а перед первым изменением создаётся точка восстановления. Откатить можно отдельный твик или всю сессию.',
+    faq_q2: 'Могут ли забанить в играх?',
+    faq_a2: 'Нет. VOID TWEAKS не трогает файлы игр, не внедряется в процессы и не меняет их память — только настройки системы и реестра.',
+    faq_q3: 'Windows пишет «Система Windows защитила ваш компьютер»',
+    faq_a3: 'Это SmartScreen — он предупреждает о любых новых программах. Скачивайте установщик только с этой страницы или из GitHub Releases, нажмите «Подробнее» → «Выполнить в любом случае».',
+    faq_q4: 'Нужен ли PRO для обычной оптимизации?',
+    faq_a4: 'Нет. Твики, мониторинг, автозагрузка и встроенные утилиты бесплатны навсегда. PRO нужен для прерываний, GPU-разделов и раннего доступа.',
+    faq_q5: 'Как оплатить и получить ключ?',
+    faq_a5: 'Оплата через ЮKassa. После оплаты вы вернётесь на сайт, и ключ появится прямо на странице — вставьте его в приложение. Вопросы — в <a href="https://t.me/disxrm" target="_blank" rel="noopener" style="color:#fff;text-decoration:underline">Telegram</a>.',
+    dl_title: 'Скачать VOID TWEAKS', dl_version: 'Версия', dl_btn: 'Скачать установщик', dl_downloads: 'Скачано',
+    req1: 'Windows 10 / 11, 64-bit', req2: 'Права администратора',
+    req3: '.NET 10 и драйвер PawnIO ставятся автоматически', req4: '~250 МБ на системном диске',
+    log_title: 'Что нового', log_loading: 'Загружаем релизы…',
+    log_empty: 'Не удалось загрузить релизы.', log_all: 'Все версии на GitHub →',
+    foot_tg: 'Поддержка в Telegram',
     ord_wait_t: 'Проверяем оплату…', ord_wait_d: 'Обычно это занимает несколько секунд. Не закрывайте страницу.',
     ord_done_t: 'Оплата прошла успешно', ord_copy: 'Скопировать ключ', ord_copied: 'Скопировано',
     ord_steps: '<li>Скачайте и установите программу</li><li>Запустите VOIDTWEAKS.exe и нажмите «Запустить оптимизацию»</li><li>Вставьте ключ в появившееся окно</li><li>Нажмите «Активировать»</li>',
@@ -1104,117 +594,56 @@ const I18N = {
     ord_err_create: 'Не удалось создать платёж. Попробуйте ещё раз через минуту.',
     ord_err_notfound: 'Заказ не найден. Если вы оплатили, напишите в поддержку.',
     ord_err_support: 'Платёж прошёл, но заказ не удалось подтвердить. Напишите в поддержку — выдадим ключ вручную.',
-    ord_plan_month: '1 месяц', ord_plan_half: '6 месяцев', ord_plan_forever: 'Навсегда',
-    log_eyebrow: 'Обновления',
-    log_title: 'Что нового в <span class="grad-primary-text">VOID TWEAKS</span>',
-    log_desc: 'История версий и ключевые изменения прямо из GitHub.',
-    log_loading: 'Загружаем релизы…',
-    log_empty: 'Релизы пока не опубликованы или GitHub недоступен.',
-    log_open_gh: 'Открыть релизы на GitHub',
-    log_latest: 'Актуальная',
-    log_read_full: 'Читать полностью на GitHub',
-    faq_eyebrow: 'FAQ',
-    faq_title: 'Частые <span class="grad-primary-text">вопросы</span>',
-    faq_desc: 'Коротко о безопасности, откатах и лицензии. Если чего-то не хватает — пишите в Telegram.',
-    faq_q1: 'Это безопасно для системы?',
-    faq_a1: 'Да. Все твики применяются через официальные API Windows, а перед первым изменением автоматически создаётся точка восстановления. Откатить можно как отдельный твик, так и всю сессию настроек.',
-    faq_q2: 'Могут ли забанить в играх?',
-    faq_a2: 'Нет. VOID TWEAKS не затрагивает игровые файлы, не внедряется в процесс и не изменяет память игры. Все изменения — на уровне системы и реестра.',
-    faq_q3: 'Что если что-то сломается?',
-    faq_a3: 'Любое изменение откатывается в один клик. Плюс есть 8 сценариев восстановления Windows, включая сброс сетевых настроек, служб и планировщика.',
-    faq_q4: 'Нужен ли PRO для базовой оптимизации?',
-    faq_a4: 'Нет. 180+ твиков, мониторинг в реальном времени, менеджер автозагрузки и встроенные утилиты доступны бесплатно навсегда. PRO открывает продвинутые модули — прерывания, GPU-разделы и ранний доступ.',
-    faq_q5: 'Работает на ноутбуках?',
-    faq_a5: 'Да. Есть отдельные твики для ноутбуков, которые учитывают тепловые лимиты, питание от батареи и агрессивные схемы энергосбережения. Приложение само определяет тип устройства.',
-    faq_q6: 'Windows пишет «Система Windows защитила ваш компьютер». Что делать?',
-    faq_a6: 'Это фильтр SmartScreen: он предупреждает о любых новых программах, которые ещё не набрали «репутацию» у Microsoft, — даже о подписанных. Скачивайте установщик только с этой страницы или из GitHub Releases, нажмите «Подробнее» → «Выполнить в любом случае». Если сомневаетесь — напишите в Telegram.',
-    faq_q7: 'Как я получу ключ и как оплатить?',
-    faq_a7: 'Оплата проходит через ЮKassa. После оплаты вы вернётесь на сайт, и ключ появится прямо на странице — скопируйте его и вставьте в приложение. Автопродления нет: деньги списываются один раз.',
-    dl_eyebrow: 'Скачать',
-    dl_title: 'Установщик VOID TWEAKS <span class="grad-primary-text">1.0.1</span>',
-    dl_desc: 'Установщик сам проверит .NET 10 Runtime, поставит драйвер PawnIO и создаст ярлыки.',
-    dl_badge: 'Стабильный релиз',
-    dl_info: 'Self-contained: всё нужное уже внутри. Проверяет версию Windows, права администратора и .NET 10 Runtime перед установкой.',
-    dl_downloads_label: 'Скачано', dl_downloads_times: 'раз',
-    dl_m1: 'Версия', dl_m2: 'Платформа', dl_m3: 'Размер', dl_m4: 'Формат',
-    dl_btn: 'Скачать VOID TWEAKS',
-    dl_req_title: 'Системные требования',
-    dl_r1: '<b>Windows 10 (64-bit)</b> или новее, включая Windows 11 24H2+',
-    dl_r2: '<b>Права администратора</b> — для установки служб и драйвера PawnIO',
-    dl_r3: '<b>.NET 10 Runtime</b> — устанавливается автоматически при необходимости',
-    dl_r4: '<b>~250 МБ свободного места</b> на системном диске',
-    dl_r5: 'Встроенная точка восстановления перед первыми правками',
-    dl_hint: '<b>SmartScreen ругается?</b> Нажмите «Подробнее» → «Выполнить в любом случае». Так Windows реагирует на любые новые программы.',
-    final_title: 'Верните Windows <span class="grad-primary-text">скорость</span>',
-    final_desc: 'Бесплатная версия — навсегда. PRO можно подключить в любой момент прямо из приложения.',
-    final_cta2: 'Смотреть тарифы',
-    foot_tag: 'Оптимизатор Windows с живым мониторингом железа, твиками системы и встроенными утилитами для повседневных задач.',
-    foot_product: 'Продукт', foot_support: 'Поддержка', foot_tg: 'Поддержка в Telegram', foot_version: 'Версия 1.0.1'
+    ord_plan_month: '1 месяц', ord_plan_half: '6 месяцев', ord_plan_forever: 'Навсегда'
   },
   en: {
-    brand_sub: 'Windows Optimizer',
-    nav_features: 'Features', nav_tools: 'Tools', nav_pricing: 'Pricing',
-    nav_changelog: 'Updates', nav_faq: 'FAQ', nav_download: 'Download',
-    mm_tg: 'Support on Telegram', mm_version: 'Version',
-    hero_pill: 'New version',
+    nav_features: 'Features', nav_pricing: 'Pricing', nav_faq: 'FAQ', nav_download: 'Download',
+    hero_badge: 'Version',
     hero_title: '<span class="line">Clean Windows.</span><span class="line grad-text">More FPS. Less latency.</span>',
     hero_lead: 'VOID TWEAKS disables telemetry and useless services, tunes the system for gaming and rolls back any change in one click.',
-    hero_cta1: 'Download free', hero_cta2: 'PRO from 99 ₽', hero_note1: 'Free version forever',
-    app_home: 'Home', app_opt: 'Optimization', app_lic: 'License', app_monitor: 'Monitoring', app_live: 'real time',
+    cta_free: 'Download free', cta_pro: 'PRO from 99 ₽',
+    hero_note: 'Free version forever · <b>Windows 10 / 11 x64</b>',
+    app_home: 'Home', app_opt: 'Optimization', app_tools: 'Tools', app_monitor: 'Monitoring', app_live: 'real time',
     app_ram: 'RAM', app_ping: 'Ping',
     app_tw1: 'Disable telemetry', app_tw1d: 'Data collection services, tasks and policies',
     app_tw2: 'Gaming scheduler priority', app_tw2d: 'More CPU time for your game',
     app_tw3: 'MSI mode for GPU', app_tw3d: 'Lower interrupt latency · PRO',
-    app_run: 'Run optimization',
-    trust1_t: 'Restore point', trust1_d: 'Created automatically before the first change',
-    trust2_t: 'One-click rollback', trust2_d: 'For a single tweak or the whole session',
-    trust3_t: 'Safe for games', trust3_d: 'Never touches game files or memory, no injection',
-    trust4_t: 'Real support', trust4_d: 'Personal replies on Telegram — @disxrm',
-    metric_1: 'ready-made tweaks<br>for registry, services & power',
-    metric_2: 'recovery scenarios<br>for Windows',
-    metric_3: 'built-in utilities<br>for everyday tasks',
-    metric_4: 'click to roll back<br>any change',
-    how_eyebrow: 'How it works',
-    how_title: 'Three steps to a <span class="grad-primary-text">faster system</span>',
-    how_desc: 'No need to dig through the registry and services — everything is already collected and tested.',
-    step1_t: 'Download and install', step1_d: 'The installer checks Windows, admin rights and .NET 10 Runtime for you.',
-    step2_t: 'Click “Run optimization”', step2_d: 'The app creates a restore point and applies tweaks for your hardware.',
-    step3_t: 'Play — or roll back', step3_d: 'Don’t like it? Any change reverts in one click.',
-    features_eyebrow: 'Features',
-    features_title: 'Everything to squeeze the <span class="grad-primary-text">maximum</span>',
-    features_desc: 'Key modules working together: from real-time monitoring to fine-tuning of every CPU core.',
-    feat1_t: 'Real-time monitoring',
-    feat1_d: 'CPU and GPU load, temperatures, memory frequency, network speed and ping — with smooth animation and no system overhead.',
-    feat2_t: '180+ system tweaks',
-    feat2_d: 'Registry, services, power, timers, scheduler and peripherals — all with automatic state verification and safe rollback.',
-    feat3_t: 'Interrupt control',
-    feat3_d: 'MSI, IRQ affinity and per-core distribution. Auto-plan for AMD Dual-CCD and Double-CCX, aware of chiplet topology and CPPC.',
-    feat4_t: 'Startup manager',
-    feat4_d: 'Registry, Startup folder, scheduled tasks and services — with real app icons, just like in Explorer. One-click disable.',
-    tools_eyebrow: 'Tools',
-    tools_title: 'Utilities people <span class="grad-primary-text">usually hunt for on forums</span>',
-    tools_desc: 'All in one window — no sketchy scripts to download.',
-    tool1_t: 'Drivers & libraries', tool1_d: 'Visual C++ 2015–2022, DirectX (June 2010) and a page file check — what games need to launch.',
-    tool2_t: 'Zapret & TgWsProxy', tool2_d: 'Access YouTube, Discord and Telegram without a VPN. Install and update flowseal builds in a couple of clicks.',
-    tool3_t: 'Windows Defender', tool3_d: 'Full disable and restore to Windows defaults — with a clear status for every component.',
-    tool4_t: 'Windows Update', tool4_d: 'Disable Windows Update or pause it for 35 days the official way — no more updates mid-match.',
-    tool5_t: 'App installer', tool5_d: 'Steam, Discord, browsers, 7-Zip, MSI Afterburner, HWiNFO and 15+ more apps — tick them and install at once.',
-    tool6_t: 'Game configs', tool6_d: 'Ready-made presets and an autoexec.cfg builder with Steam launch options. Dota 2 for now, more coming.',
-    price_eyebrow: 'Pricing',
-    price_title: 'Start free. <span class="grad-primary-text">Go PRO when you want more</span>',
-    price_desc: 'One-time payment, no auto-renewal. The key arrives right after payment and binds to your PC via HWID.',
-    price_tag_popular: 'Best value',
-    price1_name: 'FREE', price1_desc: '180+ tweaks, monitoring, startup manager and built-in utilities — forever.', price1_cta: 'Download free',
-    price2_name: 'Month', price2_per: 'for 30 days', price2_note: 'To try PRO',
-    price2_desc: 'All PRO modules for a month: interrupts, GPU sections, hidden tweaks and betas.', price2_cta: 'Buy 1 month',
-    price3_name: '6 months', price3_per: '<b>≈ 50 ₽</b> per month <span class="save">−50%</span>', price3_note: 'One payment for 6 months',
-    price3_desc: 'Everything from “Month” at half the monthly price.', price3_cta: 'Buy 6 months',
-    price4_name: 'Lifetime', price4_per: '<b>No expiry</b>', price4_note: 'One payment — PRO forever',
-    price4_desc: 'All PRO modules with no time limit. Costs less than six months on the monthly plan.', price4_cta: 'Buy lifetime',
-    pay1: 'Payment via YooKassa — cards and SBP', pay2: 'Key shown right on the page', pay3: 'No auto-renewal',
-    cmp_h: 'What’s included', cmp1: '180+ registry and service tweaks', cmp2: 'Real-time monitoring', cmp3: 'Startup manager',
-    cmp4: 'Built-in utilities', cmp5: 'Interrupt control (MSI, IRQ)', cmp6: 'NVIDIA and AMD GPU sections',
-    cmp7: 'Hidden and advanced tweaks', cmp8: 'Early access to betas', cmp9: 'Priority updates',
+    fact1: 'system tweaks', fact2_b: '1 click', fact2: 'to roll back any change',
+    fact3_b: 'Auto', fact3: 'restore point', fact4: 'changes to game files',
+    features_title: 'Everything in one window',
+    features_desc: 'Fine system tuning, hardware monitoring and the utilities people usually hunt for on forums.',
+    feat1_t: '180+ system tweaks', feat1_d: 'Registry, services, power, timers and scheduler — with state checks and safe rollback.',
+    feat2_t: 'Real-time monitoring', feat2_d: 'CPU and GPU load and temperatures, memory frequency, network speed and ping — with no overhead.',
+    feat3_t: 'Interrupts & GPU', feat3_d: 'MSI, IRQ affinity and an auto-plan for AMD Dual-CCD. Dedicated NVIDIA and AMD sections.',
+    feat4_t: 'Startup manager', feat4_d: 'Registry, Startup folder, tasks and services — with real app icons. One-click disable.',
+    feat5_t: 'Built-in tools', feat5_d: 'No sketchy scripts: everything installs and rolls back from the app.',
+    chip1: 'Visual C++ & DirectX', chip2: 'Zapret & TgWsProxy', chip5: '20+ apps in one click', chip6: 'Game configs',
+    price_title: 'Start free',
+    price_desc: 'Go PRO when you want more. One-time payment, no auto-renewal, key right after payment.',
+    free_desc: 'Tweaks, monitoring, startup manager and utilities — forever.',
+    p1_name: 'Month', p1_per: 'for 30 days', p1_desc: 'To try every PRO module.', p1_cta: 'Buy 1 month',
+    p2_name: '6 months', p2_per: '<b>≈ 50 ₽</b> per month <span class="save">−50%</span>', p2_desc: 'Half the price of paying monthly.', p2_cta: 'Buy 6 months',
+    p3_tag: 'Best value', p3_name: 'Lifetime', p3_per: '<b>No expiry</b>',
+    p3_desc: 'One payment — PRO forever. Costs less than six months on the monthly plan.', p3_cta: 'Buy lifetime',
+    pro_list: '<b>PRO unlocks:</b> interrupt control (MSI, IRQ), NVIDIA and AMD sections, hidden tweaks, betas and priority updates.',
+    pay1: 'Payment via YooKassa — cards and SBP', pay2: 'Key binds to your PC via HWID',
+    faq_title: 'FAQ',
+    faq_q1: 'Is it safe for my system?',
+    faq_a1: 'Yes. Tweaks go through official Windows APIs and a restore point is created before the first change. Roll back a single tweak or the whole session.',
+    faq_q2: 'Can I get banned in games?',
+    faq_a2: 'No. VOID TWEAKS never touches game files, injects into processes or modifies their memory — only system and registry settings.',
+    faq_q3: 'Windows says “Windows protected your PC”',
+    faq_a3: 'That’s SmartScreen — it warns about any new app. Download the installer only from this page or GitHub Releases, then click “More info” → “Run anyway”.',
+    faq_q4: 'Do I need PRO for basic optimization?',
+    faq_a4: 'No. Tweaks, monitoring, startup manager and built-in utilities are free forever. PRO is for interrupts, GPU sections and early access.',
+    faq_q5: 'How do I pay and get my key?',
+    faq_a5: 'Payment goes through YooKassa. After paying you return to the site and the key appears right on the page — paste it into the app. Questions — on <a href="https://t.me/disxrm" target="_blank" rel="noopener" style="color:#fff;text-decoration:underline">Telegram</a>.',
+    dl_title: 'Download VOID TWEAKS', dl_version: 'Version', dl_btn: 'Download installer', dl_downloads: 'Downloaded',
+    req1: 'Windows 10 / 11, 64-bit', req2: 'Administrator rights',
+    req3: '.NET 10 and the PawnIO driver install automatically', req4: '~250 MB on the system drive',
+    log_title: 'What’s new', log_loading: 'Loading releases…',
+    log_empty: 'Could not load releases.', log_all: 'All versions on GitHub →',
+    foot_tg: 'Telegram support',
     ord_wait_t: 'Checking your payment…', ord_wait_d: 'Usually takes a few seconds. Keep this page open.',
     ord_done_t: 'Payment received', ord_copy: 'Copy key', ord_copied: 'Copied',
     ord_steps: '<li>Download and install the app</li><li>Launch it and click “Run optimization”</li><li>Paste the key into the window that appears</li><li>Click “Activate”</li>',
@@ -1226,52 +655,7 @@ const I18N = {
     ord_err_create: 'Could not create the payment. Try again in a minute.',
     ord_err_notfound: 'Order not found. If you paid, contact support.',
     ord_err_support: 'Payment went through but the order could not be confirmed. Contact support and we will issue the key manually.',
-    ord_plan_month: '1 month', ord_plan_half: '6 months', ord_plan_forever: 'Lifetime',
-    log_eyebrow: 'Updates',
-    log_title: 'What’s new in <span class="grad-primary-text">VOID TWEAKS</span>',
-    log_desc: 'Version history and key changes straight from GitHub.',
-    log_loading: 'Loading releases…',
-    log_empty: 'No releases published yet or GitHub is unavailable.',
-    log_open_gh: 'Open releases on GitHub',
-    log_latest: 'Latest',
-    log_read_full: 'Read full changelog on GitHub',
-    faq_eyebrow: 'FAQ',
-    faq_title: 'Frequently asked <span class="grad-primary-text">questions</span>',
-    faq_desc: 'Briefly about safety, rollbacks and licensing. If something is missing — ping us on Telegram.',
-    faq_q1: 'Is it safe for my system?',
-    faq_a1: 'Yes. All tweaks go through official Windows APIs, and a restore point is created automatically before the first change. You can roll back a single tweak or the whole session.',
-    faq_q2: 'Can I get banned in games?',
-    faq_a2: 'No. VOID TWEAKS does not touch game files, inject into processes, or modify game memory. All changes are at the OS and registry level.',
-    faq_q3: 'What if something breaks?',
-    faq_a3: 'Every change rolls back in one click. Plus there are 8 Windows recovery scenarios, including reset of network settings, services and scheduler.',
-    faq_q4: 'Do I need PRO for basic optimization?',
-    faq_a4: 'No. 180+ tweaks, real-time monitoring, startup manager and built-in utilities are free forever. PRO unlocks advanced modules — interrupts, GPU sections and early access.',
-    faq_q5: 'Does it work on laptops?',
-    faq_a5: 'Yes. There are dedicated laptop tweaks that respect thermal limits, battery power and aggressive power-saving schemes. The app detects the device type automatically.',
-    faq_q6: 'Windows says “Windows protected your PC”. What do I do?',
-    faq_a6: 'That’s SmartScreen: it warns about any new app that hasn’t built “reputation” with Microsoft yet — even signed ones. Download the installer only from this page or GitHub Releases, then click “More info” → “Run anyway”. In doubt? Message us on Telegram.',
-    faq_q7: 'How do I pay and get my key?',
-    faq_a7: 'Payment goes through YooKassa. After paying you return to the site and the key appears right on the page — copy it and paste it into the app. There is no auto-renewal: you are charged once.',
-    dl_eyebrow: 'Download',
-    dl_title: 'VOID TWEAKS Installer <span class="grad-primary-text">1.0.1</span>',
-    dl_desc: 'The installer checks .NET 10 Runtime, installs the PawnIO driver and creates shortcuts.',
-    dl_badge: 'Stable release',
-    dl_info: 'Self-contained: everything is inside. Verifies Windows version, administrator rights and .NET 10 Runtime before install.',
-    dl_downloads_label: 'Downloaded', dl_downloads_times: 'times',
-    dl_m1: 'Version', dl_m2: 'Platform', dl_m3: 'Size', dl_m4: 'Format',
-    dl_btn: 'Download VOID TWEAKS',
-    dl_req_title: 'System requirements',
-    dl_r1: '<b>Windows 10 (64-bit)</b> or newer, including Windows 11 24H2+',
-    dl_r2: '<b>Administrator rights</b> — for installing services and the PawnIO driver',
-    dl_r3: '<b>.NET 10 Runtime</b> — installed automatically if needed',
-    dl_r4: '<b>~250 MB free space</b> on the system drive',
-    dl_r5: 'Built-in restore point before the first changes',
-    dl_hint: '<b>SmartScreen warning?</b> Click “More info” → “Run anyway”. Windows does this for any new app.',
-    final_title: 'Give Windows its <span class="grad-primary-text">speed back</span>',
-    final_desc: 'The free version is forever. Upgrade to PRO anytime right from the app.',
-    final_cta2: 'See pricing',
-    foot_tag: 'Windows optimizer with live hardware monitoring, system tweaks and built-in utilities for everyday tasks.',
-    foot_product: 'Product', foot_support: 'Support', foot_tg: 'Telegram support', foot_version: 'Version 1.0.1'
+    ord_plan_month: '1 month', ord_plan_half: '6 months', ord_plan_forever: 'Lifetime'
   }
 };
 
@@ -1287,46 +671,16 @@ function applyLang(lang) {
     const val = dict[el.dataset.i18nHtml];
     if (val !== undefined) el.innerHTML = val;
   });
-  const cur = document.getElementById('langCurrent');
-  if (cur) cur.textContent = lang.toUpperCase();
+  document.getElementById('langCurrent').textContent = lang === 'en' ? 'RU' : 'EN';
   try { localStorage.setItem('void-lang', lang); } catch {}
 }
 
 (() => {
   let lang = 'ru';
   try { lang = localStorage.getItem('void-lang') || 'ru'; } catch {}
-  if (lang !== 'ru' && lang !== 'en') lang = 'ru';
-  if (lang !== 'ru') applyLang(lang);
-  const toggle = document.getElementById('langToggle');
-  if (toggle) toggle.addEventListener('click', () => applyLang(document.documentElement.lang === 'en' ? 'ru' : 'en'));
-})();
-
-/* ============================================================
-   FAQ — smooth accordion
-============================================================ */
-(() => {
-  document.querySelectorAll('.faq-item').forEach(item => {
-    const toggle = item.querySelector('.faq-toggle');
-    const body = item.querySelector('.faq-body');
-    if (!toggle || !body) return;
-    body.style.height = '0px';
-    toggle.addEventListener('click', () => {
-      const isOpen = item.classList.contains('is-open');
-      if (!isOpen) {
-        item.classList.add('is-open');
-        toggle.setAttribute('aria-expanded', 'true');
-        body.style.height = body.scrollHeight + 'px';
-        const onEnd = e => { if (e.propertyName !== 'height') return; body.style.height = 'auto'; body.removeEventListener('transitionend', onEnd); };
-        body.addEventListener('transitionend', onEnd);
-      } else {
-        body.style.height = body.scrollHeight + 'px';
-        void body.offsetHeight;
-        item.classList.remove('is-open');
-        toggle.setAttribute('aria-expanded', 'false');
-        requestAnimationFrame(() => { body.style.height = '0px'; });
-      }
-    });
-  });
+  applyLang(lang === 'en' ? 'en' : 'ru');
+  document.getElementById('langToggle').addEventListener('click', () =>
+    applyLang(document.documentElement.lang === 'en' ? 'ru' : 'en'));
 })();
 
 /* ============================================================
@@ -1424,117 +778,14 @@ function applyLang(lang) {
   try { saved = localStorage.getItem(STORE) || ''; } catch {}
   if (fromUrl) poll(fromUrl); else if (saved) poll(saved, true);
 })();
-
-/* ============================================================
-   NAV + MOBILE MENU + SCROLL PROGRESS
-============================================================ */
-(() => {
-  const nav = document.getElementById('nav');
-  const bar = document.getElementById('scrollProgress');
-  let ticking = false;
-  const update = () => {
-    nav.classList.toggle('scrolled', window.scrollY > 20);
-    const h = document.documentElement.scrollHeight - window.innerHeight;
-    bar.style.transform = 'scaleX(' + (h > 0 ? Math.min(1, window.scrollY / h) : 0) + ')';
-    ticking = false;
-  };
-  update();
-  window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-
-  const links = [...document.querySelectorAll('.nav-links a, .mm-links a')];
-  const sections = [...new Set(links.map(a => a.getAttribute('href')))].map(h => document.querySelector(h)).filter(Boolean);
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(en => {
-      if (en.isIntersecting) {
-        const id = '#' + en.target.id;
-        links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
-      }
-    });
-  }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
-  sections.forEach(s => io.observe(s));
-
-  const burger = document.getElementById('burger');
-  const menu = document.getElementById('mobileMenu');
-  const backdrop = document.getElementById('menuBackdrop');
-  const closeBtn = document.getElementById('menuClose');
-  const openM = () => { menu.classList.add('open'); backdrop.classList.add('open'); };
-  const shut = () => { menu.classList.remove('open'); backdrop.classList.remove('open'); };
-  burger.addEventListener('click', openM);
-  backdrop.addEventListener('click', shut);
-  closeBtn.addEventListener('click', shut);
-  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', shut));
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') shut(); });
-})();
-
-/* ============================================================
-   REVEAL + COUNTERS + SPOTLIGHT
-============================================================ */
-(() => {
-  const groups = new Map();
-  document.querySelectorAll('.reveal').forEach(el => {
-    const p = el.parentElement;
-    if (!groups.has(p)) groups.set(p, []);
-    groups.get(p).push(el);
-  });
-  groups.forEach(list => list.forEach((el, i) => el.style.setProperty('--i', i)));
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const runCounters = root => {
-    root.querySelectorAll('[data-count]').forEach(el => {
-      if (el.dataset.done) return;
-      el.dataset.done = '1';
-      const target = parseInt(el.dataset.count, 10) || 0;
-      const suffix = el.dataset.suffix || '';
-      if (reduce) { el.textContent = target + suffix; return; }
-      const start = performance.now(), dur = 1400;
-      const tick = now => {
-        const p = Math.min(1, (now - start) / dur);
-        el.textContent = Math.round(target * (1 - Math.pow(1 - p, 4))) + (p === 1 ? suffix : '');
-        if (p < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    });
-  };
-  if (!('IntersectionObserver' in window)) {
-    document.querySelectorAll('.reveal').forEach(el => { el.classList.add('in'); runCounters(el); });
-  } else {
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(en => {
-        if (!en.isIntersecting) return;
-        en.target.classList.add('in');
-        runCounters(en.target);
-        io.unobserve(en.target);
-      });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.01 });
-    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-  }
-
-  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    document.querySelectorAll('[data-spotlight]').forEach(el => {
-      el.addEventListener('pointermove', e => {
-        const r = el.getBoundingClientRect();
-        el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-        el.style.setProperty('--my', (e.clientY - r.top) + 'px');
-      }, { passive: true });
-    });
-  }
-
-  const dl = document.getElementById('downloadBtn');
-  if (dl) dl.addEventListener('click', () => {
-    const span = dl.querySelector('span');
-    const orig = span.textContent;
-    span.textContent = document.documentElement.lang === 'en' ? 'Download started…' : 'Загрузка началась…';
-    setTimeout(() => { span.textContent = orig; }, 1800);
-  });
-})();
 </script>
 
 <script>
 /* ============================================================
    RELEASES FROM GITHUB
    One shared request feeds: version, installer size, download
-   counter and changelog. Lives in its own <script> so an error
-   elsewhere on the page can never leave the spinner stuck.
+   counter and the latest release notes. Lives in its own <script>
+   so an error elsewhere on the page can never break it.
 ============================================================ */
 (() => {
   const REPO = 'disxrm/voidtweaks';
@@ -1544,13 +795,11 @@ function applyLang(lang) {
   const MIN_GAP = 15 * 1000;          // never hit GitHub more often than every 15 s (60 req/h limit per IP)
   const AUTO_REFRESH = 2 * 60 * 1000; // background refresh while the tab is visible
   const TIMEOUT = 8000;
-  const MAX_ENTRIES = 5;
 
-  // old cache keys held outdated data (e.g. only v1.0.0) — drop them
   ['void-changelog-v1', 'void-dl-count-v1'].forEach(k => { try { localStorage.removeItem(k); } catch {} });
 
   const docLang = () => document.documentElement.lang === 'en' ? 'en' : 'ru';
-  const dictOf = () => (typeof I18N !== 'undefined' && (I18N[docLang()] || I18N.ru)) || {};
+  const dictOf = () => I18N[docLang()] || I18N.ru;
   const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
@@ -1602,25 +851,10 @@ function applyLang(lang) {
   const published = () => (releases || []).filter(r => !r.draft);
   const latestStable = () => published().find(r => !r.prerelease) || published()[0];
 
-  /* ---------- version + installer size ---------- */
   function renderVersion() {
     const rel = latestStable();
     const v = rel && cleanVer(rel.tag_name);
-    if (!v) return;
-    document.querySelectorAll('[data-ver]').forEach(el => { el.textContent = v; });
-    document.querySelectorAll('[data-ver-x64]').forEach(el => { el.textContent = v + ' · x64'; });
-
-    // keep translations in sync so switching language doesn't bring the old version back
-    if (typeof I18N !== 'undefined') {
-      Object.values(I18N).forEach(d => {
-        if (d.dl_title) d.dl_title = d.dl_title.replace(/(<span class="grad-primary-text">)[^<]*(<\/span>)/, (m, a, b) => a + escapeHtml(v) + b);
-        if (d.foot_version) d.foot_version = d.foot_version.replace(/[\w.\-]+$/, () => v);
-      });
-    }
-    const t = document.querySelector('[data-i18n-html="dl_title"] .grad-primary-text');
-    if (t) t.textContent = v;
-    const f = document.querySelector('[data-i18n="foot_version"]');
-    if (f && dictOf().foot_version) f.textContent = dictOf().foot_version;
+    if (v) document.querySelectorAll('[data-ver]').forEach(el => { el.textContent = v; });
   }
 
   function renderSize() {
@@ -1633,28 +867,16 @@ function applyLang(lang) {
     el.textContent = Math.round(asset.size / 1048576) + (docLang() === 'en' ? ' MB' : ' МБ');
   }
 
-  /* ---------- download counter (hero + download card) ---------- */
   function renderCounter() {
-    const els = document.querySelectorAll('[data-download-count]');
-    if (!els.length) return;
-    let text = '—', total = 0;
-    if (releases) {
-      total = releases.reduce((s, r) => s + (r.assets || []).reduce((x, a) => x + (a.download_count || 0), 0), 0);
-      try { text = total.toLocaleString(docLang() === 'en' ? 'en-US' : 'ru-RU'); }
-      catch { text = String(total); }
-    }
-    els.forEach(el => { el.textContent = text; });
-    // the hero shows the counter only once it works as social proof
+    let total = 0;
+    if (releases) total = releases.reduce((s, r) => s + (r.assets || []).reduce((x, a) => x + (a.download_count || 0), 0), 0);
+    let text = String(total);
+    try { text = total.toLocaleString(docLang() === 'en' ? 'en-US' : 'ru-RU'); } catch {}
+    document.querySelectorAll('[data-download-count]').forEach(el => { el.textContent = text; });
+    // show the counter only once it works as social proof
     document.querySelectorAll('[data-count-wrap]').forEach(w => { w.hidden = total < (parseInt(w.dataset.min, 10) || 0); });
   }
 
-  /* ---------- changelog ---------- */
-  function formatDate(iso, l) {
-    if (!iso) return '';
-    try {
-      return new Date(iso).toLocaleDateString(l === 'en' ? 'en-US' : 'ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    } catch { return ''; }
-  }
   function cleanLine(s) {
     return s
       .replace(/^[-*+]\s+/, '').replace(/^\d+\.\s+/, '')
@@ -1664,86 +886,43 @@ function applyLang(lang) {
   }
 
   function renderLog() {
-    const list = document.getElementById('logList');
-    if (!list) return;
-    const l = docLang();
+    const box = document.getElementById('logList');
+    if (!box) return;
     const dict = dictOf();
+    const head = `<h4>${escapeHtml(dict.log_title)}</h4>`;
+    const all = `<a class="log-more" href="${RELEASES_URL}" target="_blank" rel="noopener">${escapeHtml(dict.log_all)}</a>`;
 
-    if (state === 'loading') {
-      list.innerHTML = `<div class="log-loading"><span class="spinner"></span><span>${escapeHtml(dict.log_loading || 'Загружаем релизы…')}</span></div>`;
-      return;
-    }
+    if (state === 'loading') { box.innerHTML = head + `<p class="log-empty">${escapeHtml(dict.log_loading)}</p>`; return; }
+    const rel = published()[0];
+    if (state === 'error' || !rel) { box.innerHTML = head + `<p class="log-empty">${escapeHtml(dict.log_empty)}</p>` + all; return; }
 
-    const items = published().slice(0, MAX_ENTRIES);
-    if (state === 'error' || !items.length) {
-      list.innerHTML = `<div class="log-empty">${escapeHtml(dict.log_empty || 'Релизы пока не опубликованы или GitHub недоступен.')}<br><a href="${RELEASES_URL}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px;">${escapeHtml(dict.log_open_gh || 'Открыть релизы на GitHub')}</a></div>`;
-      return;
-    }
+    const lines = String(rel.body || '')
+      .split(/\r?\n/).map(s => s.trim())
+      .filter(s => s && !/^#+\s*/.test(s) && !/^[-*_]{3,}$/.test(s))
+      .map(cleanLine).filter(Boolean)
+      .slice(0, 6);
+    let date = '';
+    try { date = new Date(rel.published_at).toLocaleDateString(docLang() === 'en' ? 'en-US' : 'ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }); } catch {}
 
-    list.innerHTML = items.map((rel, idx) => {
-      const tag = escapeHtml('v' + cleanVer(rel.tag_name || rel.name || 'release'));
-      const date = formatDate(rel.published_at, l);
-      const isLatest = idx === 0;
-      const prerelease = !!rel.prerelease;
-
-      const lines = String(rel.body || '')
-        .split(/\r?\n/).map(s => s.trim())
-        .filter(s => s && !/^#+\s*/.test(s) && !/^[-*_]{3,}$/.test(s))
-        .map(cleanLine).filter(Boolean)
-        .slice(0, 8);
-
-      const bullets = lines.length
-        ? lines.map(b => `<li>${escapeHtml(b)}</li>`).join('')
-        : `<li>${escapeHtml(dict.log_latest || 'Обновление')}: ${tag}</li>`;
-
-      const relUrl = rel.html_url && /^https:\/\/github\.com\//.test(rel.html_url)
-        ? rel.html_url
-        : (rel.tag_name ? RELEASES_URL + '/tag/' + encodeURIComponent(rel.tag_name) : RELEASES_URL);
-      const moreLabel = escapeHtml(dict.log_read_full || 'Читать полностью на GitHub');
-
-      const tagClass = prerelease ? 'beta' : (isLatest ? 'latest' : '');
-      const tagLabel = prerelease
-        ? (l === 'en' ? 'Beta' : 'Бета')
-        : (isLatest ? (dict.log_latest || 'Актуальная') : (l === 'en' ? 'Stable' : 'Стабильная'));
-
-      return `
-        <div class="card log-entry reveal in">
-          <div class="log-head">
-            <span class="log-ver">${tag}</span>
-            ${date ? `<span class="log-date">${escapeHtml(date)}</span>` : ''}
-            <span class="log-tag ${tagClass}">${escapeHtml(tagLabel)}</span>
-          </div>
-          <ul class="log-list-items">${bullets}</ul>
-          <a class="log-more" href="${escapeHtml(relUrl)}" target="_blank" rel="noopener noreferrer">
-            <span>${moreLabel}</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
-          </a>
-        </div>`;
-    }).join('');
+    box.innerHTML = head
+      + `<p class="log-ver">v${escapeHtml(cleanVer(rel.tag_name || rel.name))}</p>`
+      + (date ? `<p class="log-date">${escapeHtml(date)}</p>` : '')
+      + (lines.length ? `<ul class="log-items">${lines.map(l => `<li>${escapeHtml(l)}</li>`).join('')}</ul>` : '')
+      + all;
   }
 
-  let lastLogSig = null;
-  const logSig = () => state + '|' + published().slice(0, MAX_ENTRIES)
-    .map(r => [r.tag_name, r.published_at, r.prerelease, r.body].join('~')).join('||');
-
-  function renderAll(forceLog) {
-    const sig = logSig();
-    const list = [renderVersion, renderSize, renderCounter];
-    if (forceLog === true || sig !== lastLogSig) { lastLogSig = sig; list.push(renderLog); }
-    list.forEach(fn => {
+  function renderAll() {
+    [renderVersion, renderSize, renderCounter, renderLog].forEach(fn => {
       try { fn(); } catch (e) { console.warn('render failed:', fn.name, e); }
     });
   }
 
   // language switch: re-render texts that are generated here
-  const toggle = document.getElementById('langToggle');
-  if (toggle) toggle.addEventListener('click', () => setTimeout(() => renderAll(true), 0));
+  document.getElementById('langToggle').addEventListener('click', () => setTimeout(renderAll, 0));
 
-  // 1) show cached data instantly (if any), 2) refresh from GitHub
   const cached = readCache();
   if (cached) { releases = cached.data; state = 'ready'; renderAll(); }
 
-  /* ---------- live refresh: no waiting for a cache to expire ---------- */
   let busy = false, lastFetch = 0;
   function refresh(force) {
     if (busy) return;
@@ -1753,24 +932,16 @@ function applyLang(lang) {
       if (data) { releases = data; state = 'ready'; }
       else if (!releases) state = 'error';
       renderAll();
-    }).catch(err => {
-      console.warn('releases refresh failed:', err);
-      if (!releases) state = 'error';
-      renderAll();
     }).finally(() => { busy = false; });
   }
 
-  refresh(true);                                                    // every page load asks GitHub
+  refresh(true);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
-  window.addEventListener('focus', () => refresh());
   setInterval(() => { if (!document.hidden) refresh(); }, AUTO_REFRESH);
 
-  // after a click on a download link, re-check the counter a few times
-  document.addEventListener('click', e => {
-    const a = e.target.closest && e.target.closest('a[href*="/releases/"][href$=".exe"], #downloadBtn');
-    if (!a) return;
-    [4000, 15000, 40000].forEach(ms => setTimeout(() => refresh(true), ms));
-  });
+  // after a click on the download button, re-check the counter a few times
+  document.getElementById('downloadBtn').addEventListener('click', () =>
+    [4000, 15000, 40000].forEach(ms => setTimeout(() => refresh(true), ms)));
 })();
 </script>
 
