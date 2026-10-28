@@ -1,7 +1,7 @@
 """
-Веб-оплата для VoidTweaks: сайт -> ЮKassa -> ключ на странице (без Telegram).
+Веб-оплата для VoidTweaks: сайт -> ЮKassa -> ключ на странице.
 
-Подключение в bot.py — см. README_WEB_PAYMENT.md.
+Подключается в bot.py через init(...) и register(app).
 
 Как это работает:
   1. Сайт:  POST /api/checkout {"plan": "month"}
@@ -101,7 +101,7 @@ async def _yk_create(amount: int, token: str, plan_key: str, description: str):
             "return_url": f"{_site_url}/?order={token}",
         },
         "description": description,
-        # префикс web_ — чтобы вебхук отличал веб-заказы от Telegram-заказов
+        # префикс web_ — по нему вебхук узнаёт заказы с сайта
         "metadata": {"order_id": f"web_{token}", "plan": plan_key},
     }
     try:
@@ -198,7 +198,7 @@ async def issue_web_license(token: str) -> dict | None:
         )
         row = {
             "license_key": key,
-            "telegram_id": None,            # веб-покупатель без Telegram
+            "telegram_id": None,            # колонка осталась от Telegram-бота
             "plan": plan_key,
             "payment_id": order["payment_id"],
             "expires_at": expires.isoformat() if expires else None,
