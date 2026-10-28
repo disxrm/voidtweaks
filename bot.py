@@ -33,6 +33,8 @@ ALLOWED_ORIGINS = {o.strip() for o in os.environ.get("ALLOWED_ORIGINS", SITE_URL
 ALLOWED_ORIGINS |= {"https://voidtweaksapp.github.io", "https://disxrm.github.io"}
 BANNER_WELCOME_URL = "https://raw.githubusercontent.com/disxrm/voidtweaks/main/banner_welcome.png"
 BANNER_PLANS_URL = "https://raw.githubusercontent.com/disxrm/voidtweaks/main/banner_plans.png"
+# Всегда последний релиз: имя файла установщика одинаковое во всех версиях
+DOWNLOAD_URL = "https://github.com/voidtweaksapp/voidtweaks/releases/latest/download/VOIDTWEAKSInstaller.exe"
 
 _banner_welcome_id: str | None = None
 _banner_plans_id: str | None = None
@@ -76,16 +78,20 @@ def main_menu():
         [InlineKeyboardButton(text="💳 Купить лицензию", callback_data="buy")],
         [InlineKeyboardButton(text="🔑 Мои лицензии",    callback_data="mylicense")],
         [InlineKeyboardButton(text="📞 Поддержка",        callback_data="support"),
-         InlineKeyboardButton(text="⬇️ Скачать",         url="https://github.com/disxrm/voidtweaks/releases/download/1.0/VOIDTWEAKS.exe")],
+         InlineKeyboardButton(text="⬇️ Скачать",         url=DOWNLOAD_URL)],
     ])
 
 def plans_menu():
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="1 месяц — 99₽", callback_data="plan_month")],
-        [InlineKeyboardButton(text="6 месяцев — 299₽", callback_data="plan_half")],
-        [InlineKeyboardButton(text="Навсегда — 499₽", callback_data="plan_forever")],
+        *[[InlineKeyboardButton(text=f"{p['name']} — {p['price']}₽", callback_data=f"plan_{k}")]
+          for k, p in PLANS.items()],
         [InlineKeyboardButton(text="◀️ Назад", callback_data="back")],
     ])
+
+RENEW_DISCOUNT = 0.9
+
+def renew_price(plan_key: str) -> int:
+    return int(PLANS[plan_key]["price"] * RENEW_DISCOUNT)
 
 def generate_key():
     raw = str(uuid.uuid4()).upper().replace("-", "")
@@ -126,7 +132,8 @@ async def create_yukassa_invoice(amount: int, order_id: str, description: str):
         logger.error(f"Ошибка создания платежа: {e}")
         return None, None
 
-async def check_yukassa_payment(payment_id: str):
+async def fetch_yukassa_payment(payment_id: str) -> dict | None:
+    """Платёж целиком из API ЮKassa. Статусу, сумме и metadata верим только отсюда."""
     import base64
     credentials = base64.b64encode(f"{YUKASSA_SHOP_ID}:{YUKASSA_SECRET_KEY}".encode()).decode()
     headers = {"Authorization": f"Basic {credentials}"}
@@ -138,12 +145,30 @@ async def check_yukassa_payment(payment_id: str):
                 timeout=aiohttp.ClientTimeout(total=10)
             ) as resp:
                 result = await resp.json()
-                status = result.get("status")
-                logger.info(f"Платёж {payment_id}: {status}")
-                return status
+                if resp.status != 200:
+                    logger.error(f"ЮKassa ошибка проверки {resp.status}: {result}")
+                    return None
+                logger.info(f"Платёж {payment_id}: {result.get('status')}")
+                return result
     except Exception as e:
         logger.error(f"Ошибка проверки платежа {payment_id}: {e}")
         return None
+
+def parse_bot_order(payment: dict) -> tuple[int, str] | None:
+    """(telegram_id, plan_key) из metadata.order_id бот-заказа, если оплачена хотя бы цена со скидкой."""
+    order_id = payment.get("metadata", {}).get("order_id", "")
+    parts = order_id.split("_")
+    if len(parts) < 2 or not parts[0].isdigit() or parts[1] not in PLANS:
+        return None
+    plan_key = parts[1]
+    try:
+        paid = float(payment.get("amount", {}).get("value", 0))
+    except (TypeError, ValueError):
+        return None
+    if paid < renew_price(plan_key):
+        logger.warning(f"Платёж {payment.get('id')}: сумма {paid} меньше цены тарифа {plan_key}")
+        return None
+    return int(parts[0]), plan_key
 
 async def issue_license(telegram_id: int, plan_key: str, payment_id: str) -> str | None:
     if payment_id in used_payment_ids:
@@ -290,20 +315,24 @@ async def buy(callback: CallbackQuery):
     else:
         await callback.message.answer(
             "💳 <b>Выберите тариф:</b>\n\n"
-            "📅 <b>1 месяц — 99₽</b>\n"
-            "📅 <b>6 месяцев — 299₽</b>\n"
-            "♾️ <b>Навсегда — 499₽</b>",
+            + "\n".join(f"{'♾️' if k == 'forever' else '📅'} <b>{p['name']} — {p['price']}₽</b>"
+                        for k, p in PLANS.items()),
             parse_mode="HTML",
             reply_markup=plans_menu()
         )
 
-@dp.callback_query(F.data.startswith("plan_"))
+# "_renew" исключён: иначе этот обработчик (он зарегистрирован раньше) перехватывал
+# кнопки продления и падал на PLANS["month_renew"]
+@dp.callback_query(F.data.startswith("plan_") & ~F.data.endswith("_renew"))
 async def select_plan(callback: CallbackQuery):
     if is_flood(callback.from_user.id):
         await callback.answer("⏳ Не так быстро!")
         return
 
     plan_key = callback.data.replace("plan_", "")
+    if plan_key not in PLANS:
+        await callback.answer("❌ Неверный тариф", show_alert=True)
+        return
     plan = PLANS[plan_key]
     order_id = f"{callback.from_user.id}_{plan_key}_{int(datetime.now().timestamp())}"
 
@@ -348,18 +377,27 @@ async def check_payment(callback: CallbackQuery):
         await callback.answer("⏳ Не так быстро!")
         return
 
+    # callback_data присылает клиент — из неё берём только payment_id,
+    # а тариф и владельца платежа — из ответа ЮKassa
     parts = callback.data.split("_")
+    if len(parts) < 2:
+        return
     payment_id = parts[1]
-    plan_key = parts[2]
-    plan = PLANS[plan_key]
 
-    status = await check_yukassa_payment(payment_id)
+    payment = await fetch_yukassa_payment(payment_id)
 
-    if status is None:
+    if payment is None:
         await callback.answer("❌ Ошибка связи с платёжной системой. Попробуйте позже.", show_alert=True)
         return
 
+    status = payment.get("status")
     if status == "succeeded":
+        order = parse_bot_order(payment)
+        if order is None or order[0] != callback.from_user.id:
+            await callback.answer("❌ Этот платёж не найден среди ваших.", show_alert=True)
+            return
+        plan_key = order[1]
+        plan = PLANS[plan_key]
         key = await issue_license(callback.from_user.id, plan_key, payment_id)
         if key:
             expires_text = ""
@@ -482,9 +520,8 @@ async def renew(callback: CallbackQuery):
     except Exception:
         pass
     renew_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text=f"1 месяц — {int(99*0.9)}₽ (-10%)",      callback_data="plan_month_renew")],
-        [InlineKeyboardButton(text=f"6 месяцев — {int(299*0.9)}₽ (-10%)",   callback_data="plan_half_renew")],
-        [InlineKeyboardButton(text=f"Навсегда — {int(499*0.9)}₽ (-10%)",    callback_data="plan_forever_renew")],
+        *[[InlineKeyboardButton(text=f"{p['name']} — {renew_price(k)}₽ (-10%)", callback_data=f"plan_{k}_renew")]
+          for k, p in PLANS.items()],
         [InlineKeyboardButton(text="◀️ Назад", callback_data="back")],
     ])
     await callback.message.answer(
@@ -505,7 +542,7 @@ async def select_plan_renew(callback: CallbackQuery):
         await callback.answer("❌ Неверный тариф", show_alert=True)
         return
     plan = PLANS[plan_key]
-    discounted_price = int(plan["price"] * 0.9)
+    discounted_price = renew_price(plan_key)
     order_id = f"{callback.from_user.id}_{plan_key}_{int(datetime.now().timestamp())}"
     payment_id, payment_url = await create_yukassa_invoice(
         discounted_price, order_id,
@@ -603,24 +640,30 @@ async def yukassa_webhook(request: web.Request):
         data = json.loads(body)
 
         event = data.get("event")
-        payment = data.get("object", {})
-        payment_id = payment.get("id")
+        payment_id = data.get("object", {}).get("id")
 
         logger.info(f"ЮKassa webhook: {event}, payment_id={payment_id}")
 
-        if event == "payment.succeeded":
-            metadata = payment.get("metadata", {})
-            order_id = metadata.get("order_id", "")
+        if event == "payment.succeeded" and payment_id:
+            # Тело вебхука и IP можно подделать (X-Forwarded-For задаёт клиент),
+            # поэтому платёж перечитываем из API ЮKassa и верим только ему
+            payment = await fetch_yukassa_payment(payment_id)
+            if payment is None:
+                return web.Response(text="Retry", status=500)  # ЮKassa повторит вебхук
+            if payment.get("status") != "succeeded":
+                logger.warning(f"Webhook: платёж {payment_id} в API не succeeded, а {payment.get('status')}")
+                return web.Response(text="OK", status=200)
+
+            order_id = payment.get("metadata", {}).get("order_id", "")
 
             # веб-заказ с сайта: ключ выдаём и по вебхуку, и по опросу сайта (идемпотентно)
             if order_id.startswith("web_"):
                 await web_checkout.issue_web_license(order_id[4:])
                 return web.Response(text="OK", status=200)
 
-            parts = order_id.split("_")
-            if len(parts) >= 2:
-                telegram_id = int(parts[0])
-                plan_key = parts[1]
+            order = parse_bot_order(payment)
+            if order:
+                telegram_id, plan_key = order
 
                 if plan_key in PLANS:
                     key = await issue_license(telegram_id, plan_key, payment_id)
@@ -650,8 +693,8 @@ async def yukassa_webhook(request: web.Request):
                                 telegram_id,
                                 "📋 <b>Как активировать VoidTweaks:</b>\n\n"
                                 "1️⃣ Нажмите <b>⬇️ Скачать</b> в меню и установите программу\n"
-                                "2️⃣ Запустите <b>VOIDTWEAKS.exe</b>\n"
-                                "3️⃣ Нажмите кнопку <b>«Запустить оптимизацию»</b>\n"
+                                "2️⃣ Запустите <b>VoidTweaks</b>\n"
+                                "3️⃣ На главной нажмите <b>«Активировать PRO»</b>\n"
                                 "4️⃣ В появившемся окне вставьте ключ выше\n"
                                 "5️⃣ Нажмите <b>«Активировать»</b> — готово! 🚀\n\n"
                                 "❓ Если что-то не работает — пишите @disxrm",
