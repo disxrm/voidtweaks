@@ -15,6 +15,7 @@ from datetime import datetime
 from aiohttp import web
 from supabase import create_client
 import web_checkout
+import license_api
 
 logging.basicConfig(
     level=logging.INFO,
@@ -142,6 +143,9 @@ async def main():
         generate_key=generate_key,
     )
     web_checkout.register(app)
+
+    license_api.init(supabase=supabase)
+    license_api.register(app)
 
     runner = web.AppRunner(app)
     await runner.setup()
