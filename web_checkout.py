@@ -25,6 +25,8 @@ from datetime import datetime, timedelta, timezone
 import aiohttp
 from aiohttp import web
 
+import account_api
+
 logger = logging.getLogger(__name__)
 
 # Эти значения подставляются из bot.py через init(...)
@@ -74,7 +76,7 @@ async def cors_middleware(request: web.Request, handler):
     if allowed:
         resp.headers["Access-Control-Allow-Origin"] = origin
         resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-        resp.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
         resp.headers["Access-Control-Max-Age"] = "86400"
         resp.headers["Vary"] = "Origin"
     return resp
@@ -171,7 +173,17 @@ async def issue_web_license(token: str) -> dict | None:
                 "license_key", order["license_key"]
             ).execute()
             if lic.data:
-                return _row_to_response(lic.data[0])
+                lic_row = lic.data[0]
+                # заказ могли привязать к аккаунту уже после выдачи ключа
+                if order.get("user_id") and not (lic_row.get("user_id") or "").strip():
+                    try:
+                        _supabase.table("licenses").update(
+                            {"user_id": order["user_id"]}
+                        ).eq("license_key", lic_row["license_key"]).execute()
+                        lic_row["user_id"] = order["user_id"]
+                    except Exception as e:
+                        logger.warning(f"Не удалось привязать ключ к аккаунту: {e}")
+                return _row_to_response(lic_row)
 
         # не доверяем ни вебхуку, ни клиенту — спрашиваем ЮKassa напрямую
         status, paid = await _yk_status(order["payment_id"])
@@ -204,8 +216,14 @@ async def issue_web_license(token: str) -> dict | None:
             "expires_at": expires.isoformat() if expires else None,
             "is_active": True,
         }
+        if order.get("user_id"):
+            row["user_id"] = order["user_id"]
+
+        def _insert_license(data: dict):
+            _supabase.table("licenses").insert(data).execute()
+
         try:
-            _supabase.table("licenses").insert(row).execute()
+            _insert_license(row)
         except Exception as e:
             # если уникальный индекс по payment_id сработал — ключ уже есть
             existing = _supabase.table("licenses").select("*").eq(
@@ -214,6 +232,23 @@ async def issue_web_license(token: str) -> dict | None:
             if existing.data:
                 row = existing.data[0]
                 key = row["license_key"]
+                if order.get("user_id") and not (row.get("user_id") or "").strip():
+                    try:
+                        _supabase.table("licenses").update(
+                            {"user_id": order["user_id"]}
+                        ).eq("license_key", key).execute()
+                        row["user_id"] = order["user_id"]
+                    except Exception as e:
+                        logger.warning(f"Не удалось привязать существующий ключ: {e}")
+            elif "user_id" in row:
+                # миграция с user_id ещё не применена — выдаём ключ без привязки
+                logger.warning(f"Повторная вставка лицензии без user_id: {e}")
+                row.pop("user_id", None)
+                try:
+                    _insert_license(row)
+                except Exception as e2:
+                    logger.error(f"Не удалось записать лицензию (заказ {token}): {e2}")
+                    return None
             else:
                 logger.error(f"Не удалось записать лицензию (заказ {token}): {e}")
                 return None
@@ -260,6 +295,10 @@ async def api_checkout(request: web.Request):
     if not plan:
         return web.json_response({"error": "bad_plan"}, status=400)
 
+    # Если пользователь вошёл в аккаунт — привяжем будущий ключ к нему.
+    # Гостевой checkout продолжает работать: без токена user == None.
+    user = await account_api.get_user(request)
+
     token = secrets.token_urlsafe(24)  # ~192 бита — не подобрать перебором
     payment_id, url = await _yk_create(
         plan["price"], token, plan_key, f"VoidTweaks — {plan['name']}"
@@ -267,16 +306,30 @@ async def api_checkout(request: web.Request):
     if not payment_id or not url:
         return web.json_response({"error": "payment_failed"}, status=502)
 
+    order_row = {
+        "token": token,
+        "plan": plan_key,
+        "payment_id": payment_id,
+        "status": "pending",
+    }
+    if user and user.get("id"):
+        order_row["user_id"] = user["id"]
+
     try:
-        _supabase.table("web_orders").insert({
-            "token": token,
-            "plan": plan_key,
-            "payment_id": payment_id,
-            "status": "pending",
-        }).execute()
+        _supabase.table("web_orders").insert(order_row).execute()
     except Exception as e:
-        logger.error(f"Не удалось сохранить web_order: {e}")
-        return web.json_response({"error": "db_failed"}, status=500)
+        if "user_id" in order_row:
+            # миграция с user_id ещё не применена — заказ без привязки
+            logger.warning(f"Повторное сохранение web_order без user_id: {e}")
+            order_row.pop("user_id", None)
+            try:
+                _supabase.table("web_orders").insert(order_row).execute()
+            except Exception as e2:
+                logger.error(f"Не удалось сохранить web_order: {e2}")
+                return web.json_response({"error": "db_failed"}, status=500)
+        else:
+            logger.error(f"Не удалось сохранить web_order: {e}")
+            return web.json_response({"error": "db_failed"}, status=500)
 
     return web.json_response({"url": url, "token": token})
 

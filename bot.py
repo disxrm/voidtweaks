@@ -16,6 +16,7 @@ from aiohttp import web
 from supabase import create_client
 import web_checkout
 import license_api
+import account_api
 
 logging.basicConfig(
     level=logging.INFO,
@@ -146,6 +147,13 @@ async def main():
 
     license_api.init(supabase=supabase)
     license_api.register(app)
+
+    account_api.init(
+        supabase=supabase,
+        supabase_url=SUPABASE_URL,
+        supabase_key=SUPABASE_KEY,
+    )
+    account_api.register(app)
 
     runner = web.AppRunner(app)
     await runner.setup()
