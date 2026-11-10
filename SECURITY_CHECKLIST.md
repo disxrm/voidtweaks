@@ -58,7 +58,9 @@ where tablename in ('licenses', 'web_orders');
 ## 4. Сайт (GitHub Pages)
 
 - [x] CSP и `Referrer-Policy` на `index.html` и `account.html`.
-- [x] SRI (SHA-384) для `vendor/supabase.js`.
+- [x] SRI (SHA-384) для `vendor/supabase.js`. Хеш считать по blob из
+      git (`git show HEAD:docs/vendor/supabase.js`), а не по рабочему
+      файлу: на Windows CRLF и LF дают разные байты и разный SHA-384.
 - [x] Email администратора удалён из фронтенда.
 - [x] Данные админки не кэшируются в `sessionStorage`; кэш ключей
       очищается при выходе/истечении сессии.
