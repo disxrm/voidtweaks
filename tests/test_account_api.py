@@ -136,6 +136,7 @@ class AccountApiTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status, 200)
         data = await response.json()
         self.assertEqual(data["email"], "user@example.com")
+        self.assertFalse(data["is_admin"])
         self.assertEqual(data["licenses"], [])
         self.assertEqual(data["orders"], [])
         self.assertNotIn("token", data["orders"][0] if data["orders"] else {})
@@ -153,6 +154,18 @@ class AccountApiTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data["orders"][0]["license_key"], "AAAA-BBBB-CCCC-DDDD")
         self.assertNotIn("token", data["orders"][0])
         self.assertNotIn("payment_id", data["orders"][0])
+
+    async def test_keys_reports_admin_flag(self):
+        async def fake_admin(request):
+            return {"id": "user-1", "email": "vit9aso2@gmail.com"}
+
+        account_api.get_user = fake_admin
+        response = await self.client.get(
+            "/api/account/keys", headers={"Authorization": "Bearer good"}
+        )
+        self.assertEqual(response.status, 200)
+        data = await response.json()
+        self.assertTrue(data["is_admin"])
 
     async def test_claim_order_links_license_and_is_idempotent(self):
         response = await self.client.post(

@@ -25,15 +25,25 @@ logger = logging.getLogger(__name__)
 _supabase = None
 _supabase_url = ""
 _supabase_key = ""
+_admin_emails = {"vit9aso2@gmail.com"}
 
 KEY_RE = re.compile(r"^[A-Z0-9]{4}(-[A-Z0-9]{4}){3}$")
 
 
-def init(*, supabase, supabase_url, supabase_key):
-    global _supabase, _supabase_url, _supabase_key
+def init(*, supabase, supabase_url, supabase_key, admin_emails=None):
+    global _supabase, _supabase_url, _supabase_key, _admin_emails
     _supabase = supabase
     _supabase_url = (supabase_url or "").rstrip("/")
     _supabase_key = supabase_key or ""
+    if admin_emails:
+        emails = {str(email).strip().lower() for email in admin_emails if str(email).strip()}
+        if emails:
+            _admin_emails = emails
+
+
+def is_admin(user: dict | None) -> bool:
+    email = (user or {}).get("email") or ""
+    return email.strip().lower() in _admin_emails
 
 
 async def get_user(request: web.Request) -> dict | None:
@@ -119,6 +129,7 @@ async def api_account_keys(request: web.Request):
     return web.json_response({
         "ok": True,
         "email": user.get("email"),
+        "is_admin": is_admin(user),
         "licenses": [_safe_license(row) for row in lic_rows],
         "orders": [_safe_order(row) for row in order_rows],
     })

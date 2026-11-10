@@ -295,9 +295,11 @@ async def api_checkout(request: web.Request):
     if not plan:
         return web.json_response({"error": "bad_plan"}, status=400)
 
-    # Если пользователь вошёл в аккаунт — привяжем будущий ключ к нему.
-    # Гостевой checkout продолжает работать: без токена user == None.
+    # Покупка доступна только авторизованным пользователям: ключ сразу
+    # привязывается к аккаунту, а не теряется после оплаты.
     user = await account_api.get_user(request)
+    if not user or not user.get("id"):
+        return web.json_response({"error": "unauthorized"}, status=401)
 
     token = secrets.token_urlsafe(24)  # ~192 бита — не подобрать перебором
     payment_id, url = await _yk_create(
@@ -311,25 +313,14 @@ async def api_checkout(request: web.Request):
         "plan": plan_key,
         "payment_id": payment_id,
         "status": "pending",
+        "user_id": user["id"],
     }
-    if user and user.get("id"):
-        order_row["user_id"] = user["id"]
 
     try:
         _supabase.table("web_orders").insert(order_row).execute()
     except Exception as e:
-        if "user_id" in order_row:
-            # миграция с user_id ещё не применена — заказ без привязки
-            logger.warning(f"Повторное сохранение web_order без user_id: {e}")
-            order_row.pop("user_id", None)
-            try:
-                _supabase.table("web_orders").insert(order_row).execute()
-            except Exception as e2:
-                logger.error(f"Не удалось сохранить web_order: {e2}")
-                return web.json_response({"error": "db_failed"}, status=500)
-        else:
-            logger.error(f"Не удалось сохранить web_order: {e}")
-            return web.json_response({"error": "db_failed"}, status=500)
+        logger.error(f"Не удалось сохранить web_order: {e}")
+        return web.json_response({"error": "db_failed"}, status=500)
 
     return web.json_response({"url": url, "token": token})
 

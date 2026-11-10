@@ -17,6 +17,7 @@ from supabase import create_client
 import web_checkout
 import license_api
 import account_api
+import admin_api
 
 logging.basicConfig(
     level=logging.INFO,
@@ -33,6 +34,7 @@ PORT = int(os.environ.get("PORT", 8080))
 RENDER_URL = os.environ.get("RENDER_URL", "")
 SITE_URL = os.environ.get("SITE_URL", "")  # https://voidtweaksapp.github.io/voidtweaks  (без / в конце)
 ALLOWED_ORIGINS = {o.strip() for o in os.environ.get("ALLOWED_ORIGINS", SITE_URL).split(",") if o.strip()}
+ADMIN_EMAILS = os.environ.get("ADMIN_EMAILS", "vit9aso2@gmail.com")
 # Сайт переехал в организацию voidtweaksapp: оба адреса разрешены всегда, независимо от переменных окружения
 ALLOWED_ORIGINS |= {"https://voidtweaksapp.github.io", "https://disxrm.github.io"}
 
@@ -152,8 +154,17 @@ async def main():
         supabase=supabase,
         supabase_url=SUPABASE_URL,
         supabase_key=SUPABASE_KEY,
+        admin_emails=ADMIN_EMAILS.split(","),
     )
     account_api.register(app)
+
+    admin_api.init(
+        supabase=supabase,
+        supabase_url=SUPABASE_URL,
+        supabase_key=SUPABASE_KEY,
+        plans=PLANS,
+    )
+    admin_api.register(app)
 
     runner = web.AppRunner(app)
     await runner.setup()
