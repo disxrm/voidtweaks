@@ -6,6 +6,7 @@
 access_token пользователя и его email.
 """
 
+import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
 
@@ -200,20 +201,28 @@ async def api_admin_data(request: web.Request):
     if not ok:
         return _forbidden()
 
+    users_task = asyncio.create_task(_fetch_auth_users())
     try:
-        licenses = _sort_rows(
-            _supabase.table("licenses").select("*").execute().data or []
-        )
-        orders = _sort_rows(
-            _supabase.table("web_orders").select("*").execute().data or []
+        licenses, orders = await asyncio.gather(
+            asyncio.to_thread(
+                lambda: _sort_rows(
+                    _supabase.table("licenses").select("*").execute().data or []
+                )
+            ),
+            asyncio.to_thread(
+                lambda: _sort_rows(
+                    _supabase.table("web_orders").select("*").execute().data or []
+                )
+            ),
         )
     except Exception as exc:
+        users_task.cancel()
         logger.error(f"[admin] Ошибка чтения данных: {exc}")
         return _server_error()
 
     users_error = False
     try:
-        auth_users = await _fetch_auth_users()
+        auth_users = await users_task
     except Exception as exc:
         logger.warning(f"[admin] Не удалось получить пользователей: {exc}")
         auth_users = []

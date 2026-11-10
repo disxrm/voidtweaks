@@ -14,6 +14,7 @@ licenses / web_orders своим секретным ключом.
 Чужой ключ/заказ привязать нельзя.
 """
 
+import asyncio
 import logging
 import re
 
@@ -117,8 +118,14 @@ async def api_account_keys(request: web.Request):
 
     uid = user["id"]
     try:
-        licenses = _supabase.table("licenses").select("*").eq("user_id", uid).execute()
-        orders = _supabase.table("web_orders").select("*").eq("user_id", uid).execute()
+        licenses, orders = await asyncio.gather(
+            asyncio.to_thread(
+                lambda: _supabase.table("licenses").select("*").eq("user_id", uid).execute()
+            ),
+            asyncio.to_thread(
+                lambda: _supabase.table("web_orders").select("*").eq("user_id", uid).execute()
+            ),
+        )
     except Exception as e:
         logger.error(f"[account] Ошибка чтения данных: {e}")
         return _server_error()
