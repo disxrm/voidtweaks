@@ -41,8 +41,12 @@ def init(*, supabase):
 
 
 def _client_ip(request: web.Request) -> str:
+    # Worker передаёт реальный IP клиента. Для прямых запросов это лишь
+    # эвристика rate-limit, а не доверенная авторизация.
     fwd = request.headers.get("X-Forwarded-For", "")
-    return (fwd.split(",")[0].strip() if fwd else request.remote) or "?"
+    if fwd:
+        return (fwd.split(",")[0].strip() or "?")[:64]
+    return (request.headers.get("CF-Connecting-IP", "") or request.remote or "?")[:64]
 
 
 def _rate_limited(ip: str) -> bool:
@@ -52,6 +56,9 @@ def _rate_limited(ip: str) -> bool:
     if not limited:
         hits.append(now)
     _check_hits[ip] = hits
+    if len(_check_hits) > 5000:
+        for old_key in [k for k, v in _check_hits.items() if not v or now - v[-1] > 3600]:
+            _check_hits.pop(old_key, None)
     return limited
 
 
@@ -64,10 +71,16 @@ def _parse_expires(value) -> datetime | None:
 
 async def api_license_check(request: web.Request):
     if _rate_limited(_client_ip(request)):
-        return web.json_response({"ok": False, "error": "too_many_requests"}, status=429)
+        return web.json_response(
+            {"ok": False, "error": "too_many_requests"},
+            status=429,
+            headers={"Retry-After": str(CHECK_WINDOW)},
+        )
 
     try:
         body = await request.json()
+        if not isinstance(body, dict):
+            raise ValueError("body must be an object")
         key = str(body.get("key", "")).strip().upper()
         hwid = str(body.get("hwid", "")).strip()
         compatible = body.get("compatible") or []

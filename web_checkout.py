@@ -41,9 +41,12 @@ _generate_key = None
 # Защита от гонки: вебхук и /api/order могут прийти одновременно
 _issue_locks: dict[str, asyncio.Lock] = {}
 
-# Простой rate-limit на создание платежей: ip -> список временных меток
+# Простой rate-limit: ключ (ip/user) -> список временных меток.
+# IP-лимит защищает от анонимного флуда, user-лимит — от спама заказами.
 _checkout_hits: dict[str, list[float]] = {}
-CHECKOUT_LIMIT = 5        # запросов
+CHECKOUT_IP_LIMIT = 20
+CHECKOUT_USER_LIMIT = 5
+ORDER_IP_LIMIT = 60
 CHECKOUT_WINDOW = 60      # секунд
 
 
@@ -258,7 +261,7 @@ async def issue_web_license(token: str) -> dict | None:
             "status": "succeeded",
         }).eq("token", token).execute()
 
-        logger.info(f"[web] Ключ {key} выдан по заказу {token}, план {plan_key}")
+        logger.info(f"[web] Ключ {key[:4]}-… выдан по заказу {token}, план {plan_key}")
         return {"key": key, "plan": plan_key,
                 "expires_at": row.get("expires_at"), "status": "succeeded"}
 
@@ -266,28 +269,42 @@ async def issue_web_license(token: str) -> dict | None:
 # ----------------------------------------------------------- эндпоинты ----
 
 def _client_ip(request: web.Request) -> str:
+    # Worker передаёт реальный IP клиента в X-Forwarded-For. При прямом
+    # обращении к Render заголовок может быть подделан, но это лишь
+    # эвристика для rate-limit, а не доверенная авторизация.
     fwd = request.headers.get("X-Forwarded-For", "")
-    return (fwd.split(",")[0].strip() if fwd else request.remote) or "?"
+    if fwd:
+        return (fwd.split(",")[0].strip() or "?")[:64]
+    return (request.headers.get("CF-Connecting-IP", "") or request.remote or "?")[:64]
 
 
-def _rate_limited(ip: str) -> bool:
+def _rate_limited(key: str, limit: int = CHECKOUT_USER_LIMIT) -> bool:
     now = datetime.now().timestamp()
-    hits = [t for t in _checkout_hits.get(ip, []) if now - t < CHECKOUT_WINDOW]
-    if len(hits) >= CHECKOUT_LIMIT:
-        _checkout_hits[ip] = hits
+    hits = [t for t in _checkout_hits.get(key, []) if now - t < CHECKOUT_WINDOW]
+    if len(hits) >= limit:
+        _checkout_hits[key] = hits
         return True
     hits.append(now)
-    _checkout_hits[ip] = hits
+    _checkout_hits[key] = hits
+    if len(_checkout_hits) > 5000:
+        for old_key in [k for k, v in _checkout_hits.items() if not v or now - v[-1] > 3600]:
+            _checkout_hits.pop(old_key, None)
     return False
 
 
 async def api_checkout(request: web.Request):
-    if _rate_limited(_client_ip(request)):
-        return web.json_response({"error": "too_many_requests"}, status=429)
+    if _rate_limited("ip:" + _client_ip(request), CHECKOUT_IP_LIMIT):
+        return web.json_response(
+            {"error": "too_many_requests"},
+            status=429,
+            headers={"Retry-After": str(CHECKOUT_WINDOW)},
+        )
 
     try:
         body = await request.json()
     except Exception:
+        return web.json_response({"error": "bad_json"}, status=400)
+    if not isinstance(body, dict):
         return web.json_response({"error": "bad_json"}, status=400)
 
     plan_key = body.get("plan")
@@ -300,6 +317,13 @@ async def api_checkout(request: web.Request):
     user = await account_api.get_user(request)
     if not user or not user.get("id"):
         return web.json_response({"error": "unauthorized"}, status=401)
+
+    if _rate_limited("user:" + str(user["id"]), CHECKOUT_USER_LIMIT):
+        return web.json_response(
+            {"error": "too_many_requests"},
+            status=429,
+            headers={"Retry-After": str(CHECKOUT_WINDOW)},
+        )
 
     token = secrets.token_urlsafe(24)  # ~192 бита — не подобрать перебором
     payment_id, url = await _yk_create(
@@ -326,6 +350,13 @@ async def api_checkout(request: web.Request):
 
 
 async def api_order(request: web.Request):
+    if _rate_limited("order:" + _client_ip(request), ORDER_IP_LIMIT):
+        return web.json_response(
+            {"error": "too_many_requests"},
+            status=429,
+            headers={"Retry-After": str(CHECKOUT_WINDOW)},
+        )
+
     token = request.query.get("token", "")
     if not token or len(token) > 100:
         return web.json_response({"error": "not_found"}, status=404)

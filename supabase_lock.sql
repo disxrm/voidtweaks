@@ -26,9 +26,28 @@ begin
   end loop;
 end $$;
 
--- 3. И на всякий случай забираем у публичных ролей сами права на таблицы.
-revoke all on public.licenses, public.web_orders from anon, authenticated;
+-- 3. Забираем у публичных ролей сами права на таблицы.
+--    ВАЖНО: public — это псевдороль, которая включает anon и authenticated.
+--    Без этого revoke таблица может остаться читаемой, даже если RLS включён,
+--    но в ней остались старые policy.
+revoke all on table public.licenses, public.web_orders from anon, authenticated;
+revoke all on table public.licenses, public.web_orders from public;
 
--- Проверка: должно вернуть 0 строк.
+-- 4. Проверка: политик должно быть 0, RLS должен быть включён.
+select relname, relrowsecurity, relforcerowsecurity
+from pg_class
+where relname in ('licenses', 'web_orders');
+
+select grantee, privilege_type
+from information_schema.role_table_grants
+where table_name in ('licenses', 'web_orders')
+  and grantee in ('anon', 'authenticated', 'PUBLIC');
+
 select tablename, policyname from pg_policies
 where schemaname = 'public' and tablename in ('licenses', 'web_orders');
+
+-- 5. После выполнения проверь с публичным ключом:
+--    GET /rest/v1/licenses?select=license_key&limit=1
+--    Должно быть 401/403, а не массив с ключами.
+--    Если backend использует service_role, он продолжит работать:
+--    service_role обходит RLS.

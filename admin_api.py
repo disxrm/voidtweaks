@@ -329,6 +329,12 @@ async def api_admin_license(request: web.Request):
         logger.error(f"[admin] Ошибка обновления ключа: {exc}")
         return _server_error()
 
+    admin_email = str(user.get("email") or "?").replace("\n", " ").replace("\r", " ")[:200]
+    logger.info(
+        f"[admin] {admin_email} -> {action} "
+        f"{key[:4]}-… (is_active={update.get('is_active', row.get('is_active'))})"
+    )
+
     row.update(update)
     email = ""
     try:

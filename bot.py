@@ -38,6 +38,12 @@ ADMIN_EMAILS = os.environ.get("ADMIN_EMAILS", "vit9aso2@gmail.com")
 # Сайт переехал в организацию voidtweaksapp: оба адреса разрешены всегда, независимо от переменных окружения
 ALLOWED_ORIGINS |= {"https://voidtweaksapp.github.io", "https://disxrm.github.io"}
 
+if SUPABASE_KEY and str(SUPABASE_KEY).startswith("sb_publishable_"):
+    logger.error(
+        "SUPABASE_KEY выглядит как публичный ключ. Для сервера нужен "
+        "secret/service_role, иначе после включения RLS кабинет и оплата не работают."
+    )
+
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 PLANS = {
@@ -63,7 +69,7 @@ async def deactivate_expired_licenses():
                 supabase.table("licenses").update({"is_active": False}).eq(
                     "license_key", lic["license_key"]
                 ).execute()
-                logger.info(f"Деактивирована лицензия {lic['license_key']}")
+                logger.info(f"Деактивирована лицензия {str(lic.get('license_key') or '')[:4]}-…")
 
         except Exception as e:
             logger.error(f"Ошибка в deactivate_expired_licenses: {e}")
@@ -101,7 +107,7 @@ async def yukassa_webhook(request: web.Request):
     # в issue_web_license: заказ ищется по секретному токену, а статус и сумма
     # платежа перечитываются из API ЮKassa.
     peer = request.headers.get("X-Forwarded-For", request.remote or "")
-    client_ip = peer.split(",")[0].strip()
+    client_ip = peer.split(",")[0].strip()[:64]
     if not is_yukassa_ip(client_ip):
         logger.warning(f"Webhook отклонён: неизвестный IP {client_ip}")
         return web.Response(text="Forbidden", status=403)
@@ -134,8 +140,27 @@ async def yukassa_webhook(request: web.Request):
 async def health(request):
     return web.Response(text="OK")
 
+
+@web.middleware
+async def security_headers_middleware(request: web.Request, handler):
+    try:
+        response = await handler(request)
+    except web.HTTPException as exc:
+        response = exc
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault(
+        "Permissions-Policy", "geolocation=(), microphone=(), camera=()"
+    )
+    if request.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 async def main():
-    app = web.Application()
+    app = web.Application(client_max_size=64 * 1024)
+    app.middlewares.append(security_headers_middleware)
     app.router.add_get("/", health)
     app.router.add_post("/webhook/yukassa", yukassa_webhook)
 

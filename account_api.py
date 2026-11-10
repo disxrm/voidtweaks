@@ -17,6 +17,7 @@ licenses / web_orders своим секретным ключом.
 import asyncio
 import logging
 import re
+from datetime import datetime
 
 import aiohttp
 from aiohttp import web
@@ -29,6 +30,10 @@ _supabase_key = ""
 _admin_emails = {"vit9aso2@gmail.com"}
 
 KEY_RE = re.compile(r"^[A-Z0-9]{4}(-[A-Z0-9]{4}){3}$")
+MAX_TOKEN_LEN = 4096
+CLAIM_LIMIT = 15
+CLAIM_WINDOW = 60
+_claim_hits: dict[str, list[float]] = {}
 
 
 def init(*, supabase, supabase_url, supabase_key, admin_emails=None):
@@ -42,9 +47,35 @@ def init(*, supabase, supabase_url, supabase_key, admin_emails=None):
             _admin_emails = emails
 
 
+def _email_confirmed(user: dict) -> bool:
+    # Если Supabase вернул поле подтверждения — требуем его. В тестах и
+    # старых ответах поля может не быть, тогда не ломаем совместимость.
+    if "email_confirmed_at" in user:
+        return bool(user.get("email_confirmed_at"))
+    return True
+
+
 def is_admin(user: dict | None) -> bool:
-    email = (user or {}).get("email") or ""
+    user = user or {}
+    email = user.get("email") or ""
+    if not email or not _email_confirmed(user):
+        return False
     return email.strip().lower() in _admin_emails
+
+
+def _rate_limited(key: str, limit: int, window: int) -> bool:
+    now = datetime.now().timestamp()
+    hits = [t for t in _claim_hits.get(key, []) if now - t < window]
+    if len(hits) >= limit:
+        _claim_hits[key] = hits
+        return True
+    hits.append(now)
+    _claim_hits[key] = hits
+    # Не даём словарю расти бесконечно при переборе.
+    if len(_claim_hits) > 5000:
+        for old_key in [k for k, v in _claim_hits.items() if not v or now - v[-1] > 3600]:
+            _claim_hits.pop(old_key, None)
+    return False
 
 
 async def get_user(request: web.Request) -> dict | None:
@@ -53,7 +84,7 @@ async def get_user(request: web.Request) -> dict | None:
     if not auth.lower().startswith("bearer "):
         return None
     token = auth[7:].strip()
-    if not token or not _supabase_url or not _supabase_key:
+    if not token or len(token) > MAX_TOKEN_LEN or not _supabase_url or not _supabase_key:
         return None
 
     url = _supabase_url + "/auth/v1/user"
@@ -252,6 +283,13 @@ async def api_account_claim(request: web.Request):
     user = await get_user(request)
     if not user:
         return _unauthorized()
+
+    if _rate_limited("user:" + str(user["id"]), CLAIM_LIMIT, CLAIM_WINDOW):
+        return web.json_response(
+            {"error": "too_many_requests"},
+            status=429,
+            headers={"Retry-After": str(CLAIM_WINDOW)},
+        )
 
     try:
         body = await request.json()

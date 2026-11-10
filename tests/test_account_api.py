@@ -115,6 +115,7 @@ class AccountApiTest(unittest.IsolatedAsyncioTestCase):
         account_api.get_user = fake_get_user
         account_api._supabase = FakeSupabase()
         account_api._supabase.tables = make_db()
+        account_api._claim_hits.clear()
 
         app = web.Application()
         account_api.register(app)
@@ -123,6 +124,7 @@ class AccountApiTest(unittest.IsolatedAsyncioTestCase):
 
     async def asyncTearDown(self):
         account_api.get_user = self._original_get_user
+        account_api._claim_hits.clear()
         await self.client.close()
 
     async def test_keys_requires_auth(self):
@@ -166,6 +168,37 @@ class AccountApiTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status, 200)
         data = await response.json()
         self.assertTrue(data["is_admin"])
+
+    async def test_admin_flag_requires_confirmed_email(self):
+        async def unconfirmed(request):
+            return {
+                "id": "user-1",
+                "email": "vit9aso2@gmail.com",
+                "email_confirmed_at": None,
+            }
+
+        account_api.get_user = unconfirmed
+        response = await self.client.get(
+            "/api/account/keys", headers={"Authorization": "Bearer good"}
+        )
+        data = await response.json()
+        self.assertFalse(data["is_admin"])
+
+    async def test_claim_is_rate_limited(self):
+        for _ in range(account_api.CLAIM_LIMIT):
+            response = await self.client.post(
+                "/api/account/claim",
+                json={"key": "AAAA-BBBB-CCCC-DDDD"},
+                headers={"Authorization": "Bearer good"},
+            )
+            self.assertNotEqual(response.status, 429)
+        response = await self.client.post(
+            "/api/account/claim",
+            json={"key": "AAAA-BBBB-CCCC-DDDD"},
+            headers={"Authorization": "Bearer good"},
+        )
+        self.assertEqual(response.status, 429)
+        self.assertEqual(response.headers.get("Retry-After"), str(account_api.CLAIM_WINDOW))
 
     async def test_claim_order_links_license_and_is_idempotent(self):
         response = await self.client.post(
