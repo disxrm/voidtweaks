@@ -11,8 +11,8 @@
             https://<сайт>/?order=<token>
   3. Сайт:  GET /api/order?token=...   (опрос каждые 3 сек)
             -> {"status": "pending" | "canceled" | "succeeded", "key": ..., ...}
-  4. Ключ выдаётся ОДИН раз, идемпотентно, из двух мест — из вебхука ЮKassa
-     и из /api/order (если вебхук опоздал или не дошёл). Дубля не будет.
+  4. Ключ выдаётся ОДИН раз, идемпотентно: из /api/order, а также при
+     сверке в кабинете и админке, если покупатель закрыл вкладку.
 """
 
 import asyncio
@@ -106,7 +106,7 @@ async def _yk_create(amount: int, token: str, plan_key: str, description: str):
             "return_url": f"{_site_url}/?order={token}",
         },
         "description": description,
-        # префикс web_ — по нему вебхук узнаёт заказы с сайта
+        # префикс web_ — по нему можно отличить заказы сайта
         "metadata": {"order_id": f"web_{token}", "plan": plan_key},
     }
     try:
@@ -264,6 +264,83 @@ async def issue_web_license(token: str) -> dict | None:
         logger.info(f"[web] Ключ {key[:4]}-… выдан по заказу {token}, план {plan_key}")
         return {"key": key, "plan": plan_key,
                 "expires_at": row.get("expires_at"), "status": "succeeded"}
+
+
+# --------------------------------------------------- сверка заказов -------
+
+# Насколько старые pending-заказы имеет смысл перепроверять
+RECONCILE_MAX_AGE = timedelta(hours=48)
+
+
+def _parse_created(value) -> datetime | None:
+    if not value:
+        return None
+    try:
+        dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
+async def reconcile_pending_orders(user_id: str | None = None, limit: int = 3) -> int:
+    """
+    Догоняет выдачу ключей: если покупатель оплатил и закрыл вкладку,
+    ключ всё равно появится при следующем заходе в кабинет (или в админку).
+    Проверяет только свежие pending-заказы и не более limit за раз.
+    """
+    try:
+        query = (
+            _supabase.table("web_orders")
+            .select("token,payment_id,created_at,user_id")
+            .eq("status", "pending")
+            .order("created_at", desc=True)
+        )
+        if user_id:
+            query = query.eq("user_id", user_id)
+        rows = query.execute().data or []
+    except Exception as e:
+        logger.warning(f"[web] Сверка заказов: не удалось прочитать список: {e}")
+        return 0
+
+    now = datetime.now(timezone.utc)
+    checked = 0
+    issued = 0
+    for row in rows:
+        if checked >= limit:
+            break
+        created = _parse_created(row.get("created_at"))
+        if created and now - created > RECONCILE_MAX_AGE:
+            continue
+
+        token = str(row.get("token") or "")
+        if not token:
+            continue
+        checked += 1
+
+        try:
+            result = await issue_web_license(token)
+        except Exception as e:
+            logger.warning(f"[web] Сверка заказа {token[:6]}…: ошибка выдачи: {e}")
+            continue
+        if result:
+            issued += 1
+            continue
+
+        # ключа нет: возможно, платёж отменён или истёк — закрываем заказ
+        status, _ = await _yk_status(str(row.get("payment_id") or ""))
+        if status == "canceled":
+            try:
+                _supabase.table("web_orders").update(
+                    {"status": "canceled"}
+                ).eq("token", token).execute()
+            except Exception as e:
+                logger.warning(f"[web] Не удалось пометить заказ {token[:6]}… отменённым: {e}")
+
+    if issued:
+        logger.info(f"[web] Сверка заказов: выдано ключей — {issued}")
+    return issued
 
 
 # ----------------------------------------------------------- эндпоинты ----

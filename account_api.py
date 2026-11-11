@@ -148,6 +148,17 @@ async def api_account_keys(request: web.Request):
         return _unauthorized()
 
     uid = user["id"]
+
+    # Догоняем выдачу ключей, если покупатель оплатил, но не вернулся на сайт.
+    try:
+        import web_checkout
+        await asyncio.wait_for(
+            web_checkout.reconcile_pending_orders(user_id=uid, limit=3),
+            timeout=5,
+        )
+    except Exception as e:
+        logger.warning(f"[account] Сверка заказов не удалась: {e}")
+
     try:
         licenses, orders = await asyncio.gather(
             asyncio.to_thread(

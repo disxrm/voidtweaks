@@ -201,6 +201,16 @@ async def api_admin_data(request: web.Request):
     if not ok:
         return _forbidden()
 
+    # Догоняем выдачу ключей по оплаченным, но не завершённым заказам.
+    try:
+        import web_checkout
+        await asyncio.wait_for(
+            web_checkout.reconcile_pending_orders(limit=5),
+            timeout=6,
+        )
+    except Exception as exc:
+        logger.warning(f"[admin] Сверка заказов не удалась: {exc}")
+
     users_task = asyncio.create_task(_fetch_auth_users())
     try:
         licenses, orders = await asyncio.gather(
