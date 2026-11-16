@@ -47,6 +47,7 @@ _checkout_hits: dict[str, list[float]] = {}
 CHECKOUT_IP_LIMIT = 20
 CHECKOUT_USER_LIMIT = 5
 ORDER_IP_LIMIT = 60
+ORDER_USER_LIMIT = 120
 CHECKOUT_WINDOW = 60      # секунд
 
 
@@ -427,7 +428,21 @@ async def api_checkout(request: web.Request):
 
 
 async def api_order(request: web.Request):
-    if _rate_limited("order:" + _client_ip(request), ORDER_IP_LIMIT):
+    if _rate_limited("order-ip:" + _client_ip(request), ORDER_IP_LIMIT):
+        return web.json_response(
+            {"error": "too_many_requests"},
+            status=429,
+            headers={"Retry-After": str(CHECKOUT_WINDOW)},
+        )
+
+    # Токен заказа — не единственная защита: ключ может получить только
+    # авторизованный пользователь, и только если заказ принадлежит ему.
+    user = await account_api.get_user(request)
+    if not user or not user.get("id"):
+        return web.json_response({"error": "unauthorized"}, status=401)
+
+    uid = str(user["id"])
+    if _rate_limited("order-user:" + uid, ORDER_USER_LIMIT):
         return web.json_response(
             {"error": "too_many_requests"},
             status=429,
@@ -435,6 +450,13 @@ async def api_order(request: web.Request):
         )
 
     token = request.query.get("token", "")
+    if not token and request.method == "POST":
+        try:
+            body = await request.json()
+            if isinstance(body, dict):
+                token = str(body.get("token") or "").strip()
+        except Exception:
+            return web.json_response({"error": "bad_json"}, status=400)
     if not token or len(token) > 100:
         return web.json_response({"error": "not_found"}, status=404)
 
@@ -443,9 +465,25 @@ async def api_order(request: web.Request):
         return web.json_response({"error": "not_found"}, status=404)
     order = res.data[0]
 
+    owner = str(order.get("user_id") or "").strip()
+    # Чужой заказ неотличим от несуществующего, чтобы не раскрывать токены.
+    if owner and owner != uid:
+        return web.json_response({"error": "not_found"}, status=404)
+
     # ключ уже есть -> отдаём
     result = await issue_web_license(token)
     if result:
+        # Старые заказы без user_id привязываем при первой выдаче ключа.
+        if not owner:
+            try:
+                _supabase.table("web_orders").update({"user_id": uid}).eq(
+                    "token", token
+                ).execute()
+                _supabase.table("licenses").update({"user_id": uid}).eq(
+                    "license_key", result["key"]
+                ).execute()
+            except Exception as e:
+                logger.warning(f"[web] Не удалось привязать старый заказ к аккаунту: {e}")
         return web.json_response(result)
 
     # ключа нет: pending или canceled?
@@ -463,5 +501,6 @@ def register(app: web.Application):
     app.middlewares.append(cors_middleware)
     app.router.add_post("/api/checkout", api_checkout)
     app.router.add_get("/api/order", api_order)
+    app.router.add_post("/api/order", api_order)
     app.router.add_options("/api/checkout", lambda r: web.Response(status=204))
     app.router.add_options("/api/order", lambda r: web.Response(status=204))
